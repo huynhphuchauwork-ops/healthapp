@@ -1,0 +1,3298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthTrack Pro - v5.33 Master Fixed Version</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+    }
+    .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 4px 10px -2px rgba(15, 23, 42, 0.03);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .tab-btn { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+    .tab-btn:hover:not(.active) {
+      background: rgba(241, 245, 249, 0.9);
+      color: #1e293b;
+      transform: translateX(3px);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.35);
+    }
+    .tab-btn.active .nav-badge {
+      background: rgba(255, 255, 255, 0.22) !important;
+      color: #ffffff !important;
+    }
+    .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .meal-item-card { position: relative; overflow: visible !important; }
+    .meal-item-card .nutrient-tooltip {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      z-index: 9999 !important;
+    }
+    .meal-item-card:hover .nutrient-tooltip {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(18px, -14px) scale(1.05); }
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(8px); }
+      70% { transform: scale(1.02) translateY(-1px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes gentlePulseRing {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
+      50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    }
+    .animate-float-slow { animation: floatSlow 11s ease-in-out infinite; }
+    .animate-float-reverse { animation: floatSlow 14s ease-in-out infinite reverse; }
+    .animate-pop-in { animation: popIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .ring-alert-pulse { animation: gentlePulseRing 2s infinite; }
+    .glass-card:hover {
+      box-shadow: 0 18px 35px -8px rgba(15, 23, 42, 0.09), 0 6px 14px -3px rgba(37, 99, 235, 0.05);
+    }
+    .meal-col-card {
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+    .meal-col-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px -6px rgba(15, 23, 42, 0.07);
+    }
+    /* Hide scrollbar cleanly for horizontal pill strips on mobile/tablet */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    /* Safe area padding for mobile bottom nav */
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
+    @media (max-width: 639px) {
+      .meal-item-card .nutrient-tooltip {
+        left: -4px;
+        right: -4px;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen pb-24 lg:pb-14 relative overflow-x-hidden">
+  <!-- HIỆU ỨNG NỀN CHUYỂN ĐỘNG MỀM MẠI -->
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-blue-300/25 blur-3xl animate-float-slow"></div>
+    <div class="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-indigo-300/20 blur-3xl animate-float-reverse"></div>
+    <div class="absolute -bottom-24 left-1/3 w-96 h-96 rounded-full bg-emerald-200/25 blur-3xl animate-float-slow"></div>
+  </div>
+
+  <!-- NÚT NỔI MỞ NHANH SIDEBAR KHI ĐANG ẨN (DESKTOP) -->
+  <button onclick="toggleLeftSidebar()" id="floatingSidebarBtn" class="hidden lg:flex fixed bottom-5 left-5 z-40 px-3.5 py-2.5 rounded-2xl bg-slate-900/90 hover:bg-blue-600 text-white text-xs font-bold shadow-xl border border-white/15 backdrop-blur-md items-center gap-2 transition cursor-pointer" title="Mở thanh điều hướng">
+    <i class="fa-solid fa-bars text-cyan-400"></i>
+    <span>Menu & Ngày</span>
+  </button>
+
+  <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG CHO DI ĐỘNG & MÁY TÍNH BẢNG (< 1024px) -->
+  <nav id="mobileBottomNav" class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200/90 shadow-[0_-8px_24px_-6px_rgba(15,23,42,0.08)] px-1.5 pt-1.5 pb-safe">
+    <div class="max-w-xl mx-auto grid grid-cols-5 gap-1 text-[10px] font-bold">
+      <button onclick="switchTab('tab-daily')" id="mnav-tab-daily" class="mnav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-blue-600 bg-blue-50/90 transition cursor-pointer">
+        <i class="fa-solid fa-utensils text-sm mb-0.5"></i>
+        <span class="truncate max-w-full">Hằng ngày</span>
+      </button>
+      <button onclick="switchTab('tab-workout')" id="mnav-tab-workout" class="mnav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-slate-500 hover:bg-slate-100 transition cursor-pointer">
+        <i class="fa-solid fa-dumbbell text-sm mb-0.5"></i>
+        <span class="truncate max-w-full">Tập Gym</span>
+      </button>
+      <button onclick="switchTab('tab-history')" id="mnav-tab-history" class="mnav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-slate-500 hover:bg-slate-100 transition cursor-pointer">
+        <i class="fa-solid fa-calendar-days text-sm mb-0.5"></i>
+        <span class="truncate max-w-full">Lịch sử</span>
+      </button>
+      <button onclick="switchTab('tab-library')" id="mnav-tab-library" class="mnav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-slate-500 hover:bg-slate-100 transition cursor-pointer">
+        <i class="fa-solid fa-database text-sm mb-0.5"></i>
+        <span class="truncate max-w-full">Kho món</span>
+      </button>
+      <button onclick="switchTab('tab-clinical')" id="mnav-tab-clinical" class="mnav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-slate-500 hover:bg-slate-100 transition cursor-pointer">
+        <i class="fa-solid fa-file-medical text-sm mb-0.5"></i>
+        <span class="truncate max-w-full">Hồ sơ</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- TOAST THÔNG BÁO SINH ĐỘNG -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white sticky top-0 z-40 shadow-lg border-b border-white/10">
+    <div class="max-w-[1440px] mx-auto px-3 sm:px-4 py-2.5 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-3">
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+        <button onclick="toggleLeftSidebar()" id="btnToggleSidebar" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-center shrink-0 transition cursor-pointer" title="Ẩn / Hiện thanh điều hướng trái">
+          <i id="sidebarToggleIcon" class="fa-solid fa-bars-staggered text-sm"></i>
+        </button>
+        <div class="hidden xs:flex sm:flex w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-500 to-cyan-400 items-center justify-center text-white text-base sm:text-xl shadow-lg shadow-blue-500/30 shrink-0">
+          <i class="fa-solid fa-heart-pulse animate-pulse"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <h1 class="font-extrabold text-sm sm:text-lg tracking-tight text-white truncate">HealthTrack Pro</h1>
+            <span class="hidden sm:inline-block text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-semibold shrink-0">v5.47 Responsive</span>
+          </div>
+          <p class="text-[11px] sm:text-xs text-slate-300 mt-0.5 truncate">
+            <strong class="text-white">HUỲNH PHÚC HẬU</strong> <span class="hidden md:inline">• 27T</span> • 56kg • 1.58m • Eo <span id="headerWaistDisplay" class="text-amber-400 font-bold">70cm</span> <span class="hidden sm:inline">(WHtR <span id="headerWhtrDisplay" class="text-slate-200">0.44</span>)</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- THANH ĐIỀU KHIỂN GỌN GÀNG -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        <button onclick="openAddFoodModal()" class="px-2.5 sm:px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-950/30 transition cursor-pointer">
+          <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Thêm Món</span><span class="sm:hidden">Món</span>
+        </button>
+
+        <!-- NÚT SETTING GOM TẤT CẢ CẤU HÌNH & ĐỒNG BỘ -->
+        <div class="relative" id="headerSettingsWrapper">
+          <button onclick="toggleHeaderSettingsMenu(event)" id="btnHeaderSettings" class="px-2.5 sm:px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold flex items-center gap-1.5 sm:gap-2 shadow-md transition cursor-pointer" title="Cài đặt & Đồng bộ">
+            <span id="settingsStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <i class="fa-solid fa-gear text-sm"></i>
+            <span class="hidden sm:inline">Cài đặt</span>
+            <i class="fa-solid fa-chevron-down text-[10px] opacity-75"></i>
+          </button>
+
+          <!-- MENU DROPDOWN CÀI ĐẶT -->
+          <div id="headerSettingsDropdown" class="hidden absolute right-0 top-full mt-2 w-72 bg-slate-900/95 backdrop-blur-xl text-slate-100 rounded-2xl shadow-2xl border border-slate-700/80 p-2.5 z-50 space-y-1.5 fade-in">
+            <!-- Trạng thái đồng bộ -->
+            <div class="px-3 py-2 rounded-xl bg-white/5 border border-white/10">
+              <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Trạng thái đám mây</div>
+              <div id="githubSyncStatus" class="text-[11px] px-2.5 py-1.5 rounded-lg bg-white/10 text-slate-200 border border-white/15 font-medium flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span> Chưa kết nối GitHub
+              </div>
+            </div>
+
+            <!-- Nút thao tác nhanh GitHub khi đã kết nối -->
+            <div id="githubQuickActionsGroup" class="hidden grid grid-cols-2 gap-1.5 pt-0.5">
+              <button onclick="pullFromGithub(true); closeHeaderSettingsMenu();" id="btnPullGithub" class="px-2.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-400/30 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Tải về
+              </button>
+              <button onclick="pushToGithub(true); closeHeaderSettingsMenu();" id="btnPushGithubDropdown" class="px-2.5 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-400/30 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Đẩy lên
+              </button>
+            </div>
+
+            <div class="border-t border-slate-800 my-1"></div>
+
+            <!-- Cấu hình GitHub DB -->
+            <button onclick="openGithubModal(); closeHeaderSettingsMenu();" class="w-full px-3 py-2.5 rounded-xl hover:bg-white/10 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer">
+              <span class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-white"><i class="fa-brands fa-github"></i></span>
+                <span>Cấu Hình GitHub DB</span>
+              </span>
+              <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+            </button>
+
+            <!-- Cấu hình AI Key -->
+            <button onclick="openApiModal(); closeHeaderSettingsMenu();" class="w-full px-3 py-2.5 rounded-xl hover:bg-white/10 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer">
+              <span class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300"><i class="fa-solid fa-key"></i></span>
+                <span>Cấu Hình AI Key</span>
+              </span>
+              <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+            </button>
+
+            <!-- Dữ liệu JSON -->
+            <button onclick="switchTab('tab-json'); closeHeaderSettingsMenu();" id="btn-tab-json" class="w-full px-3 py-2.5 rounded-xl hover:bg-white/10 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer">
+              <span class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-300"><i class="fa-solid fa-code"></i></span>
+                <span>Dữ Liệu JSON</span>
+              </span>
+              <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- BACKDROP CHO DRAWER TRÊN DI ĐỘNG / TABLET -->
+  <div id="sidebarBackdrop" onclick="closeMobileSidebar()" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 lg:hidden transition-opacity"></div>
+
+  <!-- KHUNG BỐ CỤC CHÍNH: SIDEBAR DỌC BÊN TRÁI + NỘI DUNG BÊN PHẢI -->
+  <div class="max-w-[1440px] mx-auto px-3 sm:px-4 pt-3.5 sm:pt-5 flex flex-col lg:flex-row items-start gap-4 lg:gap-5">
+
+    <!-- SIDEBAR ĐIỀU HƯỚNG DỌC BÊN TAY TRÁI (DRAWER TRÊN MOBILE/TABLET, CỘT CỐ ĐỊNH TRÊN DESKTOP) -->
+    <aside id="leftSidebar" class="hidden lg:block fixed lg:static inset-y-0 left-0 z-50 lg:z-auto w-72 sm:w-80 lg:w-64 max-w-[85vw] bg-slate-50/98 lg:bg-transparent backdrop-blur-xl lg:backdrop-blur-none p-4 lg:p-0 overflow-y-auto lg:overflow-visible shadow-2xl lg:shadow-none border-r lg:border-r-0 border-slate-200 flex-shrink-0 lg:sticky lg:top-20 space-y-4 transition-all duration-300">
+      <!-- Header riêng cho Mobile/Tablet Drawer -->
+      <div class="flex lg:hidden items-center justify-between pb-3 border-b border-slate-200">
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm"><i class="fa-solid fa-heart-pulse"></i></span>
+          <span class="font-extrabold text-sm text-slate-900">Điều hướng & Ngày</span>
+        </div>
+        <button onclick="closeMobileSidebar()" class="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-300 text-slate-700 flex items-center justify-center font-bold cursor-pointer">&times;</button>
+      </div>
+
+      <!-- BỘ CHỌN NGÀY NHANH TRONG SIDEBAR -->
+      <div class="glass-card p-3.5 rounded-2xl">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <i class="fa-regular fa-calendar text-blue-600"></i> Ngày theo dõi
+          </span>
+          <button onclick="jumpToToday()" class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold text-[10px] transition cursor-pointer">
+            Hôm nay
+          </button>
+        </div>
+        <div class="flex items-center justify-between gap-1 bg-slate-50 p-1.5 rounded-xl border border-slate-200/80 text-xs">
+          <button onclick="changeDate(-1)" class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200/70 text-slate-600 shadow-2xs flex items-center justify-center transition cursor-pointer" title="Ngày trước">
+            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+          </button>
+          <input type="date" id="activeDatePicker" onchange="onDatePickerChange()" class="font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer text-center text-xs w-full">
+          <button onclick="changeDate(1)" class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200/70 text-slate-600 shadow-2xs flex items-center justify-center transition cursor-pointer" title="Ngày sau">
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- MENU ĐIỀU HƯỚNG DỌC -->
+      <nav class="glass-card p-2.5 rounded-2xl flex flex-col gap-1.5 text-xs">
+        <div class="flex items-center justify-between px-3 pt-1 pb-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+          <span>Danh mục quản lý</span>
+          <button onclick="toggleLeftSidebar()" class="hidden lg:flex text-slate-400 hover:text-blue-600 transition cursor-pointer items-center gap-1" title="Thu gọn thanh bên">
+            <i class="fa-solid fa-angles-left"></i> Ẩn
+          </button>
+        </div>
+
+        <button onclick="switchTab('tab-daily')" id="btn-tab-daily" class="tab-btn active w-full px-3.5 py-2.5 rounded-xl text-slate-600 flex items-center justify-between gap-2.5 cursor-pointer">
+          <span class="flex items-center gap-2.5">
+            <i class="fa-solid fa-utensils w-4 text-center"></i>
+            <span>Theo Dõi Hàng Ngày</span>
+          </span>
+        </button>
+
+        <button onclick="switchTab('tab-history')" id="btn-tab-history" class="tab-btn w-full px-3.5 py-2.5 rounded-xl text-slate-600 flex items-center justify-between gap-2.5 cursor-pointer">
+          <span class="flex items-center gap-2.5">
+            <i class="fa-solid fa-calendar-days w-4 text-center"></i>
+            <span>Lịch Sử Bữa Ăn</span>
+          </span>
+          <span id="historyCountBadge" class="nav-badge px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold">0 ngày</span>
+        </button>
+
+        <button onclick="switchTab('tab-library')" id="btn-tab-library" class="tab-btn w-full px-3.5 py-2.5 rounded-xl text-slate-600 flex items-center justify-between gap-2.5 cursor-pointer">
+          <span class="flex items-center gap-2.5">
+            <i class="fa-solid fa-database w-4 text-center"></i>
+            <span>Kho Thực Phẩm</span>
+          </span>
+          <span id="customFoodCountBadge" class="nav-badge px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold">0 món</span>
+        </button>
+
+        <button onclick="switchTab('tab-workout')" id="btn-tab-workout" class="tab-btn w-full px-3.5 py-2.5 rounded-xl text-slate-600 flex items-center justify-between gap-2.5 cursor-pointer">
+          <span class="flex items-center gap-2.5">
+            <i class="fa-solid fa-dumbbell w-4 text-center"></i>
+            <span>Lịch Tập Gym</span>
+          </span>
+          <span id="workoutNavBadge" class="nav-badge px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 text-[10px] font-bold">5 buổi</span>
+        </button>
+
+        <button onclick="switchTab('tab-clinical')" id="btn-tab-clinical" class="tab-btn w-full px-3.5 py-2.5 rounded-xl text-slate-600 flex items-center justify-between gap-2.5 cursor-pointer">
+          <span class="flex items-center gap-2.5">
+            <i class="fa-solid fa-file-medical w-4 text-center"></i>
+            <span>Hồ Sơ Khám</span>
+          </span>
+        </button>
+      </nav>
+
+      <!-- THẺ NHẮC NHỞ MỤC TIÊU NHANH TRÊN SIDEBAR -->
+      <div class="glass-card p-3.5 rounded-2xl text-[11px] space-y-2 border-l-4 border-l-blue-500">
+        <div class="font-extrabold text-slate-800 flex items-center gap-1.5">
+          <i class="fa-solid fa-bullseye text-blue-600"></i> Ngưỡng An Toàn Ngày
+        </div>
+        <div class="flex justify-between text-slate-600">
+          <span>Calo mục tiêu:</span>
+          <strong class="text-slate-900">1,750 kcal</strong>
+        </div>
+        <div class="flex justify-between text-slate-600">
+          <span>Purine (Gout):</span>
+          <strong class="text-red-600">&lt; 200 mg</strong>
+        </div>
+        <div class="flex justify-between text-slate-600">
+          <span>Nước đào thải:</span>
+          <strong class="text-cyan-700">2,800 ml</strong>
+        </div>
+      </div>
+    </aside>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH BÊN TAY PHẢI -->
+    <main class="flex-1 min-w-0 w-full space-y-4">
+
+      <!-- THANH CHỌN NGÀY NHANH CHO DI ĐỘNG & TABLET (< 1024px) -->
+      <div class="lg:hidden glass-card px-3 py-2 rounded-2xl flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5">
+          <button onclick="changeDate(-1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition cursor-pointer" title="Ngày trước">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+          </button>
+          <input type="date" id="mobileDatePicker" onchange="onMobileDatePickerChange()" class="font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer text-xs text-center">
+          <button onclick="changeDate(1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition cursor-pointer" title="Ngày sau">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+        <button onclick="jumpToToday()" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs transition cursor-pointer">
+          Hôm nay
+        </button>
+      </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 1: THEO DÕI HÀNG NGÀY -->
+    <!-- ========================================================= -->
+    <div id="tab-daily" class="space-y-6 fade-in">
+
+      <!-- NÚT THU GỌN / MỞ RỘNG 4 THẺ CHỈ SỐ Y KHOA -->
+      <div class="flex justify-end">
+        <button onclick="toggleMedicalCards()" id="toggleCardsBtn" class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-xs font-bold flex items-center gap-2 shadow-2xs transition cursor-pointer">
+          <i id="toggleIcon" class="fa-solid fa-chevron-down text-blue-600"></i> <span id="toggleText">Xem 4 thẻ chỉ số y khoa</span>
+        </button>
+      </div>
+
+      <!-- 4 THẺ CHỈ SỐ NHANH (MẶC ĐỊNH ẨN) -->
+      <div id="medicalCardsContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 fade-in">
+        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-emerald-500 flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-slate-500 uppercase font-bold tracking-wider">Cân Nặng / BMI</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-2xl font-extrabold text-slate-900">56 <span class="text-xs font-normal text-slate-500">kg</span></span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold">BMI 22.4</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Mục tiêu: Giảm mỡ nội tạng</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white flex items-center justify-center text-lg shadow-md shadow-emerald-500/20">
+            <i class="fa-solid fa-weight-scale"></i>
+          </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-red-500 flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-red-600 uppercase font-bold tracking-wider">Acid Uric Máu</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-2xl font-extrabold text-red-600">8.5 <span class="text-xs font-normal text-slate-500">mg/dL</span></span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">Cao (&gt;7.0)</span>
+            </div>
+            <p class="text-[11px] text-red-500 mt-1 font-medium">Giữ Purine &lt; 200mg/ngày</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 text-white flex items-center justify-center text-lg shadow-md shadow-red-500/20">
+            <i class="fa-solid fa-bone"></i>
+          </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-amber-500 flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-amber-700 uppercase font-bold tracking-wider">Triglyceride</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-2xl font-extrabold text-amber-600">231 <span class="text-xs font-normal text-slate-500">mg/dL</span></span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">Cao (&gt;150)</span>
+            </div>
+            <p class="text-[11px] text-amber-700 mt-1 font-medium">Kiêng đường & mỡ bão hòa</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center text-lg shadow-md shadow-amber-500/20">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-blue-500 flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-blue-700 uppercase font-bold tracking-wider">Men Gan ALT</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-2xl font-extrabold text-blue-700">42 <span class="text-xs font-normal text-slate-500">U/L</span></span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold">Tăng nhẹ</span>
+            </div>
+            <p class="text-[11px] text-emerald-600 mt-1 font-semibold"><i class="fa-solid fa-check-circle"></i> Thận tốt (eGFR 103.3)</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-lg shadow-md shadow-blue-500/20">
+            <i class="fa-solid fa-shield-virus"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- BỘ TÍNH CALO & PHÂN TÍCH DINH DƯỠNG -->
+      <section class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-200/80 gap-3">
+          <div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-calculator"></i>
+              </span>
+              <h2 class="font-extrabold text-lg text-slate-900">
+                Nhật Ký Dinh Dưỡng Ngày <span id="displayDateTitle" class="text-blue-600"></span>
+              </h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Mục tiêu: <strong class="text-slate-700">1,750 kcal</strong> • Đạm: <strong class="text-slate-700">75g</strong> • Chất xơ: <strong class="text-emerald-600">&ge; 25g</strong> • Purine: <strong class="text-red-600">&lt; 200mg</strong></p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="pushToGithub(true)" id="btnManualPush" class="hidden px-3.5 py-2 text-xs text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl transition font-bold cursor-pointer">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Đẩy lên GitHub ngay
+            </button>
+            <button onclick="copyYesterdayMenu()" class="px-3.5 py-2 text-xs text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition font-semibold cursor-pointer">
+              <i class="fa-regular fa-clone"></i> Chép hôm qua
+            </button>
+            <button onclick="resetDayLog()" class="px-3.5 py-2 text-xs text-slate-600 hover:text-red-600 bg-slate-100 hover:bg-red-50 rounded-xl transition font-semibold cursor-pointer">
+              <i class="fa-solid fa-trash-can"></i> Xóa ngày
+            </button>
+          </div>
+        </div>
+
+        <!-- KHUNG NHẬP MÓN + BỮA TIÊU CHUẨN HẬU -->
+        <div class="mt-5 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-blue-50 to-cyan-50 border border-indigo-200/80">
+          <div class="flex flex-col sm:flex-row gap-2.5">
+            <div class="relative flex-1">
+              <i class="fa-solid fa-bolt text-amber-500 absolute left-3.5 top-3 text-xs"></i>
+              <input type="text" id="aiFoodInput" oninput="handleLiveSearchSuggestions()" onkeydown="if(event.key==='Enter') analyzeFoodWithAI()" autocomplete="off" placeholder="Gõ tên món hoặc số calo (+/-)... (VD: 100g ức gà, phở, +200)" class="w-full pl-9 pr-3.5 py-2.5 text-xs bg-white rounded-xl border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+              <div id="quickSuggestDropdown" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-xl border border-slate-200 z-30 max-h-60 overflow-y-auto divide-y divide-slate-100"></div>
+            </div>
+
+            <select id="mealSlotSelect" class="px-3.5 py-2.5 text-xs bg-white rounded-xl border border-indigo-200 focus:outline-none font-semibold text-slate-700 shadow-sm cursor-pointer">
+              <option value="breakfast">🌅 Bữa Sáng</option>
+              <option value="lunch" selected>☀️ Bữa Trưa</option>
+              <option value="dinner">🌙 Bữa Tối</option>
+              <option value="snack">🍎 Bữa Phụ</option>
+            </select>
+            <button onclick="analyzeFoodWithAI()" id="btnAnalyze" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-indigo-500/25 transition cursor-pointer">
+              <i class="fa-solid fa-plus"></i> Tính & Thêm Món
+            </button>
+          </div>
+
+          <div class="mt-3 pt-2.5 border-t border-indigo-200/50 flex flex-wrap items-center gap-1.5">
+            <span class="text-[11px] font-bold text-indigo-800 mr-1"><i class="fa-solid fa-fire-flame-curved text-amber-500"></i> Chọn nhanh:</span>
+            <button onclick="insertStandardMeal()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-lg text-[11px] shadow-2xs transition cursor-pointer flex items-center gap-1">
+              <i class="fa-solid fa-star text-amber-300"></i> Bữa Tiêu Chuẩn Hậu (339 kcal)
+            </button>
+            <div id="quickPillsContainer" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <div id="apiErrorNotice" class="hidden mt-2.5 text-[11px] text-amber-800 bg-amber-50 px-3 py-2 rounded-xl border border-amber-200 flex items-center justify-between">
+            <span id="apiErrorText"></span>
+            <button onclick="this.parentElement.classList.add('hidden')" class="text-amber-600 hover:text-amber-900 font-bold ml-2">&times;</button>
+          </div>
+        </div>
+
+        <!-- THANH TỔNG HỢP 6 CHỈ SỐ DINH DƯỠNG DẠNG VÒNG TRÒN SIÊU ĐÁNG YÊU & SINH ĐỘNG -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mt-5 sm:mt-6 justify-items-center">
+          <!-- 1. NĂNG LƯỢNG -->
+          <div id="calRingCard" class="group relative w-36 h-36 rounded-full bg-gradient-to-b from-blue-50 via-white to-blue-50/40 border-2 border-blue-200/80 shadow-md shadow-blue-500/10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 flex items-center justify-center cursor-default">
+            <span id="calPctBadge" class="absolute -top-1.5 right-1 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] font-extrabold shadow-sm">0%</span>
+            <svg class="w-full h-full -rotate-90 p-1.5" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="gradCal" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8"/>
+                  <stop offset="100%" stop-color="#2563eb"/>
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#dbeafe" stroke-width="9.5" stroke-linecap="round" />
+              <circle id="calProgressRing" cx="60" cy="60" r="50" fill="none" stroke="url(#gradCal)" stroke-width="9.5" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" class="transition-all duration-700 ease-out" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
+              <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce">
+                <i class="fa-solid fa-bolt"></i>
+              </span>
+              <span class="text-[9px] font-extrabold text-blue-700 uppercase tracking-tight">Calo Thực (Net)</span>
+              <span id="sumCalories" class="text-lg font-black text-slate-900 leading-tight mt-0.5">0</span>
+              <div class="inline-flex items-center justify-center gap-1 px-1.5 py-0.5 mt-0.5 rounded-full bg-slate-100/95 border border-slate-200/80 text-[8.5px] leading-none shadow-2xs">
+                <span class="inline-flex items-center gap-0.5 text-slate-500 font-semibold">
+                  <span class="w-1 h-1 rounded-full bg-blue-500 shrink-0"></span>
+                  Nạp <strong id="calInVal" class="font-extrabold text-slate-800 tabular-nums">0</strong>
+                </span>
+                <span class="text-slate-300">|</span>
+                <span class="inline-flex items-center gap-0.5 text-slate-500 font-semibold">
+                  <span class="w-1 h-1 rounded-full bg-orange-500 shrink-0"></span>
+                  Đốt <strong id="calOutVal" class="font-extrabold text-orange-600 tabular-nums">0</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. CARBS -->
+          <div id="carbRingCard" class="group relative w-36 h-36 rounded-full bg-gradient-to-b from-amber-50 via-white to-amber-50/40 border-2 border-amber-200/80 shadow-md shadow-amber-500/10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/20 transition-all duration-300 flex items-center justify-center cursor-default">
+            <span id="carbPctBadge" class="absolute -top-1.5 right-1 px-2 py-0.5 rounded-full bg-amber-500 text-white text-[9px] font-extrabold shadow-sm">0%</span>
+            <svg class="w-full h-full -rotate-90 p-1.5" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="gradCarb" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fbbf24"/>
+                  <stop offset="100%" stop-color="#ea580c"/>
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#fef3c7" stroke-width="9.5" stroke-linecap="round" />
+              <circle id="carbProgressRing" cx="60" cy="60" r="50" fill="none" stroke="url(#gradCarb)" stroke-width="9.5" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" class="transition-all duration-700 ease-out" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
+              <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-orange-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce">
+                <i class="fa-solid fa-wheat-awn"></i>
+              </span>
+              <span class="text-[9px] font-extrabold text-amber-800 uppercase tracking-tight">Carbs</span>
+              <span id="sumCarbs" class="text-lg font-black text-amber-700 leading-tight mt-0.5">0</span>
+              <span class="text-[9px] font-semibold text-slate-400">&le;200g</span>
+            </div>
+          </div>
+
+          <!-- 3. PROTEIN -->
+          <div id="proRingCard" class="group relative w-36 h-36 rounded-full bg-gradient-to-b from-sky-50 via-white to-sky-50/40 border-2 border-sky-200/80 shadow-md shadow-sky-500/10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-sky-500/20 transition-all duration-300 flex items-center justify-center cursor-default">
+            <span id="proPctBadge" class="absolute -top-1.5 right-1 px-2 py-0.5 rounded-full bg-sky-600 text-white text-[9px] font-extrabold shadow-sm">0%</span>
+            <svg class="w-full h-full -rotate-90 p-1.5" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="gradPro" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#22d3ee"/>
+                  <stop offset="100%" stop-color="#0284c7"/>
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#e0f2fe" stroke-width="9.5" stroke-linecap="round" />
+              <circle id="proProgressRing" cx="60" cy="60" r="50" fill="none" stroke="url(#gradPro)" stroke-width="9.5" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" class="transition-all duration-700 ease-out" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
+              <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-sky-500 to-cyan-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce">
+                <i class="fa-solid fa-fish"></i>
+              </span>
+              <span class="text-[9px] font-extrabold text-sky-800 uppercase tracking-tight">Protein</span>
+              <span id="sumProtein" class="text-lg font-black text-sky-700 leading-tight mt-0.5">0</span>
+              <span class="text-[9px] font-semibold text-slate-400">~75g</span>
+            </div>
+          </div>
+
+          <!-- 4. FAT -->
+          <div id="fatRingCard" class="group relative w-36 h-36 rounded-full bg-gradient-to-b from-purple-50 via-white to-purple-50/40 border-2 border-purple-200/80 shadow-md shadow-purple-500/10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 flex items-center justify-center cursor-default">
+            <span id="fatPctBadge" class="absolute -top-1.5 right-1 px-2 py-0.5 rounded-full bg-purple-600 text-white text-[9px] font-extrabold shadow-sm">0%</span>
+            <svg class="w-full h-full -rotate-90 p-1.5" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="gradFat" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#c084fc"/>
+                  <stop offset="100%" stop-color="#7e22ce"/>
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#f3e8ff" stroke-width="9.5" stroke-linecap="round" />
+              <circle id="fatProgressRing" cx="60" cy="60" r="50" fill="none" stroke="url(#gradFat)" stroke-width="9.5" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" class="transition-all duration-700 ease-out" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
+              <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-600 to-fuchsia-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce">
+                <i class="fa-solid fa-oil-can"></i>
+              </span>
+              <span class="text-[9px] font-extrabold text-purple-800 uppercase tracking-tight">Fat (Béo)</span>
+              <span id="sumFat" class="text-lg font-black text-purple-700 leading-tight mt-0.5">0</span>
+              <span class="text-[9px] font-semibold text-slate-400">&le;45g</span>
+            </div>
+          </div>
+
+          <!-- 5. CHẤT XƠ -->
+          <div id="fiberRingCard" class="group relative w-36 h-36 rounded-full bg-gradient-to-b from-emerald-50 via-white to-emerald-50/40 border-2 border-emerald-200/80 shadow-md shadow-emerald-500/10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/20 transition-all duration-300 flex items-center justify-center cursor-default">
+            <span id="fiberPctBadge" class="absolute -top-1.5 right-1 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-extrabold shadow-sm">0%</span>
+            <svg class="w-full h-full -rotate-90 p-1.5" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="gradFiber" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#34d399"/>
+                  <stop offset="100%" stop-color="#059669"/>
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#d1fae5" stroke-width="9.5" stroke-linecap="round" />
+              <circle id="fiberProgressRing" cx="60" cy="60" r="50" fill="none" stroke="url(#gradFiber)" stroke-width="9.5" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" class="transition-all duration-700 ease-out" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
+              <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce">
+                <i class="fa-solid fa-seedling"></i>
+              </span>
+              <span class="text-[9px] font-extrabold text-emerald-800 uppercase tracking-tight">Chất Xơ</span>
+              <span id="sumFiber" class="text-lg font-black text-emerald-700 leading-tight mt-0.5">0</span>
+              <span class="text-[9px] font-semibold text-slate-400">&ge;25g</span>
+            </div>
+          </div>
+
+          <!-- 6. PURINE -->
+          <div id="purineRingCard" class="group relative w-36 h-36 rounded-full bg-gradient-to-b from-rose-50 via-white to-rose-50/40 border-2 border-red-200/80 shadow-md shadow-red-500/10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-red-500/20 transition-all duration-300 flex items-center justify-center cursor-default">
+            <span id="purinePctBadge" class="absolute -top-1.5 right-1 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[9px] font-extrabold shadow-sm">0%</span>
+            <svg class="w-full h-full -rotate-90 p-1.5" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="gradPurine" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fb7185"/>
+                  <stop offset="100%" stop-color="#dc2626"/>
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#ffe4e6" stroke-width="9.5" stroke-linecap="round" />
+              <circle id="purineProgressRing" cx="60" cy="60" r="50" fill="none" stroke="url(#gradPurine)" stroke-width="9.5" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" class="transition-all duration-700 ease-out" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
+              <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-rose-500 to-red-600 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce">
+                <i class="fa-solid fa-bone"></i>
+              </span>
+              <span class="text-[9px] font-extrabold text-red-700 uppercase tracking-tight">Purine</span>
+              <span id="sumPurine" class="text-lg font-black text-red-600 leading-tight mt-0.5">0</span>
+              <span class="text-[9px] font-semibold text-slate-400">&lt;200mg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HỘP ĐÁNH GIÁ Y KHOA TỰ ĐỘNG -->
+        <div id="healthAlignmentBox" class="mt-4 p-3.5 rounded-2xl border border-emerald-200 bg-emerald-50/70 flex items-center gap-3.5">
+          <div id="evalIconBox" class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="text-xs">
+            <h4 id="evalTitle" class="font-bold text-emerald-900 text-sm">Thực đơn hiện tại rất cân đối & an toàn</h4>
+            <p id="evalDesc" class="text-emerald-800 mt-0.5">Lượng tinh bột và đạm nhẹ phù hợp để kéo hạ Triglyceride (231 mg/dL) và kiểm soát Acid Uric (8.5 mg/dL).</p>
+          </div>
+        </div>
+
+        <!-- CHI TIẾT 4 BỮA ĂN -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5 sm:gap-4 mt-5">
+          <div class="meal-col-card p-3.5 rounded-2xl border border-slate-200/90 bg-white/75 backdrop-blur-xs flex flex-col">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-2.5">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-regular fa-sun text-amber-500"></i> Bữa Sáng</span>
+              <span id="calBreakfast" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100/70 text-amber-800">0 kcal</span>
+            </div>
+            <div id="listBreakfast" class="space-y-2 min-h-[65px] text-xs text-slate-400 italic">Chưa có món</div>
+          </div>
+
+          <div class="meal-col-card p-3.5 rounded-2xl border border-slate-200/90 bg-white/75 backdrop-blur-xs flex flex-col">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-2.5">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-bowl-rice text-blue-500"></i> Bữa Trưa</span>
+              <span id="calLunch" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100/70 text-blue-800">0 kcal</span>
+            </div>
+            <div id="listLunch" class="space-y-2 min-h-[65px] text-xs text-slate-400 italic">Chưa có món</div>
+          </div>
+
+          <div class="meal-col-card p-3.5 rounded-2xl border border-slate-200/90 bg-white/75 backdrop-blur-xs flex flex-col">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-2.5">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-regular fa-moon text-indigo-500"></i> Bữa Tối</span>
+              <span id="calDinner" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-100/70 text-indigo-800">0 kcal</span>
+            </div>
+            <div id="listDinner" class="space-y-2 min-h-[65px] text-xs text-slate-400 italic">Chưa có món</div>
+          </div>
+
+          <div class="meal-col-card p-3.5 rounded-2xl border border-slate-200/90 bg-white/75 backdrop-blur-xs flex flex-col">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-2.5">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-apple-whole text-emerald-500"></i> Bữa Phụ</span>
+              <span id="calSnack" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100/70 text-emerald-800">0 kcal</span>
+            </div>
+            <div id="listSnack" class="space-y-2 min-h-[65px] text-xs text-slate-400 italic">Chưa có món</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 TIỆN ÍCH THEO DÕI (ĐỒNG HỒ CALO, VÒNG EO, NƯỚC, TẬP LUYỆN) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- THẺ NHẬP CALO TIÊU HAO TỪ ĐỒNG HỒ -->
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-xs"><i class="fa-solid fa-fire-flame-curved"></i></span>
+                Calo Tiêu Hao (Đồng Hồ)
+              </h3>
+              <span id="netCalBadge" class="text-[11px] font-extrabold text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-lg border border-orange-200/70">Net: 0 / 1,750 kcal</span>
+            </div>
+            <div class="flex gap-2 mt-4">
+              <input type="number" id="burnedCalInput" min="0" step="1" onkeydown="if(event.key==='Enter') saveBurnedCalories()" placeholder="Nhập calo đồng hồ đo được (kcal)..." class="flex-1 px-3.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold text-slate-800">
+              <button onclick="saveBurnedCalories()" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer">Lưu</button>
+            </div>
+            <div class="mt-3 p-2.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap justify-between items-center gap-2 text-xs">
+              <span>Nạp vào: <strong id="cardIntakeCal" class="text-slate-800">0</strong> kcal</span>
+              <span>Tiêu hao: <strong id="cardBurnedCal" class="text-orange-600">-0</strong> kcal</span>
+              <span>Còn lại (Net): <strong id="cardNetCal" class="text-blue-700 text-sm">0</strong> kcal</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 mt-3.5">
+            <button onclick="addBurnedCalories(100)" class="flex-1 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 text-[11px] font-bold rounded-xl transition cursor-pointer">+100 kcal</button>
+            <button onclick="addBurnedCalories(250)" class="flex-1 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 text-[11px] font-bold rounded-xl transition cursor-pointer">+250 kcal</button>
+            <button onclick="addBurnedCalories(400)" class="flex-1 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 text-[11px] font-bold rounded-xl transition cursor-pointer">+400 kcal</button>
+            <button onclick="resetBurnedCalories()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] transition cursor-pointer" title="Đặt về 0"><i class="fa-solid fa-rotate-left"></i></button>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-ruler-horizontal"></i></span>
+                Đo Vòng Eo (WHtR)
+              </h3>
+              <span class="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">Mục tiêu: 70 cm</span>
+            </div>
+            <div class="flex gap-2 mt-4">
+              <input type="number" id="waistInput" placeholder="Nhập vòng eo (cm)..." class="flex-1 px-3.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <button onclick="calculateWaistRisk(true)" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer">Lưu</button>
+            </div>
+            <div class="mt-3.5 p-3 rounded-2xl bg-slate-50 border border-slate-200 flex justify-between items-center text-xs">
+              <span>Tỉ lệ Eo/Cao: <strong id="whtrValue" class="text-slate-900 text-sm">--</strong></span>
+              <span id="whtrLabel" class="font-bold text-slate-400">Chưa nhập số đo</span>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-3">* Đồng bộ trực tiếp lên GitHub Cloud mỗi khi bấm Lưu.</p>
+        </div>
+
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-cyan-100 text-cyan-600 flex items-center justify-center text-xs"><i class="fa-solid fa-glass-water"></i></span>
+                Nước Đào Thải Urat
+              </h3>
+              <span class="text-xs font-extrabold text-blue-600" id="waterCounterText">0 / 2,800 ml</span>
+            </div>
+            <div class="w-full bg-slate-100 h-3.5 rounded-full mt-4 overflow-hidden border border-slate-200 p-0.5">
+              <div id="waterProgressBar" class="bg-gradient-to-r from-cyan-400 to-blue-600 h-full w-0 transition-all duration-500 rounded-full"></div>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-3 leading-relaxed">Thận lọc tốt (eGFR 103.3). Uống đủ 2.8L/ngày giúp hòa tan và đào thải Acid Uric 8.5 mg/dL.</p>
+          </div>
+          <div class="flex items-center gap-2 mt-4">
+            <button onclick="addWater(250)" class="flex-1 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-200 text-xs font-bold rounded-xl transition cursor-pointer">+250ml</button>
+            <button onclick="addWater(500)" class="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer">+500ml</button>
+            <button onclick="resetWater()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition cursor-pointer" title="Đặt lại"><i class="fa-solid fa-rotate-left"></i></button>
+          </div>
+        </div>
+
+        <!-- THẺ TÓM TẮT LỊCH TẬP HÔM NAY -->
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center text-xs"><i class="fa-solid fa-dumbbell"></i></span>
+                Lịch Tập Hôm Nay
+              </h3>
+              <span id="dailyWorkoutBadge" class="text-[11px] font-extrabold text-violet-700 bg-violet-50 px-2.5 py-0.5 rounded-lg border border-violet-200/70">--</span>
+            </div>
+            <p id="dailyWorkoutTitle" class="font-extrabold text-slate-800 text-xs mt-3">--</p>
+            <div class="w-full bg-slate-100 h-3 rounded-full mt-2.5 overflow-hidden border border-slate-200 p-0.5">
+              <div id="dailyWorkoutBar" class="bg-gradient-to-r from-violet-500 to-fuchsia-600 h-full w-0 transition-all duration-500 rounded-full"></div>
+            </div>
+            <p id="dailyWorkoutSub" class="text-[11px] text-slate-500 mt-2.5 leading-relaxed">Theo dõi mức tạ & số reps từng hiệp để tăng cơ giảm mỡ.</p>
+          </div>
+          <div class="flex items-center gap-2 mt-4">
+            <button onclick="switchTab('tab-workout')" class="flex-1 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-list-check"></i> Mở Bảng Tập & Ghi Reps
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- TAB MỚI: LỊCH TẬP TĂNG CƠ & GIẢM MỠ (5 BUỔI/TUẦN) -->
+    <!-- ========================================================= -->
+    <div id="tab-workout" class="hidden space-y-6 fade-in">
+      <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <!-- Header Lịch Tập + Đồng Hồ Bấm Giờ Nghỉ -->
+        <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-200/80 gap-4">
+          <div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-500 text-white flex items-center justify-center text-sm shadow-md shadow-violet-500/25">
+                <i class="fa-solid fa-dumbbell"></i>
+              </span>
+              <div>
+                <h2 class="font-extrabold text-lg text-slate-900">
+                  Lịch Tập Tăng Cơ & Giảm Mỡ • <span id="workoutDateTitle" class="text-violet-600"></span>
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">60–75 phút/buổi • Dụng cụ: <strong>Barbell, Dumbbell, Xà đơn, Máy chạy bộ</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ĐỒNG HỒ NGHỈ GIỮA HIỆP (REST TIMER) -->
+          <div class="flex flex-wrap items-center gap-2 bg-slate-900 text-white px-3.5 py-2 rounded-2xl shadow-md">
+            <i class="fa-solid fa-stopwatch text-amber-400 text-sm"></i>
+            <span class="text-[11px] text-slate-300 font-semibold">Nghỉ hiệp:</span>
+            <span id="restTimerDisplay" class="font-mono-code font-extrabold text-base text-emerald-400 min-w-[48px] text-center">00:00</span>
+            <div class="flex items-center gap-1 ml-1">
+              <button onclick="startRestTimer(60)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-violet-600 text-[10px] font-bold transition cursor-pointer">60s</button>
+              <button onclick="startRestTimer(90)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-violet-600 text-[10px] font-bold transition cursor-pointer">90s</button>
+              <button onclick="startRestTimer(120)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-violet-600 text-[10px] font-bold transition cursor-pointer">2p</button>
+              <button onclick="startRestTimer(180)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-violet-600 text-[10px] font-bold transition cursor-pointer">3p</button>
+              <button onclick="stopRestTimer()" class="px-2 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-300 text-[10px] font-bold transition cursor-pointer" title="Dừng"><i class="fa-solid fa-stop"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- THANH CHỌN NGÀY TRONG TUẦN (THỨ 2 -> CHỦ NHẬT) -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div id="workoutDayPills" class="flex flex-wrap gap-1.5"></div>
+          <div class="flex items-center gap-2">
+            <button onclick="copyLastWeekWorkout()" class="px-3 py-1.5 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 text-xs font-bold transition cursor-pointer">
+              <i class="fa-solid fa-clock-rotate-left"></i> Nạp tạ buổi trước
+            </button>
+            <button onclick="markAllExercisesDone()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition cursor-pointer">
+              <i class="fa-solid fa-check-double"></i> Hoàn thành cả buổi
+            </button>
+          </div>
+        </div>
+
+        <!-- THÔNG TIN BUỔI TẬP ĐANG CHỌN -->
+        <div id="workoutSessionBanner" class="mt-5 p-4 rounded-2xl bg-gradient-to-r from-violet-50 via-indigo-50 to-sky-50 border border-violet-200/80 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="sessionDayTag" class="px-2.5 py-0.5 rounded-full bg-violet-600 text-white text-[11px] font-extrabold">Thứ 2</span>
+              <h3 id="sessionTitle" class="font-extrabold text-base text-slate-900">Upper A (Thiên về sức mạnh thân trên)</h3>
+            </div>
+            <p id="sessionGoal" class="text-xs text-slate-600 mt-1">Ghi lại mức tạ (kg) và số reps thực tế từng hiệp. Khi đạt mức reps cao nhất ở tất cả các hiệp với form chuẩn, tăng thêm 1–2.5kg ở tuần sau.</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] text-slate-500 font-bold uppercase block">Tiến độ buổi tập</span>
+            <span id="sessionProgressText" class="text-xl font-black text-violet-700">0 / 6 bài</span>
+          </div>
+        </div>
+
+        <!-- DANH SÁCH BÀI TẬP & GHI CHÉP SETS / REPS / TẠ -->
+        <div id="workoutExerciseList" class="mt-5 space-y-3.5"></div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 2: LỊCH SỬ BỮA ĂN THEO NGÀY -->
+    <!-- ========================================================= -->
+    <div id="tab-history" class="hidden space-y-6 fade-in">
+      <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-200 gap-3">
+          <div>
+            <h2 class="font-extrabold text-lg text-slate-900 flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-calendar-check"></i>
+              </span>
+              Lịch Sử Dinh Dưỡng & Chuyển Hóa Theo Ngày
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">Đồng bộ đa thiết bị qua tệp <code>healthtrack_db.json</code> trên GitHub Repository</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="pullFromGithub(true)" class="px-3.5 py-2 text-xs bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 rounded-xl font-bold transition cursor-pointer">
+              <i class="fa-solid fa-cloud-arrow-down"></i> Đồng bộ từ GitHub
+            </button>
+            <button onclick="downloadJsonSnapshot()" class="px-3.5 py-2 text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-xl font-bold transition cursor-pointer">
+              <i class="fa-solid fa-download"></i> Tải bản sao JSON
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5 mt-5">
+          <div class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-200/80 text-center">
+            <span class="text-[11px] text-blue-700 font-bold uppercase">Số Ngày Đã Ghi Nhận</span>
+            <p class="text-2xl font-extrabold text-blue-900 mt-1" id="statTotalDays">0</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
+            <span class="text-[11px] text-slate-500 font-bold uppercase">Calo Trung Bình / Ngày</span>
+            <p class="text-2xl font-extrabold text-slate-800 mt-1"><span id="statAvgCal">0</span> <span class="text-xs font-normal">kcal</span></p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-red-50/60 border border-red-200/80 text-center">
+            <span class="text-[11px] text-red-600 font-bold uppercase">Purine Trung Bình / Ngày</span>
+            <p class="text-2xl font-extrabold text-red-600 mt-1"><span id="statAvgPurine">0</span> <span class="text-xs font-normal">mg</span></p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-cyan-50/60 border border-cyan-200/80 text-center">
+            <span class="text-[11px] text-cyan-700 font-bold uppercase">Nước Uống TB / Ngày</span>
+            <p class="text-2xl font-extrabold text-cyan-800 mt-1"><span id="statAvgWater">0</span> <span class="text-xs font-normal">ml</span></p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto mt-5">
+          <table class="w-full text-xs text-left text-slate-700">
+            <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+              <tr>
+                <th class="p-3 rounded-tl-xl">Ngày</th>
+                <th class="p-3">Tổng Năng Lượng</th>
+                <th class="p-3">Macros (C / P / F)</th>
+                <th class="p-3 text-emerald-700">Chất Xơ</th>
+                <th class="p-3 text-red-600">Purine (mg)</th>
+                <th class="p-3 text-cyan-700">Nước Uống</th>
+                <th class="p-3">Vòng Eo</th>
+                <th class="p-3 text-right rounded-tr-xl">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody" class="divide-y divide-slate-200"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- TAB 3: KHO THỰC PHẨM CÁ NHÂN & THƯ VIỆN -->
+    <!-- ========================================================= -->
+    <div id="tab-library" class="hidden space-y-5 fade-in">
+      <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-200 gap-3">
+          <div>
+            <h3 class="font-extrabold text-lg text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-database text-emerald-600"></i>
+              Kho Thực Phẩm & Thư Viện Chuẩn (Tất cả đều chỉnh sửa & xóa được)
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Bấm Sửa để đổi thông số hoặc bấm Xóa (thùng rác) để gỡ bỏ bất kỳ món nào.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openAddFoodModal()" class="px-4 py-2 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-sm flex items-center gap-1.5 transition cursor-pointer">
+              <i class="fa-solid fa-plus"></i> Thêm Món Mới
+            </button>
+            <input type="text" id="foodSearchInput" onkeyup="filterFoodLibrary()" placeholder="Tìm kiếm món ăn..." class="px-3.5 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <button onclick="filterCustomOnly()" class="px-3 py-2 text-xs bg-indigo-50 text-indigo-700 rounded-xl border border-indigo-200 font-bold hover:bg-indigo-100 transition cursor-pointer">
+              Món tự thêm
+            </button>
+            <button onclick="renderFoodTable(getAllFoods())" class="px-3 py-2 text-xs bg-slate-100 text-slate-600 rounded-xl font-semibold hover:bg-slate-200 transition cursor-pointer">
+              Tất cả
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-xs text-left text-slate-600">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-bold">
+              <tr>
+                <th class="p-3 rounded-tl-xl">Tên thực phẩm & Định mức</th>
+                <th class="p-3">Từ khóa</th>
+                <th class="p-3">Calo</th>
+                <th class="p-3">Carbs</th>
+                <th class="p-3">Protein</th>
+                <th class="p-3">Fat</th>
+                <th class="p-3 text-emerald-700">Chất Xơ</th>
+                <th class="p-3 text-red-600">Purine</th>
+                <th class="p-3 text-right rounded-tr-xl">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="foodTableBody" class="divide-y divide-slate-200"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- TAB 4: TRÌNH XEM DỮ LIỆU JSON GỐC -->
+    <!-- ========================================================= -->
+    <div id="tab-json" class="hidden space-y-5 fade-in">
+      <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-200 gap-3">
+          <div>
+            <h3 class="font-extrabold text-lg text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-code text-amber-600"></i>
+              Dữ Liệu JSON Đồng Bộ GitHub (Live JSON Inspector)
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Toàn bộ dữ liệu được commit lên nhánh chính của GitHub Repository.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="pushToGithub(true)" class="px-3.5 py-2 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition cursor-pointer">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Commit lên GitHub
+            </button>
+            <button onclick="copyRawJson()" class="px-3.5 py-2 text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-xl font-bold transition cursor-pointer">
+              <i class="fa-regular fa-copy"></i> Copy JSON
+            </button>
+            <button onclick="downloadJsonSnapshot()" class="px-3.5 py-2 text-xs bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold transition cursor-pointer">
+              <i class="fa-solid fa-download"></i> Tải về (.json)
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <textarea id="rawJsonViewer" rows="18" class="w-full p-4 rounded-2xl bg-slate-900 text-emerald-400 font-mono-code text-xs leading-relaxed focus:outline-none border border-slate-700 shadow-inner"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between mt-3">
+          <span class="text-[11px] text-slate-500">Chỉnh sửa JSON trực tiếp và bấm "Áp dụng & Đồng bộ GitHub".</span>
+          <button onclick="applyEditedRawJson()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition cursor-pointer">
+            <i class="fa-solid fa-check"></i> Áp dụng & Đồng bộ GitHub
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- TAB 5: HỒ SƠ KHÁM SỨC KHỎE -->
+    <!-- ========================================================= -->
+    <div id="tab-clinical" class="hidden space-y-6 fade-in">
+      <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-200 gap-2">
+          <div>
+            <h2 class="font-extrabold text-lg text-slate-900 flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-hospital"></i></span>
+              Hồ Sơ Xét Nghiệm - Trung Tâm Y Khoa Bernard
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">Số bệnh án: <strong>VS0255455</strong> • Mã BN: <strong>0165847</strong> • Ngày lấy mẫu: <strong>13/10/2026</strong></p>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold">Gói: 2026 INGENIUM Nam</span>
+        </div>
+
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-xs text-left text-slate-700">
+            <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+              <tr>
+                <th class="p-3 rounded-tl-xl">Tên xét nghiệm</th>
+                <th class="p-3">Kết quả</th>
+                <th class="p-3">Tham chiếu</th>
+                <th class="p-3">Nhận định lâm sàng</th>
+                <th class="p-3 rounded-tr-xl">Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="bg-red-50/60">
+                <td class="p-3 font-bold text-red-700">Acid uric</td>
+                <td class="p-3 font-extrabold text-red-700 text-sm">8.5 mg/dL (505.8 µmol/L)</td>
+                <td class="p-3">3.7 - 7.0 mg/dL</td>
+                <td class="p-3">Tăng cao, nguy cơ Gout & kết tinh tinh thể urat</td>
+                <td class="p-3"><span class="px-2.5 py-1 rounded-full bg-red-100 text-red-700 font-bold text-[11px]">Cảnh báo Đỏ</span></td>
+              </tr>
+              <tr class="bg-amber-50/50">
+                <td class="p-3 font-bold text-amber-800">Triglyceride</td>
+                <td class="p-3 font-extrabold text-amber-700 text-sm">231 mg/dL (2.6 mmol/L)</td>
+                <td class="p-3">&lt; 150 mg/dL</td>
+                <td class="p-3">Tăng cao, liên quan trực tiếp mỡ nội tạng & béo bụng</td>
+                <td class="p-3"><span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-[11px]">Cảnh báo Vàng</span></td>
+              </tr>
+              <tr class="bg-amber-50/50">
+                <td class="p-3 font-bold text-amber-800">Cholesterol total</td>
+                <td class="p-3 font-bold text-amber-700">225 mg/dL (5.8 mmol/L)</td>
+                <td class="p-3">&lt; 200 mg/dL</td>
+                <td class="p-3">Tăng nhẹ, cần giảm mỡ động vật & thức ăn chiên rán</td>
+                <td class="p-3"><span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-[11px]">Cảnh báo Vàng</span></td>
+              </tr>
+              <tr class="bg-blue-50/50">
+                <td class="p-3 font-bold text-blue-800">ALT (SGPT) - Men gan</td>
+                <td class="p-3 font-bold text-blue-800">42 U/L</td>
+                <td class="p-3">&lt; 35 U/L</td>
+                <td class="p-3">Tăng nhẹ do gan đang quá tải chuyển hóa lipid</td>
+                <td class="p-3"><span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-bold text-[11px]">Theo dõi nhẹ</span></td>
+              </tr>
+              <tr class="bg-emerald-50/40">
+                <td class="p-3 font-bold text-emerald-800">Creatinine & eGFR (Thận)</td>
+                <td class="p-3 font-bold text-emerald-700">1.02 mg/dL | eGFR: 103.3</td>
+                <td class="p-3">0.62 - 1.18 | &gt; 90</td>
+                <td class="p-3">Chức năng lọc thận xuất sắc, lợi thế đào thải urat</td>
+                <td class="p-3"><span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">Tối ưu</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL 1: CẤU HÌNH GITHUB DATABASE -->
+  <div id="githubModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 fade-in">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+          <i class="fa-brands fa-github text-slate-900 text-lg"></i> Kết Nối GitHub Database (Đa Thiết Bị)
+        </h3>
+        <button onclick="closeGithubModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">&times;</button>
+      </div>
+
+      <form onsubmit="saveGithubConfig(event)" class="space-y-3.5 mt-4 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">GitHub Username *</label>
+            <input type="text" id="ghOwner" required placeholder="VD: huynhphuchau" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tên Repository *</label>
+            <input type="text" id="ghRepo" required placeholder="VD: healthtrack-db" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Đường dẫn file JSON *</label>
+            <input type="text" id="ghPath" required value="data/healthtrack_db.json" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nhánh (Branch)</label>
+            <input type="text" id="ghBranch" value="main" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">GitHub Personal Access Token (PAT) *</label>
+          <input type="password" id="ghToken" required placeholder="github_pat_..." class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-200">
+          <button type="button" onclick="disconnectGithub()" class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold cursor-pointer">
+            Ngắt kết nối
+          </button>
+          <div class="flex gap-2">
+            <button type="button" onclick="closeGithubModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">Đóng</button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-md cursor-pointer">
+              <i class="fa-solid fa-plug"></i> Lưu & Đồng Bộ Ngay
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: THÊM / SỬA MÓN ĂN TRONG KHO -->
+  <div id="addFoodModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 fade-in">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <h3 id="foodModalTitle" class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs"><i class="fa-solid fa-plus"></i></span>
+          Thêm Món Mới Vào GitHub Database
+        </h3>
+        <button onclick="closeAddFoodModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">&times;</button>
+      </div>
+
+      <form onsubmit="submitFoodForm(event)" class="space-y-3.5 mt-4 text-xs">
+        <input type="hidden" id="editFoodId" value="">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tên món ăn / Sản phẩm *</label>
+            <input type="text" id="cfName" required placeholder="VD: Sữa tươi Mộc Châu" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Từ khóa gõ tắt</label>
+            <input type="text" id="cfKeys" placeholder="VD: mộc châu, sữa" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-slate-700">Chỉ số chuẩn:</span>
+            <select id="cfUnitType" class="px-2 py-1 bg-white border border-slate-300 rounded-lg text-[11px] font-semibold">
+              <option value="100g">Trên 100g</option>
+              <option value="100ml">Trên 100ml</option>
+              <option value="1part">Trên 1 phần / ly / hủ</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-6 gap-2">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Calo *</label>
+              <input type="number" step="0.1" id="cfCal" required placeholder="77" class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded-lg font-bold">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Carbs</label>
+              <input type="number" step="0.1" id="cfCarb" value="0" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Đạm</label>
+              <input type="number" step="0.1" id="cfPro" value="0" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Béo</label>
+              <input type="number" step="0.1" id="cfFat" value="0" class="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-emerald-600 mb-0.5">Chất xơ</label>
+              <input type="number" step="0.1" id="cfFiber" value="0" class="w-full px-2 py-1 bg-white border border-emerald-200 rounded-lg text-emerald-600 font-bold">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-red-600 mb-0.5">Purine</label>
+              <input type="number" step="1" id="cfPurine" value="0" class="w-full px-2 py-1 bg-white border border-red-200 rounded-lg text-red-600 font-bold">
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="cfPinQuick" checked class="w-4 h-4 accent-emerald-600 rounded">
+            <span class="font-semibold text-slate-700">Ghim chọn nhanh 1 chạm</span>
+          </label>
+          <label id="addNowRowLabel" class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="cfAddNow" checked class="w-4 h-4 accent-blue-600 rounded">
+            <span class="font-semibold text-blue-700">Thêm luôn vào bữa</span>
+          </label>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
+          <button type="button" onclick="closeAddFoodModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">Hủy</button>
+          <button type="submit" id="foodSubmitBtn" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-500/20 cursor-pointer">
+            <i class="fa-solid fa-check"></i> Lưu Vào Kho
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: CẤU HÌNH GEMINI API -->
+  <div id="apiModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 fade-in">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-indigo-600"></i> Cấu Hình Gemini AI Key
+        </h3>
+        <button onclick="closeApiModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">&times;</button>
+      </div>
+      <div class="space-y-4 mt-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5">Google Gemini API Key:</label>
+          <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-6">
+        <button onclick="closeApiModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer">Đóng</button>
+        <button onclick="saveApiKeys()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer">Lưu Cấu Hình</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // GITHUB REST API DATABASE ENGINE (v5.33 - Master Fixed Version)
+    // =========================================================================
+    const DEFAULT_FOOD_LIBRARY = [
+      { id: "def_1", keys: ["sữa chua không đường", "sua chua khong duong"], name: "Sữa chua không đường (100g)", cal: 65, carb: 6.0, pro: 3.8, fat: 2.5, fiber: 0, purine: 0, unitType: "100g", pinned: false, custom: false },
+      { id: "def_2", keys: ["sữa chua ít đường", "sua chua it duong", "sữa chua"], name: "Sữa chua Vinamilk ít đường (100g)", cal: 95, carb: 13.5, pro: 3.5, fat: 2.8, fiber: 0, purine: 0, unitType: "100g", pinned: true, custom: false },
+      { id: "def_3", keys: ["trà xoài", "tra xoai", "trà sữa", "tra sua"], name: "Trà xoài thạch / Trà sữa (1 ly)", cal: 300, carb: 68, pro: 1.0, fat: 1.5, fiber: 0.5, purine: 5, unitType: "1part", pinned: false, custom: false },
+      { id: "def_atiso", keys: ["trà hoa atiso", "tra hoa atiso", "trà atiso", "tra atiso", "atiso"], name: "Nước trà hoa atiso Vfresh (100ml)", cal: 28, carb: 7.0, pro: 0, fat: 0, fiber: 0, purine: 0, unitType: "100ml", pinned: false, custom: false },
+      { id: "def_4", keys: ["sữa tươi không đường", "sua tuoi khong duong", "sữa không đường"], name: "Sữa tươi không đường (100ml)", cal: 60, carb: 4.7, pro: 3.0, fat: 3.3, fiber: 0, purine: 0, unitType: "100ml", pinned: true, custom: false },
+      { id: "def_5", keys: ["sữa tươi", "sữa", "sua", "mộc châu", "vinamilk", "th true"], name: "Sữa tươi có đường Mộc Châu (100ml)", cal: 77, carb: 8.4, pro: 3.0, fat: 3.5, fiber: 0, purine: 0, unitType: "100ml", pinned: false, custom: false },
+      { id: "def_6", keys: ["đậu gà", "dau ga"], name: "Đậu gà hạt khô (100g)", cal: 364, carb: 61, pro: 19, fat: 6, fiber: 12.2, purine: 50, unitType: "100g", pinned: true, custom: false },
+      { id: "def_7", keys: ["ức gà", "uc ga"], name: "Thịt ức gà luộc bỏ da (100g)", cal: 165, carb: 0, pro: 31, fat: 3.6, fiber: 0, purine: 95, unitType: "100g", pinned: true, custom: false },
+      { id: "def_8", keys: ["chuối", "chuoi"], name: "Chuối già (100g)", cal: 89, carb: 23, pro: 1.1, fat: 0.3, fiber: 2.6, purine: 5, unitType: "100g", pinned: true, custom: false },
+      { id: "def_9", keys: ["yến mạch", "yen mach"], name: "Yến mạch nguyên cám (100g)", cal: 389, carb: 66, pro: 16.9, fat: 6.9, fiber: 10.6, purine: 35, unitType: "100g", pinned: true, custom: false },
+      { id: "def_10", keys: ["hạt bí", "hat bi"], name: "Hạt bí xanh tách vỏ (100g)", cal: 559, carb: 11, pro: 30, fat: 49, fiber: 6.0, purine: 40, unitType: "100g", pinned: false, custom: false },
+      { id: "def_11", keys: ["cơm trắng", "com trang", "cơm"], name: "Cơm trắng nấu chín (100g)", cal: 130, carb: 28, pro: 2.7, fat: 0.3, fiber: 0.4, purine: 15, unitType: "100g", pinned: true, custom: false },
+      { id: "def_12", keys: ["khoai lang"], name: "Khoai lang luộc / hấp (100g)", cal: 86, carb: 20, pro: 1.6, fat: 0.1, fiber: 3.0, purine: 12, unitType: "100g", pinned: false, custom: false }
+    ];
+
+    let appDatabase = {
+      schemaVersion: "5.33-github",
+      lastUpdated: new Date().toISOString(),
+      patientProfile: {
+        name: "HUỲNH PHÚC HẬU",
+        birthYear: 1999,
+        weightKg: 56,
+        heightCm: 158,
+        bmi: 22.4,
+        targets: { calories: 1750, carbsG: 200, proteinG: 75, fatG: 45, fiberG: 25, purineMg: 200, waterMl: 2800, maxWaistCm: 79 },
+        labs: { acidUric: 8.5, triglyceride: 231, cholesterolTotal: 225, alt: 42, egfr: 103.3, date: "2026-10-13" }
+      },
+      customFoods: [],
+      editedDefaultFoods: {},
+      deletedDefaultIds: [],
+      history: {}
+    };
+
+    const cachedDb = JSON.parse(localStorage.getItem('healthtrack_unified_json_v50')) || JSON.parse(localStorage.getItem('healthtrack_unified_json_v44'));
+    if (cachedDb) appDatabase = cachedDb;
+
+    let githubConfig = JSON.parse(localStorage.getItem('healthtrack_github_cfg')) || null;
+    let currentFileSha = null;
+    let pushDebounceTimer = null;
+    let hasPendingSync = false;
+    let isPulling = false;
+
+    function utf8ToBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binString = "";
+      bytes.forEach((b) => { binString += String.fromCharCode(b); });
+      return btoa(binString);
+    }
+
+    function base64ToUtf8(base64) {
+      const binString = atob(base64.replace(/\s/g, ''));
+      const bytes = new Uint8Array(binString.length);
+      for (let i = 0; i < binString.length; i++) {
+        bytes[i] = binString.charCodeAt(i);
+      }
+      return new TextDecoder().decode(bytes);
+    }
+
+    function toggleHeaderSettingsMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('headerSettingsDropdown');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    function closeHeaderSettingsMenu() {
+      const menu = document.getElementById('headerSettingsDropdown');
+      if (menu) menu.classList.add('hidden');
+    }
+
+    document.addEventListener('click', (e) => {
+      const wrapper = document.getElementById('headerSettingsWrapper');
+      const menu = document.getElementById('headerSettingsDropdown');
+      if (wrapper && menu && !wrapper.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function updateGithubStatusUI(state, text) {
+      const badge = document.getElementById('githubSyncStatus');
+      const quickGroup = document.getElementById('githubQuickActionsGroup');
+      const btnPush = document.getElementById('btnManualPush');
+      const statusDot = document.getElementById('settingsStatusDot');
+
+      if (githubConfig) {
+        if(quickGroup) quickGroup.classList.remove('hidden');
+        if(btnPush) btnPush.classList.remove('hidden');
+      } else {
+        if(quickGroup) quickGroup.classList.add('hidden');
+        if(btnPush) btnPush.classList.add('hidden');
+      }
+
+      if (statusDot) {
+        if (state === 'synced') statusDot.className = "w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]";
+        else if (state === 'syncing') statusDot.className = "w-2 h-2 rounded-full bg-sky-400 animate-ping";
+        else if (state === 'error') statusDot.className = "w-2 h-2 rounded-full bg-red-500";
+        else statusDot.className = "w-2 h-2 rounded-full bg-amber-400";
+      }
+
+      if (!badge) return;
+      if (state === 'synced') {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span> <span class="truncate">${text}</span>`;
+        badge.className = "text-[11px] px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-semibold flex items-center gap-1.5";
+      } else if (state === 'syncing') {
+        badge.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-300 flex-shrink-0"></i> <span class="truncate">${text}</span>`;
+        badge.className = "text-[11px] px-2.5 py-1.5 rounded-lg bg-sky-500/20 text-sky-200 border border-sky-400/40 font-semibold flex items-center gap-1.5";
+      } else if (state === 'error') {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"></span> <span class="truncate">${text}</span>`;
+        badge.className = "text-[11px] px-2.5 py-1.5 rounded-lg bg-red-500/20 text-red-200 border border-red-400/40 font-semibold flex items-center gap-1.5";
+      } else {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0"></span> <span class="truncate">${text}</span>`;
+        badge.className = "text-[11px] px-2.5 py-1.5 rounded-lg bg-white/10 text-slate-200 border border-white/15 font-medium flex items-center gap-1.5";
+      }
+    }
+
+    async function pullFromGithub(showAlert = false) {
+      if (!githubConfig || isPulling) return;
+      isPulling = true;
+      const { owner, repo, path, branch, token } = githubConfig;
+      updateGithubStatusUI('syncing', 'Đang tải từ GitHub...');
+
+      try {
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch || 'main'}&t=${Date.now()}`;
+        const res = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
+
+        if (res.status === 404) {
+          currentFileSha = null;
+          await pushToGithub(false);
+          if (showAlert) alert("Đã khởi tạo file dữ liệu lần đầu trên GitHub!");
+          return;
+        }
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.message || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        currentFileSha = data.sha;
+        const decodedJson = base64ToUtf8(data.content);
+        const remoteDb = JSON.parse(decodedJson);
+
+        if (remoteDb.history) {
+          appDatabase = { ...appDatabase, ...remoteDb };
+        }
+
+        localStorage.setItem('healthtrack_unified_json_v50', JSON.stringify(appDatabase, null, 2));
+        refreshAllViews();
+        const timeStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        updateGithubStatusUI('synced', `GitHub Synced (${timeStr})`);
+        if (showAlert) alert("Đã tải dữ liệu mới nhất từ GitHub thành công!");
+      } catch (err) {
+        console.error("GitHub Pull Error:", err);
+        updateGithubStatusUI('error', `Lỗi GitHub: ${err.message}`);
+        if (showAlert) alert(`Lỗi kết nối GitHub: ${err.message}`);
+      } finally {
+        isPulling = false;
+      }
+    }
+
+    async function pushToGithub(showAlert = false) {
+      if (!githubConfig) return;
+      const { owner, repo, path, branch, token } = githubConfig;
+      updateGithubStatusUI('syncing', 'Đang lưu lên GitHub...');
+
+      try {
+        if (!currentFileSha) {
+          const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch || 'main'}&t=${Date.now()}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+          });
+          if (checkRes.ok) {
+            const checkData = await checkRes.json();
+            currentFileSha = checkData.sha;
+          }
+        }
+
+        appDatabase.lastUpdated = new Date().toISOString();
+        const jsonString = JSON.stringify(appDatabase, null, 2);
+        const base64Content = utf8ToBase64(jsonString);
+
+        const bodyPayload = {
+          message: `Update HealthTrack DB (${formatDisplayDate(currentDate)})`,
+          content: base64Content,
+          branch: branch || 'main'
+        };
+        if (currentFileSha) bodyPayload.sha = currentFileSha;
+
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(bodyPayload)
+        });
+
+        if (res.status === 409) {
+          currentFileSha = null;
+          return await pushToGithub(showAlert);
+        }
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.message || `HTTP ${res.status}`);
+        }
+
+        const result = await res.json();
+        currentFileSha = result.content.sha;
+
+        const timeStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        updateGithubStatusUI('synced', `GitHub Synced (${timeStr})`);
+        if (showAlert) alert("Đã đồng bộ dữ liệu lên GitHub thành công!");
+      } catch (err) {
+        console.error("GitHub Push Error:", err);
+        updateGithubStatusUI('error', `Lỗi đồng bộ: ${err.message}`);
+        if (showAlert) alert(`Không thể đẩy dữ liệu lên GitHub: ${err.message}`);
+      }
+    }
+
+    function saveDatabase() {
+      appDatabase.lastUpdated = new Date().toISOString();
+      const jsonString = JSON.stringify(appDatabase, null, 2);
+      localStorage.setItem('healthtrack_unified_json_v50', jsonString);
+
+      refreshAllViews();
+
+      if (githubConfig) {
+        hasPendingSync = true;
+        updateGithubStatusUI('syncing', 'Đang chờ đồng bộ...');
+        clearTimeout(pushDebounceTimer);
+        pushDebounceTimer = setTimeout(async () => {
+          hasPendingSync = false;
+          await pushToGithub(false);
+        }, 1200);
+      }
+    }
+
+    window.addEventListener('beforeunload', (e) => {
+      if (hasPendingSync && githubConfig) {
+        clearTimeout(pushDebounceTimer);
+        hasPendingSync = false;
+        pushToGithub(false);
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    function refreshAllViews() {
+      updateHistoryBadge();
+      updateCustomFoodBadge();
+      renderQuickPills();
+      loadDateState(currentDate);
+      renderFoodTable(getAllFoods());
+      const rawViewer = document.getElementById('rawJsonViewer');
+      if (rawViewer) rawViewer.value = JSON.stringify(appDatabase, null, 2);
+    }
+
+    function openGithubModal() {
+      if (githubConfig) {
+        document.getElementById('ghOwner').value = githubConfig.owner || "";
+        document.getElementById('ghRepo').value = githubConfig.repo || "";
+        document.getElementById('ghPath').value = githubConfig.path || "data/healthtrack_db.json";
+        document.getElementById('ghBranch').value = githubConfig.branch || "main";
+        document.getElementById('ghToken').value = githubConfig.token || "";
+      }
+      document.getElementById('githubModal').classList.remove('hidden');
+    }
+
+    function closeGithubModal() {
+      document.getElementById('githubModal').classList.add('hidden');
+    }
+
+    async function saveGithubConfig(e) {
+      e.preventDefault();
+      githubConfig = {
+        owner: document.getElementById('ghOwner').value.trim(),
+        repo: document.getElementById('ghRepo').value.trim(),
+        path: document.getElementById('ghPath').value.trim().replace(/^\/+/, ''),
+        branch: document.getElementById('ghBranch').value.trim() || 'main',
+        token: document.getElementById('ghToken').value.trim()
+      };
+      localStorage.setItem('healthtrack_github_cfg', JSON.stringify(githubConfig));
+      currentFileSha = null;
+      closeGithubModal();
+      await pullFromGithub(true);
+    }
+
+    function disconnectGithub() {
+      if (confirm("Ngắt kết nối đồng bộ GitHub trên trình duyệt này?")) {
+        localStorage.removeItem('healthtrack_github_cfg');
+        githubConfig = null;
+        currentFileSha = null;
+        updateGithubStatusUI('offline', 'Chưa kết nối GitHub');
+        closeGithubModal();
+      }
+    }
+
+    function switchTab(tabId) {
+      ['tab-daily', 'tab-workout', 'tab-history', 'tab-library', 'tab-json', 'tab-clinical'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.classList.add('hidden');
+      });
+      ['btn-tab-daily', 'btn-tab-workout', 'btn-tab-history', 'btn-tab-library', 'btn-tab-clinical'].forEach(id => {
+        const btn = document.getElementById(id);
+        if(btn) btn.classList.remove('active');
+      });
+      const jsonDropdownBtn = document.getElementById('btn-tab-json');
+      if (jsonDropdownBtn) {
+        if (tabId === 'tab-json') jsonDropdownBtn.classList.add('bg-white/15', 'text-amber-300');
+        else jsonDropdownBtn.classList.remove('bg-white/15', 'text-amber-300');
+      }
+      const targetTab = document.getElementById(tabId);
+      const targetBtn = document.getElementById('btn-' + tabId);
+      if(targetTab) targetTab.classList.remove('hidden');
+      if(targetBtn && tabId !== 'tab-json') targetBtn.classList.add('active');
+
+      // Sync Mobile/Tablet Bottom Nav active state
+      document.querySelectorAll('.mnav-btn').forEach(btn => {
+        btn.className = 'mnav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-slate-500 hover:bg-slate-100 transition cursor-pointer';
+      });
+      const activeMNav = document.getElementById('mnav-' + tabId);
+      if (activeMNav) {
+        activeMNav.className = 'mnav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-blue-600 bg-blue-50/90 transition cursor-pointer';
+      }
+      closeMobileSidebar();
+
+      if (tabId === 'tab-workout') renderWorkoutTab();
+      if (tabId === 'tab-history') renderHistoryTable();
+      if (tabId === 'tab-library') renderFoodTable(getAllFoods());
+      if (tabId === 'tab-json') {
+        const rawViewer = document.getElementById('rawJsonViewer');
+        if(rawViewer) rawViewer.value = JSON.stringify(appDatabase, null, 2);
+      }
+    }
+
+    function toggleMedicalCards() {
+      const container = document.getElementById('medicalCardsContainer');
+      const textEl = document.getElementById('toggleText');
+      const iconEl = document.getElementById('toggleIcon');
+      if(!container) return;
+      const isHidden = container.classList.contains('hidden');
+      
+      if (isHidden) {
+        container.classList.remove('hidden');
+        if(textEl) textEl.textContent = "Ẩn 4 thẻ chỉ số y khoa";
+        if(iconEl) iconEl.className = "fa-solid fa-chevron-up text-blue-600";
+      } else {
+        container.classList.add('hidden');
+        if(textEl) textEl.textContent = "Xem 4 thẻ chỉ số y khoa";
+        if(iconEl) iconEl.className = "fa-solid fa-chevron-down text-blue-600";
+      }
+    }
+
+    function getAllFoods() {
+      if (!appDatabase.editedDefaultFoods) appDatabase.editedDefaultFoods = {};
+      if (!appDatabase.deletedDefaultIds) appDatabase.deletedDefaultIds = [];
+
+      const activeDefaults = DEFAULT_FOOD_LIBRARY
+        .filter(defItem => !appDatabase.deletedDefaultIds.includes(defItem.id))
+        .map(defItem => {
+          if (appDatabase.editedDefaultFoods[defItem.id]) {
+            return { ...defItem, ...appDatabase.editedDefaultFoods[defItem.id] };
+          }
+          return defItem;
+        });
+
+      return [...appDatabase.customFoods, ...activeDefaults];
+    }
+
+    function updateCustomFoodBadge() {
+      const badge = document.getElementById('customFoodCountBadge');
+      if(badge) badge.textContent = `${getAllFoods().length} món`;
+    }
+
+    function openAddFoodModal() {
+      const editId = document.getElementById('editFoodId');
+      const modalTitle = document.getElementById('foodModalTitle');
+      const submitBtn = document.getElementById('foodSubmitBtn');
+      const nameEl = document.getElementById('cfName');
+      const keysEl = document.getElementById('cfKeys');
+      const calEl = document.getElementById('cfCal');
+      const carbEl = document.getElementById('cfCarb');
+      const proEl = document.getElementById('cfPro');
+      const fatEl = document.getElementById('cfFat');
+      const fiberEl = document.getElementById('cfFiber');
+      const purineEl = document.getElementById('cfPurine');
+      const addNowRow = document.getElementById('addNowRowLabel');
+      const modalEl = document.getElementById('addFoodModal');
+
+      if(editId) editId.value = "";
+      if(modalTitle) modalTitle.innerHTML = `<span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs"><i class="fa-solid fa-plus"></i></span> Thêm Món Mới Vào Kho`;
+      if(submitBtn) submitBtn.innerHTML = `<i class="fa-solid fa-check"></i> Lưu Vào Kho`;
+      if(nameEl) nameEl.value = "";
+      if(keysEl) keysEl.value = "";
+      if(calEl) calEl.value = "";
+      if(carbEl) carbEl.value = "0";
+      if(proEl) proEl.value = "0";
+      if(fatEl) fatEl.value = "0";
+      if(fiberEl) fiberEl.value = "0";
+      if(purineEl) purineEl.value = "0";
+      if(addNowRow) addNowRow.style.display = "flex";
+      const addNowCb = document.getElementById('cfAddNow');
+      if(addNowCb) addNowCb.checked = true;
+
+      if(modalEl) modalEl.classList.remove('hidden');
+      setTimeout(() => { if(nameEl) nameEl.focus(); }, 100);
+    }
+
+    function openEditFoodModal(id) {
+      const item = getAllFoods().find(f => f.id === id);
+      if (!item) return;
+
+      const editId = document.getElementById('editFoodId');
+      const modalTitle = document.getElementById('foodModalTitle');
+      const submitBtn = document.getElementById('foodSubmitBtn');
+      const nameEl = document.getElementById('cfName');
+      const keysEl = document.getElementById('cfKeys');
+      const unitTypeEl = document.getElementById('cfUnitType');
+      const calEl = document.getElementById('cfCal');
+      const carbEl = document.getElementById('cfCarb');
+      const proEl = document.getElementById('cfPro');
+      const fatEl = document.getElementById('cfFat');
+      const fiberEl = document.getElementById('cfFiber');
+      const purineEl = document.getElementById('cfPurine');
+      const pinCb = document.getElementById('cfPinQuick');
+      const addNowRow = document.getElementById('addNowRowLabel');
+      const modalEl = document.getElementById('addFoodModal');
+
+      if(editId) editId.value = item.id;
+      if(modalTitle) modalTitle.innerHTML = `<span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-pen"></i></span> Chỉnh Sửa Món Ăn`;
+      if(submitBtn) submitBtn.innerHTML = `<i class="fa-solid fa-check"></i> Cập Nhật Món`;
+
+      const cleanName = item.name.replace(/\s*\(.*\)$/, '').trim();
+      if(nameEl) nameEl.value = cleanName;
+      if(keysEl) keysEl.value = item.keys.filter(k => k !== cleanName.toLowerCase()).join(', ');
+      if(unitTypeEl) unitTypeEl.value = item.unitType || '100g';
+      if(calEl) calEl.value = item.cal;
+      if(carbEl) carbEl.value = item.carb;
+      if(proEl) proEl.value = item.pro;
+      if(fatEl) fatEl.value = item.fat;
+      if(fiberEl) fiberEl.value = item.fiber || 0;
+      if(purineEl) purineEl.value = item.purine;
+      if(pinCb) pinCb.checked = !!item.pinned;
+
+      if(addNowRow) addNowRow.style.display = "none";
+      if(modalEl) modalEl.classList.remove('hidden');
+    }
+
+    function closeAddFoodModal() {
+      const modalEl = document.getElementById('addFoodModal');
+      if(modalEl) modalEl.classList.add('hidden');
+    }
+
+    function submitFoodForm(e) {
+      e.preventDefault();
+      const editId = document.getElementById('editFoodId').value;
+      const name = document.getElementById('cfName').value.trim();
+      const rawKeys = document.getElementById('cfKeys').value.trim();
+      const unitType = document.getElementById('cfUnitType').value;
+      const cal = parseFloat(document.getElementById('cfCal').value) || 0;
+      const carb = parseFloat(document.getElementById('cfCarb').value) || 0;
+      const pro = parseFloat(document.getElementById('cfPro').value) || 0;
+      const fat = parseFloat(document.getElementById('cfFat').value) || 0;
+      const fiber = parseFloat(document.getElementById('cfFiber').value) || 0;
+      const purine = parseFloat(document.getElementById('cfPurine').value) || 0;
+      const pinned = document.getElementById('cfPinQuick').checked;
+      const addNowCb = document.getElementById('cfAddNow');
+      const addNow = addNowCb ? addNowCb.checked : false;
+
+      const keyList = [name.toLowerCase()];
+      if (rawKeys) {
+        rawKeys.split(',').forEach(k => {
+          const clean = k.trim().toLowerCase();
+          if (clean && !keyList.includes(clean)) keyList.push(clean);
+        });
+      }
+
+      const formattedName = `${name} (${unitType === '1part' ? '1 phần' : unitType})`;
+
+      if (editId) {
+        if (editId.startsWith('cust_')) {
+          const customTarget = appDatabase.customFoods.find(f => f.id === editId);
+          if (customTarget) {
+            customTarget.name = formattedName;
+            customTarget.keys = keyList;
+            customTarget.unitType = unitType;
+            customTarget.cal = cal;
+            customTarget.carb = carb;
+            customTarget.pro = pro;
+            customTarget.fat = fat;
+            customTarget.fiber = fiber;
+            customTarget.purine = purine;
+            customTarget.pinned = pinned;
+          }
+        } else {
+          if (!appDatabase.editedDefaultFoods) appDatabase.editedDefaultFoods = {};
+          appDatabase.editedDefaultFoods[editId] = {
+            name: formattedName,
+            keys: keyList,
+            unitType,
+            cal, carb, pro, fat, fiber, purine,
+            pinned
+          };
+        }
+        saveDatabase();
+        renderFoodTable(getAllFoods());
+        closeAddFoodModal();
+        alert("Đã cập nhật thông tin món thành công!");
+      } else {
+        const newFood = {
+          id: 'cust_' + Date.now(),
+          keys: keyList,
+          name: formattedName,
+          cal, carb, pro, fat, fiber, purine,
+          unitType,
+          pinned,
+          custom: true
+        };
+
+        appDatabase.customFoods.unshift(newFood);
+        saveDatabase();
+        renderFoodTable(getAllFoods());
+
+        if (addNow) {
+          quickInsertFoodObject(newFood, 1);
+        }
+        closeAddFoodModal();
+      }
+    }
+
+    function deleteCustomFood(id) {
+      if (confirm("Xóa món này khỏi cơ sở dữ liệu?")) {
+        if (id.startsWith('cust_')) {
+          appDatabase.customFoods = appDatabase.customFoods.filter(f => f.id !== id);
+        } else {
+          if (!appDatabase.deletedDefaultIds) appDatabase.deletedDefaultIds = [];
+          if (!appDatabase.deletedDefaultIds.includes(id)) {
+            appDatabase.deletedDefaultIds.push(id);
+          }
+        }
+        saveDatabase();
+        renderFoodTable(getAllFoods());
+      }
+    }
+
+    function togglePinFood(id) {
+      const item = getAllFoods().find(f => f.id === id);
+      if (!item) return;
+
+      if (id.startsWith('cust_')) {
+        const target = appDatabase.customFoods.find(f => f.id === id);
+        if (target) target.pinned = !target.pinned;
+      } else {
+        if (!appDatabase.editedDefaultFoods) appDatabase.editedDefaultFoods = {};
+        const currentPinned = appDatabase.editedDefaultFoods[id]?.pinned ?? DEFAULT_FOOD_LIBRARY.find(d => d.id === id).pinned;
+        if (!appDatabase.editedDefaultFoods[id]) {
+          appDatabase.editedDefaultFoods[id] = { ...DEFAULT_FOOD_LIBRARY.find(d => d.id === id) };
+        }
+        appDatabase.editedDefaultFoods[id].pinned = !currentPinned;
+      }
+      saveDatabase();
+      renderFoodTable(getAllFoods());
+    }
+
+    function renderQuickPills() {
+      const container = document.getElementById('quickPillsContainer');
+      if(!container) return;
+      const pinnedList = getAllFoods().filter(f => f.pinned).slice(0, 10);
+      container.innerHTML = pinnedList.map(item => `
+        <button onclick="quickInsertById('${item.id}')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-blue-600 text-slate-700 hover:text-white border border-indigo-200/80 text-[11px] font-semibold shadow-2xs transition flex items-center gap-1 cursor-pointer">
+          <span>+ ${item.name.split('(')[0].trim()}</span>
+          <span class="text-[10px] opacity-75">(${item.cal}k)</span>
+        </button>
+      `).join('');
+    }
+
+    function handleLiveSearchSuggestions() {
+      const inputEl = document.getElementById('aiFoodInput');
+      const dropdown = document.getElementById('quickSuggestDropdown');
+      if(!inputEl || !dropdown) return;
+
+      const rawVal = inputEl.value;
+      const segments = rawVal.split(',');
+      const currentTerm = segments[segments.length - 1].trim().toLowerCase();
+
+      const qtyMatch = currentTerm.match(/^(\d+(?:\.\d+)?)\s*(g|gr|gam|ml|hộp|hủ|quả|chén|tô)?\s*(.*)$/);
+      let qty = 100;
+      let hasExplicitQty = false;
+      let keyword = currentTerm;
+
+      if (qtyMatch && qtyMatch[1]) {
+        qty = parseFloat(qtyMatch[1]);
+        hasExplicitQty = true;
+        keyword = qtyMatch[3].trim();
+      }
+
+      if (keyword.length < 1) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      const matches = getAllFoods().filter(f =>
+        f.name.toLowerCase().includes(keyword) || f.keys.some(k => k.includes(keyword))
+      ).slice(0, 6);
+
+      if (matches.length === 0) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      dropdown.innerHTML = matches.map(item => {
+        const displayQty = hasExplicitQty ? qty : (item.unitType === '1part' ? 1 : 100);
+        const factor = item.unitType === '1part' ? (hasExplicitQty ? qty : 1) : (displayQty / 100);
+        const estCal = Math.round(item.cal * factor);
+
+        return `
+          <div onclick="selectAutocompleteItem('${item.id}', ${displayQty}, ${hasExplicitQty})" class="p-2.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between text-xs transition">
+            <div>
+              <span class="font-bold text-slate-800">${item.name}</span>
+              ${item.custom ? '<span class="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold">Custom</span>' : ''}
+              <p class="text-[11px] text-slate-400">C: ${item.carb}g • P: ${item.pro}g • F: ${item.fat}g • Xơ: ${item.fiber || 0}g</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[11px]">+ Thêm (${estCal} kcal)</span>
+          </div>
+        `;
+      }).join('');
+
+      dropdown.classList.remove('hidden');
+    }
+
+    document.addEventListener('click', (e) => {
+      const input = document.getElementById('aiFoodInput');
+      const dropdown = document.getElementById('quickSuggestDropdown');
+      if (input && dropdown && !input.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    function selectAutocompleteItem(foodId, qty, hasExplicitQty) {
+      const item = getAllFoods().find(f => f.id === foodId);
+      if (!item) return;
+
+      const factor = item.unitType === '1part' ? (hasExplicitQty ? qty : 1) : (qty / 100);
+      const labelSuffix = item.unitType === '1part'
+        ? `${hasExplicitQty ? qty + ' phần' : '1 phần'}`
+        : `${qty}${item.unitType === '100ml' ? 'ml' : 'g'}`;
+
+      quickInsertFoodObject(item, factor, `${item.name.split('(')[0].trim()} (${labelSuffix})`);
+      const inputEl = document.getElementById('aiFoodInput');
+      const dropdownEl = document.getElementById('quickSuggestDropdown');
+      if(inputEl) inputEl.value = "";
+      if(dropdownEl) dropdownEl.classList.add('hidden');
+    }
+
+    function quickInsertById(foodId) {
+      const item = getAllFoods().find(f => f.id === foodId);
+      if (item) quickInsertFoodObject(item, 1);
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const colors = {
+        success: 'bg-slate-900/95 text-white border-emerald-400/50',
+        water: 'bg-sky-950/95 text-cyan-100 border-cyan-400/50',
+        warn: 'bg-amber-950/95 text-amber-100 border-amber-400/50'
+      };
+      const icons = {
+        success: '<i class="fa-solid fa-circle-check text-emerald-400"></i>',
+        water: '<i class="fa-solid fa-droplet text-cyan-400 animate-bounce"></i>',
+        warn: '<i class="fa-solid fa-triangle-exclamation text-amber-400"></i>'
+      };
+      const toast = document.createElement('div');
+      toast.className = `animate-pop-in px-4 py-2.5 rounded-2xl border shadow-xl backdrop-blur-md text-xs font-bold flex items-center gap-2.5 ${colors[type] || colors.success}`;
+      toast.innerHTML = `${icons[type] || icons.success}<span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 2400);
+    }
+
+    function quickInsertFoodObject(item, factor = 1, customLabel = null) {
+      const slotEl = document.getElementById('mealSlotSelect');
+      const slot = slotEl ? slotEl.value : 'lunch';
+      const rec = ensureDayRecord(currentDate);
+      rec.meals[slot].push({
+        id: item.id || ('def_' + Math.random()),
+        name: customLabel || item.name,
+        cal: Math.round(item.cal * factor),
+        carb: Math.round(item.carb * factor * 10) / 10,
+        pro: Math.round(item.pro * factor * 10) / 10,
+        fat: Math.round(item.fat * factor * 10) / 10,
+        fiber: Math.round((item.fiber || 0) * factor * 10) / 10,
+        purine: Math.round(item.purine * factor),
+        baseCal: item.cal,
+        baseCarb: item.carb,
+        basePro: item.pro,
+        baseFat: item.fat,
+        baseFiber: item.fiber || 0,
+        basePurine: item.purine,
+        factor: factor,
+        isPart: item.unitType === '1part',
+        safe: item.purine <= 150
+      });
+      saveDatabase();
+      renderMealLogs();
+      showToast(`Đã thêm ${customLabel || item.name}`, 'success');
+    }
+
+    function insertStandardMeal() {
+      const slotEl = document.getElementById('mealSlotSelect');
+      const slot = slotEl ? slotEl.value : 'lunch';
+      const rec = ensureDayRecord(currentDate);
+
+      const standardItems = [
+        { name: "Thịt ức gà luộc bỏ da (100g)", cal: 165, carb: 0, pro: 31, fat: 3.6, fiber: 0, purine: 95, baseCal: 165, baseCarb: 0, basePro: 31, baseFat: 3.6, baseFiber: 0, basePurine: 95, factor: 1 },
+        { name: "Chuối già (100g)", cal: 89, carb: 23, pro: 1.1, fat: 0.3, fiber: 2.6, purine: 5, baseCal: 89, baseCarb: 23, basePro: 1.1, baseFat: 0.3, baseFiber: 2.6, basePurine: 5, factor: 1 },
+        { name: "Yến mạch nguyên cám (15g)", cal: 58, carb: 9.9, pro: 2.5, fat: 1.0, fiber: 1.6, purine: 5, baseCal: 389, baseCarb: 66, basePro: 16.9, baseFat: 6.9, baseFiber: 10.6, basePurine: 35, factor: 0.15 },
+        { name: "Hạt bí xanh tách vỏ (5g)", cal: 28, carb: 0.6, pro: 1.5, fat: 2.5, fiber: 0.3, purine: 2, baseCal: 559, baseCarb: 11, basePro: 30, baseFat: 49, baseFiber: 6.0, basePurine: 40, factor: 0.05 }
+      ];
+
+      standardItems.forEach(it => {
+        rec.meals[slot].push({
+          name: it.name,
+          cal: it.cal, carb: it.carb, pro: it.pro, fat: it.fat, fiber: it.fiber, purine: it.purine,
+          baseCal: it.baseCal, baseCarb: it.baseCarb, basePro: it.basePro, baseFat: it.baseFat, baseFiber: it.baseFiber, basePurine: it.basePurine,
+          factor: it.factor, safe: it.purine <= 150
+        });
+      });
+
+      saveDatabase();
+      renderMealLogs();
+      showToast('Đã thêm Bữa Tiêu Chuẩn Hậu (339 kcal)!', 'success');
+    }
+
+    function getTodayISO() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset() * 60000;
+      return new Date(now - offset).toISOString().split('T')[0];
+    }
+
+    function formatDisplayDate(isoStr) {
+      if(!isoStr) return "";
+      const [y, m, d] = isoStr.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    let currentDate = getTodayISO();
+
+    function ensureDayRecord(dateStr) {
+      if (!appDatabase.history[dateStr]) {
+        appDatabase.history[dateStr] = {
+          meals: { breakfast: [], lunch: [], dinner: [], snack: [] },
+          burnedCal: 0,
+          water: 0,
+          waist: "70",
+          habits: []
+        };
+      }
+      return appDatabase.history[dateStr];
+    }
+
+    function updateHistoryBadge() {
+      const badge = document.getElementById('historyCountBadge');
+      if(!badge) return;
+      const recordedDays = Object.keys(appDatabase.history).filter(d => {
+        const rec = appDatabase.history[d];
+        const mealCount = Object.values(rec.meals).reduce((sum, arr) => sum + arr.length, 0);
+        return mealCount > 0 || rec.water > 0 || (rec.burnedCal && rec.burnedCal > 0) || rec.waist;
+      });
+      badge.textContent = `${recordedDays.length} ngày`;
+    }
+
+
+    // =========================================================================
+    // WORKOUT TRACKER ENGINE (5 BUỔI/TUẦN - TĂNG CƠ & GIẢM MỠ)
+    // =========================================================================
+    const WORKOUT_PLAN = {
+      1: {
+        dayName: "Thứ 2",
+        shortLabel: "T2 • Upper A",
+        title: "Upper A (Thiên về sức mạnh thân trên)",
+        isRest: false,
+        goal: "Tập trung sức mạnh thân trên. Khi đạt mức reps cao nhất ở tất cả các hiệp với form chuẩn, tăng thêm 1–2.5kg ở tuần sau.",
+        exercises: [
+          { id: "uA_1", name: "Barbell Bench Press (Đẩy ngực ngang)", tool: "Tạ đòn", sets: 4, reps: "6–8", rest: "2–3 phút", restSec: 150, main: true, note: "Hạ tạ kiểm soát chạm nhẹ giữa ngực, ép chặt bả vai." },
+          { id: "uA_2", name: "Pull-ups (Hít xà rộng tay)", tool: "Xà đơn", sets: 4, reps: "6–10", rest: "2 phút", restSec: 120, main: true, note: "Kẹp thêm tạ đơn 2–5kg ở chân nếu kéo dư sức." },
+          { id: "uA_3", name: "Dumbbell Shoulder Press (Đẩy vai ngồi)", tool: "Tạ đơn", sets: 3, reps: "8–10", rest: "90 giây", restSec: 90, main: false, note: "Giữ thẳng lưng, không khóa khớp khuỷu tay ở đỉnh." },
+          { id: "uA_4", name: "Bent-Over Barbell Row (Gập người kéo lưng)", tool: "Tạ đòn", sets: 3, reps: "8–10", rest: "90 giây", restSec: 90, main: false, note: "Lưng giữ thẳng góc 45 độ, kéo thanh đòn về rốn." },
+          { id: "uA_5", name: "Dumbbell Bicep Curl (Cuốn tạ tay trước)", tool: "Tạ đơn", sets: 3, reps: "10–12", rest: "60 giây", restSec: 60, main: false, note: "Cố định khuỷu tay sát thân người, không đung đưa." },
+          { id: "uA_6", name: "Brisk Treadmill Walk / Jog (Đi bộ nhanh / Chạy nhẹ)", tool: "Máy chạy bộ phẳng", sets: 1, reps: "15 phút", rest: "—", restSec: 0, main: false, note: "Máy phẳng: Đi bộ nhanh 6.0–6.5 km/h hoặc chạy bộ nhẹ 7.5–8.0 km/h (Zone 2) để thả lỏng & đốt mỡ." }
+        ]
+      },
+      2: {
+        dayName: "Thứ 3",
+        shortLabel: "T3 • Lower A",
+        title: "Lower A (Thiên về sức mạnh thân dưới)",
+        isRest: false,
+        goal: "Xây dựng nền tảng sức mạnh chân & đùi sau. Gồng chặt core trước mỗi lần hạ tạ.",
+        exercises: [
+          { id: "lA_1", name: "Barbell Back Squat (Gánh tạ đòn)", tool: "Tạ đòn", sets: 4, reps: "6–8", rest: "2–3 phút", restSec: 150, main: true, note: "Hít sâu gồng bụng, hạ hông sâu dưới mức song song sàn." },
+          { id: "lA_2", name: "Barbell Romanian Deadlift (Kéo đùi sau)", tool: "Tạ đòn", sets: 4, reps: "8–10", rest: "2 phút", restSec: 120, main: true, note: "Đầu gối hơi chùng cố định, đẩy hông ra sau hết cỡ." },
+          { id: "lA_3", name: "Dumbbell Walking Lunges (Bước chùng chân)", tool: "Tạ đơn", sets: 3, reps: "10 bước/chân", rest: "90 giây", restSec: 90, main: false, note: "Bước sải dài vừa phải, hai gối tạo góc 90 độ khi hạ." },
+          { id: "lA_4", name: "Standing Dumbbell Calf Raise (Nhón bắp chuối)", tool: "Tạ đơn", sets: 3, reps: "15–20", rest: "60 giây", restSec: 60, main: false, note: "Dừng lại 1 giây ở điểm cao nhất để siết bắp chuối." },
+          { id: "lA_5", name: "Hanging Leg Raises (Treo xà đá chân)", tool: "Xà đơn", sets: 3, reps: "10–15", rest: "60 giây", restSec: 60, main: false, note: "Cuộn xương chậu nâng chân, hạ chậm chống đung đưa." }
+        ]
+      },
+      3: {
+        dayName: "Thứ 4",
+        shortLabel: "T4 • Nghỉ",
+        title: "Nghỉ ngơi / Phục hồi chủ động",
+        isRest: true,
+        goal: "Giãn cơ toàn thân 15 phút hoặc đi bộ nhẹ nhàng ngoài trời (mục tiêu 8.000–10.000 bước).",
+        exercises: [
+          { id: "r4_1", name: "Giãn cơ toàn thân (Full-body Stretching)", tool: "Thảm / Sàn", sets: 1, reps: "15 phút", rest: "—", restSec: 0, main: false, note: "Tập trung giãn nhóm cơ ngực, vai, lưng xô và gân kheo." },
+          { id: "r4_2", name: "Đi bộ nhẹ nhàng ngoài trời", tool: "Đi bộ", sets: 1, reps: "8,000–10,000 bước", rest: "—", restSec: 0, main: false, note: "Tăng lưu thông máu, hỗ trợ đào thải Acid Uric tự nhiên." }
+        ]
+      },
+      4: {
+        dayName: "Thứ 5",
+        shortLabel: "T5 • Upper B",
+        title: "Upper B (Thiên về độ phì đại cơ - Hypertrophy)",
+        isRest: false,
+        goal: "Tăng độ phì đại cơ thân trên với số reps trung bình – cao và kiểm soát nhịp độ (tempo).",
+        exercises: [
+          { id: "uB_1", name: "Chin-ups (Hít xà nắm ngửa tay)", tool: "Xà đơn", sets: 4, reps: "8–10", rest: "2 phút", restSec: 120, main: true, note: "Tập trung cảm nhận cơ lưng xô dưới và tay trước." },
+          { id: "uB_2", name: "Incline Dumbbell Press (Đẩy ngực trên)", tool: "Tạ đơn", sets: 4, reps: "8–12", rest: "90 giây", restSec: 90, main: true, note: "Chỉnh ghế dốc 30–45 độ, hạ tạ sâu giãn cơ ngực." },
+          { id: "uB_3", name: "One-Arm Dumbbell Row (Kéo lưng một tay)", tool: "Tạ đơn", sets: 3, reps: "10–12/tay", rest: "90 giây", restSec: 90, main: false, note: "Kéo tạ hướng về phía hông thay vì kéo thẳng lên vai." },
+          { id: "uB_4", name: "Dumbbell Lateral Raise (Bay vai ngang)", tool: "Tạ đơn", sets: 4, reps: "12–15", rest: "60 giây", restSec: 60, main: false, note: "Nâng khuỷu tay dẫn dắt chuyển động, tạ nhẹ chuẩn form." },
+          { id: "uB_5", name: "Overhead Dumbbell Tricep Extension (Tay sau)", tool: "Tạ đơn", sets: 3, reps: "10–12", rest: "60 giây", restSec: 60, main: false, note: "Giữ hai khuỷu tay khép hướng thẳng lên trần nhà." },
+          { id: "uB_6", name: "Brisk Treadmill Walk / Jog (Đi bộ nhanh / Chạy nhẹ)", tool: "Máy chạy bộ phẳng", sets: 1, reps: "15 phút", rest: "—", restSec: 0, main: false, note: "Máy phẳng: Đi bộ nhanh 6.0–6.5 km/h hoặc chạy bộ nhẹ 7.5–8.0 km/h giữ nhịp tim ổn định." }
+        ]
+      },
+      5: {
+        dayName: "Thứ 6",
+        shortLabel: "T6 • Lower B",
+        title: "Lower B (Thiên về độ bền cơ bắp & Mông đùi)",
+        isRest: false,
+        goal: "Phát triển sức bền cơ bắp mông – đùi và siết cơ lõi (Core).",
+        exercises: [
+          { id: "lB_1", name: "Barbell Hip Thrust (Đẩy hông tạ đòn)", tool: "Tạ đòn", sets: 4, reps: "10–12", rest: "2 phút", restSec: 120, main: true, note: "Tựa lưng trên ghế, siết chặt mông và giữ 1 giây ở đỉnh." },
+          { id: "lB_2", name: "Dumbbell Goblet Squat (Gánh tạ đơn trước ngực)", tool: "Tạ đơn", sets: 4, reps: "10–12", rest: "90 giây", restSec: 90, main: true, note: "Giữ thân người thẳng đứng tối đa để tác động đùi trước." },
+          { id: "lB_3", name: "Bulgarian Split Squat (Squat một chân)", tool: "Tạ đơn", sets: 3, reps: "8–10/chân", rest: "90 giây", restSec: 90, main: false, note: "Đặt mu bàn chân sau lên ghế, đổ nhẹ người về trước." },
+          { id: "lB_4", name: "Dumbbell Stiff-Leg Deadlift (Kéo đùi sau tạ đơn)", tool: "Tạ đơn", sets: 3, reps: "12", rest: "90 giây", restSec: 90, main: false, note: "Giữ tạ sát đùi, cảm nhận độ căng sâu của gân kheo." },
+          { id: "lB_5", name: "Plank / Hanging Knee Raises (Siết bụng)", tool: "Xà đơn / Sàn", sets: 3, reps: "45–60 giây", rest: "60 giây", restSec: 60, main: false, note: "Gồng chặt cơ lõi, không để võng lưng dưới." }
+        ]
+      },
+      6: {
+        dayName: "Thứ 7",
+        shortLabel: "T7 • Core & Cardio",
+        title: "Conditioning & Core (Đốt mỡ & Thể lực tim mạch)",
+        isRest: false,
+        goal: "Đốt mỡ nội tạng, hạ Triglyceride và tăng sức bền tim mạch Zone 2.",
+        exercises: [
+          { id: "cC_1", name: "Dumbbell Swing (Vung tạ đơn)", tool: "Tạ đơn", sets: 4, reps: "15–20 reps", rest: "45 giây", restSec: 45, main: false, note: "Dùng lực bật của hông và mông, không dùng tay nhấc tạ." },
+          { id: "cC_2", name: "Hanging Leg Raises (Treo xà nâng chân)", tool: "Xà đơn", sets: 3, reps: "12–15 reps", rest: "60 giây", restSec: 60, main: false, note: "Thực hiện chậm rãi, kiểm soát nhịp thở." },
+          { id: "cC_3", name: "Dumbbell Russian Twist (Xoay eo bụng)", tool: "Tạ đơn", sets: 3, reps: "20 reps (10/bên)", rest: "45 giây", restSec: 45, main: false, note: "Ngả lưng 45 độ, xoay cả phần thân trên theo tạ." },
+          { id: "cC_4", name: "Flat Treadmill Zone 2 Run/Walk (Cardio đốt mỡ)", tool: "Máy chạy bộ phẳng", sets: 1, reps: "25–30 phút", rest: "—", restSec: 0, main: false, note: "Máy phẳng: Chạy bộ chậm 7.5–8.5 km/h hoặc đi bộ nhanh 6.2–6.8 km/h liên tục (duy trì nhịp tim Zone 2, không vịn tay)." }
+        ]
+      },
+      0: {
+        dayName: "Chủ Nhật",
+        shortLabel: "CN • Nghỉ",
+        title: "Nghỉ hoàn toàn",
+        isRest: true,
+        goal: "Dành thời gian nghỉ ngơi, ngủ đủ 7–8 tiếng để cơ bắp phục hồi hoàn toàn cho chu kỳ tuần mới.",
+        exercises: [
+          { id: "r0_1", name: "Ngủ đủ 7–8 tiếng & Phục hồi hệ thần kinh", tool: "Nghỉ ngơi", sets: 1, reps: "Cả ngày", rest: "—", restSec: 0, main: false, note: "Uống đủ 2.8L nước và giữ bữa ăn nhẹ Purine." }
+        ]
+      }
+    };
+
+    let selectedWorkoutDow = null;
+    let restTimerInterval = null;
+    let restSecondsLeft = 0;
+
+    function getDayOfWeekFromISO(isoStr) {
+      const [y, m, d] = isoStr.split('-').map(Number);
+      return new Date(y, m - 1, d).getDay(); // 0 = Sunday, 1 = Monday ... 6 = Saturday
+    }
+
+    function ensureWorkoutRecord(dateStr, dow) {
+      const rec = ensureDayRecord(dateStr);
+      if (!rec.workout) {
+        rec.workout = {
+          dayOfWeek: dow,
+          logs: {}
+        };
+      }
+      if (!rec.workout.logs) rec.workout.logs = {};
+      return rec.workout;
+    }
+
+    function selectWorkoutDay(dow) {
+      selectedWorkoutDow = dow;
+      const rec = ensureDayRecord(currentDate);
+      if (!rec.workout) rec.workout = { dayOfWeek: dow, logs: {} };
+      else rec.workout.dayOfWeek = dow;
+      saveDatabase();
+      renderWorkoutTab();
+    }
+
+    function updateDailyWorkoutWidget() {
+      const naturalDow = getDayOfWeekFromISO(currentDate);
+      const rec = ensureDayRecord(currentDate);
+      const dow = (rec.workout && rec.workout.dayOfWeek !== undefined) ? rec.workout.dayOfWeek : naturalDow;
+      const plan = WORKOUT_PLAN[dow] || WORKOUT_PLAN[1];
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+
+      const totalEx = plan.exercises.length;
+      const doneEx = plan.exercises.filter(ex => wLog.logs[ex.id]?.done).length;
+      const pct = totalEx > 0 ? Math.round((doneEx / totalEx) * 100) : 0;
+
+      const badgeEl = document.getElementById('dailyWorkoutBadge');
+      const titleEl = document.getElementById('dailyWorkoutTitle');
+      const barEl = document.getElementById('dailyWorkoutBar');
+      const subEl = document.getElementById('dailyWorkoutSub');
+      const navBadge = document.getElementById('workoutNavBadge');
+
+      if (badgeEl) badgeEl.textContent = `${plan.dayName} • ${doneEx}/${totalEx}`;
+      if (titleEl) titleEl.textContent = plan.title;
+      if (barEl) barEl.style.width = `${pct}%`;
+      if (subEl) {
+        subEl.textContent = doneEx === totalEx
+          ? "Tuyệt vời! Bạn đã hoàn thành 100% lịch tập hôm nay."
+          : `${plan.goal}`;
+      }
+      if (navBadge) {
+        navBadge.textContent = plan.isRest ? "Nghỉ" : `${doneEx}/${totalEx}`;
+      }
+    }
+
+    function renderWorkoutTab() {
+      const naturalDow = getDayOfWeekFromISO(currentDate);
+      const rec = ensureDayRecord(currentDate);
+      if (selectedWorkoutDow === null) {
+        selectedWorkoutDow = (rec.workout && rec.workout.dayOfWeek !== undefined) ? rec.workout.dayOfWeek : naturalDow;
+      }
+      const dow = selectedWorkoutDow;
+      const plan = WORKOUT_PLAN[dow] || WORKOUT_PLAN[1];
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+
+      const dateTitle = document.getElementById('workoutDateTitle');
+      if (dateTitle) dateTitle.textContent = `${formatDisplayDate(currentDate)} (${WORKOUT_PLAN[naturalDow].dayName})`;
+
+      // Render 7 day pills (Mon -> Sun: 1, 2, 3, 4, 5, 6, 0)
+      const orderedDows = [1, 2, 3, 4, 5, 6, 0];
+      const pillsEl = document.getElementById('workoutDayPills');
+      if (pillsEl) {
+        pillsEl.innerHTML = orderedDows.map(d => {
+          const p = WORKOUT_PLAN[d];
+          const isSelected = d === dow;
+          const isNatural = d === naturalDow;
+          return `
+            <button onclick="selectWorkoutDay(${d})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              isSelected
+                ? 'bg-violet-600 text-white shadow-md shadow-violet-500/25'
+                : 'bg-slate-100 hover:bg-violet-50 text-slate-600 hover:text-violet-700'
+            }">
+              <span>${p.shortLabel}</span>
+              ${isNatural ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-amber-300' : 'bg-violet-500'}" title="Đúng thứ của ngày đang chọn"></span>` : ''}
+            </button>
+          `;
+        }).join('');
+      }
+
+      const dayTagEl = document.getElementById('sessionDayTag');
+      const titleEl = document.getElementById('sessionTitle');
+      const goalEl = document.getElementById('sessionGoal');
+      const progEl = document.getElementById('sessionProgressText');
+      if (dayTagEl) dayTagEl.textContent = plan.dayName;
+      if (titleEl) titleEl.textContent = plan.title;
+      if (goalEl) goalEl.textContent = plan.goal;
+
+      const doneCount = plan.exercises.filter(ex => wLog.logs[ex.id]?.done).length;
+      if (progEl) progEl.textContent = `${doneCount} / ${plan.exercises.length} bài`;
+
+      const listEl = document.getElementById('workoutExerciseList');
+      if (!listEl) return;
+
+      listEl.innerHTML = plan.exercises.map((ex, idx) => {
+        const entry = wLog.logs[ex.id] || { done: false, weight: "", sets: Array(ex.sets).fill(""), readyUp: false };
+        const setsArr = Array.from({ length: ex.sets }, (_, sIdx) => (entry.sets && entry.sets[sIdx] !== undefined) ? entry.sets[sIdx] : "");
+
+        return `
+          <div class="p-4 rounded-2xl border transition-all ${
+            entry.done
+              ? 'bg-emerald-50/60 border-emerald-300 shadow-xs'
+              : 'bg-white/90 border-slate-200/90 hover:border-violet-300 shadow-xs'
+          }">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="flex items-start gap-3 flex-1 min-w-[240px]">
+                <button onclick="toggleExerciseDone('${ex.id}')" class="mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition cursor-pointer flex-shrink-0 ${
+                  entry.done
+                    ? 'bg-emerald-500 border-emerald-500 text-white'
+                    : 'border-slate-300 hover:border-violet-500 bg-white text-transparent'
+                }">
+                  <i class="fa-solid fa-check text-xs"></i>
+                </button>
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-extrabold text-slate-400">#${idx + 1}</span>
+                    <h4 class="font-extrabold text-sm ${entry.done ? 'line-through text-slate-500' : 'text-slate-900'}">${ex.name}</h4>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">${ex.tool}</span>
+                    ${ex.main ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">Bài chính</span>' : ''}
+                    ${entry.readyUp ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold"><i class="fa-solid fa-arrow-trend-up"></i> Tăng +1–2.5kg tuần sau!</span>' : ''}
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1">
+                    Mục tiêu: <strong class="text-violet-700">${ex.sets} hiệp &times; ${ex.reps}</strong> • Nghỉ: <strong class="text-slate-700">${ex.rest}</strong>
+                    ${ex.restSec > 0 ? `<button onclick="startRestTimer(${ex.restSec})" class="ml-1.5 px-2 py-0.5 rounded-md bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold text-[10px] cursor-pointer"><i class="fa-solid fa-play"></i> Bấm nghỉ ${ex.rest}</button>` : ''}
+                  </p>
+                  <p class="text-[11px] text-slate-600 mt-1 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200/70">
+                    <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> ${ex.note}
+                  </p>
+                </div>
+              </div>
+
+              <!-- GHI CHÉP MỨC TẠ & SỐ REPS TỪNG HIỆP -->
+              ${!plan.isRest ? `
+              <div class="w-full lg:w-auto flex flex-wrap items-center gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80">
+                <div>
+                  <label class="block text-[9px] font-bold text-slate-500 uppercase mb-0.5">Mức tạ (kg)</label>
+                  <input type="text" value="${entry.weight || ''}" onchange="updateExerciseWeight('${ex.id}', this.value)" placeholder="VD: 40" class="w-16 px-2 py-1 text-xs font-extrabold text-center bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500">
+                </div>
+                <div class="flex items-center gap-1.5">
+                  ${setsArr.map((val, sIdx) => `
+                    <div>
+                      <label class="block text-[9px] font-bold text-slate-400 text-center mb-0.5">Hiệp ${sIdx + 1}</label>
+                      <input type="text" value="${val}" onchange="updateExerciseSet('${ex.id}', ${sIdx}, this.value)" placeholder="reps" class="w-12 px-1.5 py-1 text-xs font-bold text-center bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    </div>
+                  `).join('')}
+                </div>
+                <div class="pl-1">
+                  <label class="block text-[9px] font-bold text-slate-400 text-center mb-0.5">Tuần sau</label>
+                  <button onclick="toggleReadyIncrease('${ex.id}')" class="px-2 py-1 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
+                    entry.readyUp
+                      ? 'bg-emerald-600 text-white border-emerald-600'
+                      : 'bg-white text-slate-500 border-slate-300 hover:border-emerald-500 hover:text-emerald-600'
+                  }" title="Đánh dấu đã đạt max reps để tăng tạ tuần sau">
+                    +Tạ
+                  </button>
+                </div>
+              </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateDailyWorkoutWidget();
+    }
+
+    function toggleExerciseDone(exId) {
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      if (!wLog.logs[exId]) wLog.logs[exId] = { done: false, weight: "", sets: [], readyUp: false };
+      wLog.logs[exId].done = !wLog.logs[exId].done;
+      saveDatabase();
+      renderWorkoutTab();
+      if (wLog.logs[exId].done) showToast('Đã hoàn thành bài tập!', 'success');
+    }
+
+    function updateExerciseWeight(exId, val) {
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      if (!wLog.logs[exId]) wLog.logs[exId] = { done: false, weight: "", sets: [], readyUp: false };
+      wLog.logs[exId].weight = val.trim();
+      saveDatabase();
+    }
+
+    function updateExerciseSet(exId, setIdx, val) {
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      if (!wLog.logs[exId]) wLog.logs[exId] = { done: false, weight: "", sets: [], readyUp: false };
+      if (!wLog.logs[exId].sets) wLog.logs[exId].sets = [];
+      wLog.logs[exId].sets[setIdx] = val.trim();
+      if (val.trim() !== "") wLog.logs[exId].done = true;
+      saveDatabase();
+      renderWorkoutTab();
+    }
+
+    function toggleReadyIncrease(exId) {
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      if (!wLog.logs[exId]) wLog.logs[exId] = { done: false, weight: "", sets: [], readyUp: false };
+      wLog.logs[exId].readyUp = !wLog.logs[exId].readyUp;
+      saveDatabase();
+      renderWorkoutTab();
+    }
+
+    function markAllExercisesDone() {
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const plan = WORKOUT_PLAN[dow];
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      plan.exercises.forEach(ex => {
+        if (!wLog.logs[ex.id]) wLog.logs[ex.id] = { done: true, weight: "", sets: [], readyUp: false };
+        else wLog.logs[ex.id].done = true;
+      });
+      saveDatabase();
+      renderWorkoutTab();
+      showToast(`Chúc mừng! Đã hoàn thành toàn bộ buổi ${plan.dayName}!`, 'success');
+    }
+
+    function copyLastWeekWorkout() {
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const prevIso = shiftISODate(currentDate, -7);
+      const prevRec = appDatabase.history[prevIso];
+      if (!prevRec || !prevRec.workout || !prevRec.workout.logs) {
+        return alert(`Chưa có dữ liệu buổi tập ngày ${formatDisplayDate(prevIso)} (7 ngày trước) để nạp!`);
+      }
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      Object.keys(prevRec.workout.logs).forEach(exId => {
+        const oldEntry = prevRec.workout.logs[exId];
+        wLog.logs[exId] = {
+          done: false,
+          weight: oldEntry.weight || "",
+          sets: [...(oldEntry.sets || [])],
+          readyUp: false
+        };
+      });
+      saveDatabase();
+      renderWorkoutTab();
+      showToast(`Đã nạp mức tạ từ ngày ${formatDisplayDate(prevIso)}!`, 'success');
+    }
+
+    function startRestTimer(seconds) {
+      stopRestTimer();
+      restSecondsLeft = seconds;
+      updateRestTimerDisplay();
+      restTimerInterval = setInterval(() => {
+        restSecondsLeft--;
+        updateRestTimerDisplay();
+        if (restSecondsLeft <= 0) {
+          stopRestTimer();
+          showToast('Hết giờ nghỉ! Vào hiệp tiếp theo thôi 💪', 'warn');
+        }
+      }, 1000);
+    }
+
+    function stopRestTimer() {
+      if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+      }
+      restSecondsLeft = 0;
+      updateRestTimerDisplay();
+    }
+
+    function updateRestTimerDisplay() {
+      const el = document.getElementById('restTimerDisplay');
+      if (!el) return;
+      const mins = String(Math.floor(restSecondsLeft / 60)).padStart(2, '0');
+      const secs = String(restSecondsLeft % 60).padStart(2, '0');
+      el.textContent = `${mins}:${secs}`;
+      el.className = restSecondsLeft > 0 && restSecondsLeft <= 10
+        ? "font-mono-code font-extrabold text-base text-amber-400 animate-pulse min-w-[48px] text-center"
+        : "font-mono-code font-extrabold text-base text-emerald-400 min-w-[48px] text-center";
+    }
+
+    function loadDateState(dateStr) {
+      currentDate = dateStr;
+      const datePicker = document.getElementById('activeDatePicker');
+      if(datePicker) datePicker.value = dateStr;
+      const mDatePicker = document.getElementById('mobileDatePicker');
+      if(mDatePicker) mDatePicker.value = dateStr;
+
+      const titleEl = document.getElementById('displayDateTitle');
+      if(titleEl) {
+        const isToday = dateStr === getTodayISO();
+        titleEl.textContent = isToday ? `Hôm nay (${formatDisplayDate(dateStr)})` : formatDisplayDate(dateStr);
+      }
+
+      const rec = ensureDayRecord(dateStr);
+      renderMealLogs();
+      updateWaterUI();
+
+      const waistInputEl = document.getElementById('waistInput');
+      if (waistInputEl) waistInputEl.value = rec.waist || "70";
+      calculateWaistRisk(false);
+
+      selectedWorkoutDow = (rec.workout && rec.workout.dayOfWeek !== undefined)
+        ? rec.workout.dayOfWeek
+        : getDayOfWeekFromISO(dateStr);
+      updateDailyWorkoutWidget();
+      const workoutTabEl = document.getElementById('tab-workout');
+      if (workoutTabEl && !workoutTabEl.classList.contains('hidden')) {
+        renderWorkoutTab();
+      }
+    }
+
+    function onDatePickerChange() {
+      const val = document.getElementById('activeDatePicker').value;
+      if (val) loadDateState(val);
+    }
+
+    function onMobileDatePickerChange() {
+      const val = document.getElementById('mobileDatePicker').value;
+      if (val) loadDateState(val);
+    }
+
+    function shiftISODate(isoStr, deltaDays) {
+      const [y, m, d] = isoStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d + deltaDays);
+      const yy = dt.getFullYear();
+      const mm = String(dt.getMonth() + 1).padStart(2, '0');
+      const dd = String(dt.getDate()).padStart(2, '0');
+      return `${yy}-${mm}-${dd}`;
+    }
+
+    function changeDate(deltaDays) {
+      loadDateState(shiftISODate(currentDate, deltaDays));
+    }
+
+    function jumpToToday() {
+      loadDateState(getTodayISO());
+    }
+
+    function copyYesterdayMenu() {
+      const yestIso = shiftISODate(currentDate, -1);
+      const yestRec = appDatabase.history[yestIso];
+
+      if (!yestRec || Object.values(yestRec.meals).every(arr => arr.length === 0)) {
+        return alert(`Không tìm thấy thực đơn của ngày ${formatDisplayDate(yestIso)}!`);
+      }
+
+      if (confirm(`Sao chép thực đơn từ ngày ${formatDisplayDate(yestIso)} sang ngày ${formatDisplayDate(currentDate)}?`)) {
+        const rec = ensureDayRecord(currentDate);
+        rec.meals = JSON.parse(JSON.stringify(yestRec.meals));
+        saveDatabase();
+        renderMealLogs();
+      }
+    }
+
+    function isDesktopViewport() {
+      return window.innerWidth >= 1024;
+    }
+
+    function closeMobileSidebar() {
+      const sidebar = document.getElementById('leftSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sidebar && !isDesktopViewport()) {
+        sidebar.classList.add('hidden');
+      }
+      if (backdrop) backdrop.classList.add('hidden');
+    }
+
+    function applySidebarState(isHidden) {
+      const sidebar = document.getElementById('leftSidebar');
+      const floatBtn = document.getElementById('floatingSidebarBtn');
+      const headerBtn = document.getElementById('btnToggleSidebar');
+      const headerIcon = document.getElementById('sidebarToggleIcon');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (!sidebar) return;
+
+      if (isDesktopViewport()) {
+        if (backdrop) backdrop.classList.add('hidden');
+        if (isHidden) {
+          sidebar.classList.add('hidden');
+          sidebar.classList.remove('lg:block');
+          if (floatBtn) { floatBtn.classList.remove('hidden'); floatBtn.classList.add('lg:flex'); }
+          if (headerIcon) headerIcon.className = 'fa-solid fa-bars text-sm';
+          if (headerBtn) headerBtn.title = 'Mở thanh điều hướng trái';
+        } else {
+          sidebar.classList.remove('hidden');
+          sidebar.classList.add('lg:block');
+          if (floatBtn) { floatBtn.classList.add('hidden'); floatBtn.classList.remove('lg:flex'); }
+          if (headerIcon) headerIcon.className = 'fa-solid fa-bars-staggered text-sm';
+          if (headerBtn) headerBtn.title = 'Ẩn thanh điều hướng trái';
+        }
+      } else {
+        // Mobile & Tablet (< 1024px): drawer mode
+        if (floatBtn) { floatBtn.classList.add('hidden'); floatBtn.classList.remove('lg:flex'); }
+        if (isHidden) {
+          sidebar.classList.add('hidden');
+          if (backdrop) backdrop.classList.add('hidden');
+          if (headerIcon) headerIcon.className = 'fa-solid fa-bars text-sm';
+        } else {
+          sidebar.classList.remove('hidden');
+          if (backdrop) backdrop.classList.remove('hidden');
+          if (headerIcon) headerIcon.className = 'fa-solid fa-xmark text-sm';
+        }
+      }
+    }
+
+    function toggleLeftSidebar() {
+      const sidebar = document.getElementById('leftSidebar');
+      if (!sidebar) return;
+      const willHide = !sidebar.classList.contains('hidden');
+      if (isDesktopViewport()) {
+        localStorage.setItem('healthtrack_sidebar_hidden', willHide ? '1' : '0');
+      }
+      applySidebarState(willHide);
+    }
+
+    window.addEventListener('resize', () => {
+      if (isDesktopViewport()) {
+        applySidebarState(localStorage.getItem('healthtrack_sidebar_hidden') === '1');
+      } else {
+        closeMobileSidebar();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      applySidebarState(localStorage.getItem('healthtrack_sidebar_hidden') === '1');
+      updateCustomFoodBadge();
+      renderQuickPills();
+      renderFoodTable(getAllFoods());
+      updateHistoryBadge();
+      loadDateState(currentDate);
+
+      if (githubConfig) {
+        await pullFromGithub(false);
+      }
+    });
+
+    function renderFoodTable(list) {
+      const tbody = document.getElementById('foodTableBody');
+      if(!tbody) return;
+      tbody.innerHTML = list.map((item) => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-3 font-semibold text-slate-800">
+            ${item.name}
+            ${item.custom ? '<span class="ml-1.5 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold">Custom</span>' : '<span class="ml-1.5 text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-bold">Mặc định</span>'}
+          </td>
+          <td class="p-3 text-[11px] text-slate-400">${item.keys.slice(0, 2).join(', ')}</td>
+          <td class="p-3 font-bold text-slate-900">${item.cal} kcal</td>
+          <td class="p-3">${item.carb}g</td>
+          <td class="p-3">${item.pro}g</td>
+          <td class="p-3">${item.fat}g</td>
+          <td class="p-3 font-semibold text-emerald-700">${item.fiber || 0}g</td>
+          <td class="p-3 font-extrabold ${item.purine > 100 ? 'text-red-600' : 'text-emerald-600'}">${item.purine} mg</td>
+          <td class="p-3 text-right space-x-1">
+            <button onclick="quickInsertById('${item.id}'); switchTab('tab-daily');" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-bold transition cursor-pointer">
+              + Thêm
+            </button>
+            <button onclick="openEditFoodModal('${item.id}')" class="px-2.5 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl text-[11px] font-bold transition cursor-pointer" title="Chỉnh sửa thông số">
+              <i class="fa-solid fa-pen"></i> Sửa
+            </button>
+            <button onclick="togglePinFood('${item.id}')" class="px-2 py-1.5 ${item.pinned ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-400'} rounded-xl text-[11px] transition cursor-pointer" title="Ghim chọn nhanh">
+              <i class="fa-solid fa-thumbtack"></i>
+            </button>
+            <button onclick="deleteCustomFood('${item.id}')" class="px-2 py-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl text-[11px] transition cursor-pointer" title="Xóa món">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterFoodLibrary() {
+      const searchInput = document.getElementById('foodSearchInput');
+      if(!searchInput) return;
+      const q = searchInput.value.toLowerCase();
+      renderFoodTable(getAllFoods().filter(f => f.name.toLowerCase().includes(q) || f.keys.some(k => k.includes(q))));
+    }
+    function filterCustomOnly() {
+      renderFoodTable(appDatabase.customFoods);
+    }
+
+    function computeDayTotals(mealsObj) {
+      let cal = 0, carb = 0, pro = 0, fat = 0, fiber = 0, purine = 0;
+      ['breakfast', 'lunch', 'dinner', 'snack'].forEach(slot => {
+        (mealsObj[slot] || []).forEach(it => {
+          cal += it.cal; carb += it.carb; pro += it.pro; fat += it.fat; fiber += (it.fiber || 0); purine += it.purine;
+        });
+      });
+      return { cal, carb, pro, fat, fiber, purine };
+    }
+
+    function renderMealLogs() {
+      const rec = ensureDayRecord(currentDate);
+      const slots = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+      slots.forEach(slot => {
+        const container = document.getElementById('list' + slot.charAt(0).toUpperCase() + slot.slice(1));
+        const calLabel = document.getElementById('cal' + slot.charAt(0).toUpperCase() + slot.slice(1));
+        if(!container || !calLabel) return;
+
+        const items = rec.meals[slot] || [];
+        let slotCal = 0;
+
+        if (items.length === 0) {
+          container.innerHTML = `<span class="text-xs text-slate-400 italic">Chưa có món</span>`;
+        } else {
+          container.innerHTML = items.map((it, i) => {
+            slotCal += it.cal;
+            const isPurineHigh = it.purine > 100;
+            return `
+              <div class="meal-item-card animate-pop-in group flex items-start justify-between bg-white hover:bg-blue-50/60 p-2.5 rounded-xl border border-slate-200/80 hover:border-blue-300 shadow-xs gap-2 transition cursor-default">
+                <span class="font-semibold text-slate-700 group-hover:text-blue-900 leading-snug break-words flex-1 min-w-0">${it.name}</span>
+                <div class="flex items-center gap-1 flex-shrink-0 mt-0.5">
+                  <span class="text-[11px] text-blue-600 font-bold">${Math.round(it.cal)}k</span>
+                  <button onclick="editMealItemWeight('${slot}', ${i})" class="w-5 h-5 rounded-lg hover:bg-blue-100 text-slate-400 hover:text-blue-600 flex items-center justify-center text-[11px] transition cursor-pointer" title="Sửa trọng lượng"><i class="fa-solid fa-pen"></i></button>
+                  <button onclick="removeFoodItem('${slot}', ${i})" class="w-5 h-5 rounded-lg hover:bg-red-100 text-slate-400 hover:text-red-600 flex items-center justify-center text-xs transition cursor-pointer" title="Xóa món này">&times;</button>
+                </div>
+
+                <!-- POPOVER CHI TIẾT DINH DƯỠNG KHI RÊ CHUỘT (HOVER) -->
+                <div class="nutrient-tooltip absolute left-0 right-0 bottom-full mb-2 z-50 bg-slate-900/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-xl border border-slate-700/80 text-[11px]">
+                  <div class="font-bold text-cyan-300 border-b border-slate-700/80 pb-1.5 mb-2 leading-snug">
+                    ${it.name}
+                  </div>
+                  <div class="grid grid-cols-2 gap-x-3 gap-y-1.5">
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Năng lượng:</span>
+                      <strong class="text-white">${Math.round(it.cal)} kcal</strong>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Purine:</span>
+                      <strong class="${isPurineHigh ? 'text-red-400' : 'text-emerald-400'}">${Math.round(it.purine)} mg</strong>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Tinh bột (C):</span>
+                      <strong class="text-amber-300">${it.carb}g</strong>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Chất đạm (P):</span>
+                      <strong class="text-sky-300">${it.pro}g</strong>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Chất béo (F):</span>
+                      <strong class="text-purple-300">${it.fat}g</strong>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Chất xơ:</span>
+                      <strong class="text-emerald-300">${it.fiber || 0}g</strong>
+                    </div>
+                  </div>
+                  <div class="absolute left-6 -bottom-1.5 w-3 h-3 bg-slate-900 rotate-45 border-r border-b border-slate-700/80"></div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+        calLabel.textContent = Math.round(slotCal) + " kcal";
+      });
+
+      const totals = computeDayTotals(rec.meals);
+      const burned = Math.max(0, Number(rec.burnedCal) || 0);
+      const intakeCal = Math.round(totals.cal);
+      const netCal = Math.max(0, intakeCal - burned);
+      totals.burned = burned;
+      totals.netCal = netCal;
+
+      const sumCalEl = document.getElementById('sumCalories');
+      const calInEl = document.getElementById('calInVal');
+      const calOutEl = document.getElementById('calOutVal');
+      const sumCarbEl = document.getElementById('sumCarbs');
+      const sumProEl = document.getElementById('sumProtein');
+      const sumFatEl = document.getElementById('sumFat');
+      const sumFiberEl = document.getElementById('sumFiber');
+      const sumPurineEl = document.getElementById('sumPurine');
+
+      if (sumCalEl) sumCalEl.textContent = netCal;
+      if (calInEl) calInEl.textContent = intakeCal;
+      if (calOutEl) calOutEl.textContent = burned;
+      if (sumCarbEl) sumCarbEl.textContent = Math.round(totals.carb * 10) / 10;
+      if (sumProEl) sumProEl.textContent = Math.round(totals.pro * 10) / 10;
+      if (sumFatEl) sumFatEl.textContent = Math.round(totals.fat * 10) / 10;
+      if (sumFiberEl) sumFiberEl.textContent = Math.round(totals.fiber * 10) / 10;
+      if (sumPurineEl) sumPurineEl.textContent = Math.round(totals.purine);
+
+      // Cập nhật thẻ Đồng hồ Calo
+      const burnedInputEl = document.getElementById('burnedCalInput');
+      if (burnedInputEl && document.activeElement !== burnedInputEl) {
+        burnedInputEl.value = burned > 0 ? burned : "";
+      }
+      const cardIntake = document.getElementById('cardIntakeCal');
+      const cardBurned = document.getElementById('cardBurnedCal');
+      const cardNet = document.getElementById('cardNetCal');
+      const netBadge = document.getElementById('netCalBadge');
+      if (cardIntake) cardIntake.textContent = intakeCal.toLocaleString();
+      if (cardBurned) cardBurned.textContent = `-${burned.toLocaleString()}`;
+      if (cardNet) cardNet.textContent = netCal.toLocaleString();
+      if (netBadge) netBadge.textContent = `Net: ${netCal.toLocaleString()} / 1,750 kcal`;
+
+      // Cập nhật vòng tròn tiến độ siêu đáng yêu & huy hiệu % cho từng chỉ số (Dùng Net Calo!)
+      const RING_CIRCUMFERENCE = 314.16;
+      const setRingProgress = (ringId, badgeId, currentVal, targetVal) => {
+        const ring = document.getElementById(ringId);
+        const badge = document.getElementById(badgeId);
+        const pct = Math.round((currentVal / targetVal) * 100);
+        if (badge) badge.textContent = `${pct}%`;
+        if (!ring) return;
+        const ratio = Math.min(1, Math.max(0, currentVal / targetVal));
+        ring.style.strokeDashoffset = (RING_CIRCUMFERENCE * (1 - ratio)).toFixed(2);
+      };
+
+      setRingProgress('calProgressRing', 'calPctBadge', netCal, 1750);
+      setRingProgress('carbProgressRing', 'carbPctBadge', totals.carb, 200);
+      setRingProgress('proProgressRing', 'proPctBadge', totals.pro, 75);
+      setRingProgress('fatProgressRing', 'fatPctBadge', totals.fat, 45);
+      setRingProgress('fiberProgressRing', 'fiberPctBadge', totals.fiber, 25);
+      setRingProgress('purineProgressRing', 'purinePctBadge', totals.purine, 200);
+
+      const purineCard = document.getElementById('purineRingCard');
+      if (purineCard) {
+        if (totals.purine >= 200) purineCard.classList.add('ring-alert-pulse', 'border-red-400');
+        else purineCard.classList.remove('ring-alert-pulse', 'border-red-400');
+      }
+
+      updateHealthAlignmentBox(totals);
+    }
+
+    function updateHealthAlignmentBox(totals) {
+      const box = document.getElementById('healthAlignmentBox');
+      const iconBox = document.getElementById('evalIconBox');
+      const titleEl = document.getElementById('evalTitle');
+      const descEl = document.getElementById('evalDesc');
+      if (!box || !iconBox || !titleEl || !descEl) return;
+
+      const warnings = [];
+      if (totals.purine >= 200) {
+        warnings.push(`Purine đạt ${Math.round(totals.purine)}mg (vượt ngưỡng 200mg, tăng nguy cơ kết tinh Acid Uric 8.5 mg/dL)`);
+      }
+      if (totals.carb > 200) {
+        warnings.push(`Tinh bột ${Math.round(totals.carb)}g (>200g, dễ làm tăng Triglyceride 231 mg/dL)`);
+      }
+      if (totals.fat > 45) {
+        warnings.push(`Chất béo ${Math.round(totals.fat)}g (>45g, cần giảm để bảo vệ gan & mỡ máu)`);
+      }
+      const evalCal = totals.netCal !== undefined ? totals.netCal : Math.round(totals.cal);
+      if (evalCal > 1750) {
+        warnings.push(`Calo thực tế (Net) đạt ${evalCal} kcal (vượt mục tiêu 1,750 kcal sau khi trừ ${totals.burned || 0} kcal tiêu hao)`);
+      }
+
+      if (totals.purine >= 200) {
+        box.className = "mt-4 p-3.5 rounded-2xl border border-red-200 bg-red-50/80 flex items-center gap-3.5 transition-all";
+        iconBox.className = "w-9 h-9 rounded-xl bg-red-500 text-white flex items-center justify-center flex-shrink-0 shadow-sm";
+        iconBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        titleEl.className = "font-bold text-red-900 text-sm";
+        titleEl.textContent = "Cảnh báo Đỏ: Vượt ngưỡng Purine an toàn cho Gout!";
+        descEl.className = "text-red-800 mt-0.5";
+        descEl.textContent = warnings.join(" • ") + ". Hãy uống nhiều nước (>2.8L) để tăng đào thải urat.";
+      } else if (warnings.length > 0) {
+        box.className = "mt-4 p-3.5 rounded-2xl border border-amber-200 bg-amber-50/80 flex items-center gap-3.5 transition-all";
+        iconBox.className = "w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-sm";
+        iconBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+        titleEl.className = "font-bold text-amber-900 text-sm";
+        titleEl.textContent = "Lưu ý điều chỉnh chỉ số chuyển hóa";
+        descEl.className = "text-amber-800 mt-0.5";
+        descEl.textContent = warnings.join(" • ") + ".";
+      } else if (totals.cal === 0) {
+        box.className = "mt-4 p-3.5 rounded-2xl border border-slate-200 bg-slate-50/80 flex items-center gap-3.5 transition-all";
+        iconBox.className = "w-9 h-9 rounded-xl bg-slate-400 text-white flex items-center justify-center flex-shrink-0 shadow-sm";
+        iconBox.innerHTML = '<i class="fa-solid fa-utensils"></i>';
+        titleEl.className = "font-bold text-slate-800 text-sm";
+        titleEl.textContent = "Chưa ghi nhận thực đơn cho ngày này";
+        descEl.className = "text-slate-600 mt-0.5";
+        descEl.textContent = "Hãy thêm món ăn để hệ thống tự động đánh giá mức độ an toàn với Acid Uric và Triglyceride.";
+      } else {
+        const fiberNote = totals.fiber < 25 ? ` (Gợi ý bổ sung thêm chất xơ: hiện đạt ${Math.round(totals.fiber * 10)/10}/25g)` : " Lượng chất xơ rất tốt!";
+        box.className = "mt-4 p-3.5 rounded-2xl border border-emerald-200 bg-emerald-50/70 flex items-center gap-3.5 transition-all";
+        iconBox.className = "w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center flex-shrink-0 shadow-sm";
+        iconBox.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+        titleEl.className = "font-bold text-emerald-900 text-sm";
+        titleEl.textContent = "Thực đơn hiện tại rất cân đối & an toàn";
+        descEl.className = "text-emerald-800 mt-0.5";
+        descEl.textContent = `Purine (${Math.round(totals.purine)}mg), tinh bột (${Math.round(totals.carb)}g) và chất béo (${Math.round(totals.fat)}g) đều nằm trong ngưỡng kiểm soát Acid Uric & Triglyceride.${fiberNote}`;
+      }
+    }
+
+    function editMealItemWeight(slot, index) {
+      const rec = ensureDayRecord(currentDate);
+      const item = rec.meals[slot][index];
+      const isPart = item.isPart || item.name.includes('phần');
+      const existingQtyMatch = item.name.match(/\(([\d.]+)\s*(?:g|ml|phần)/i);
+      const defaultPromptVal = existingQtyMatch ? existingQtyMatch[1] : (isPart ? "1" : "100");
+      const unitLabel = isPart ? "số phần" : "trọng lượng (g/ml)";
+
+      const currentInput = prompt(`Nhập ${unitLabel} mới cho món "${item.name}":`, defaultPromptVal);
+      if (currentInput === null) return;
+
+      const newQty = parseFloat(currentInput);
+      if (isNaN(newQty) || newQty <= 0) {
+        return alert("Vui lòng nhập một con số hợp lệ!");
+      }
+
+      if (item.baseCal !== undefined) {
+        const factor = isPart ? newQty : (newQty / 100);
+        item.cal = Math.round(item.baseCal * factor);
+        item.carb = Math.round(item.baseCarb * factor * 10) / 10;
+        item.pro = Math.round(item.basePro * factor * 10) / 10;
+        item.fat = Math.round(item.baseFat * factor * 10) / 10;
+        item.fiber = Math.round((item.baseFiber || 0) * factor * 10) / 10;
+        item.purine = Math.round(item.basePurine * factor);
+        item.factor = factor;
+
+        const cleanBaseName = item.name.replace(/\s*\([\d.]+\s*(?:g|ml|phần|g\/ml).*?\)/i, '').trim();
+        const unitSuffix = item.name.includes('ml') ? 'ml' : (isPart ? ' phần' : 'g');
+        item.name = `${cleanBaseName} (${newQty}${unitSuffix})`;
+      } else {
+        const oldCal = item.cal || 100;
+        const ratio = newQty / 100;
+        item.cal = Math.round(oldCal * ratio);
+        item.carb = Math.round((item.carb || 10) * ratio * 10) / 10;
+        item.pro = Math.round((item.pro || 5) * ratio * 10) / 10;
+        item.fat = Math.round((item.fat || 2) * ratio * 10) / 10;
+        item.fiber = Math.round((item.fiber || 2) * ratio * 10) / 10;
+        item.purine = Math.round((item.purine || 10) * ratio);
+        item.name = `${item.name.split('(')[0].trim()} (${newQty}g)`;
+      }
+
+      saveDatabase();
+      renderMealLogs();
+    }
+
+    function removeFoodItem(slot, index) {
+      const rec = ensureDayRecord(currentDate);
+      rec.meals[slot].splice(index, 1);
+      saveDatabase();
+      renderMealLogs();
+    }
+
+    function resetDayLog() {
+      if (confirm(`Xóa toàn bộ thực đơn của ngày ${formatDisplayDate(currentDate)}?`)) {
+        const rec = ensureDayRecord(currentDate);
+        rec.meals = { breakfast: [], lunch: [], dinner: [], snack: [] };
+        saveDatabase();
+        renderMealLogs();
+      }
+    }
+
+    async function analyzeFoodWithAI() {
+      const inputEl = document.getElementById('aiFoodInput');
+      const slotEl = document.getElementById('mealSlotSelect');
+      const errNotice = document.getElementById('apiErrorNotice');
+      const errText = document.getElementById('apiErrorText');
+      if(errNotice) errNotice.classList.add('hidden');
+      const suggestDropdown = document.getElementById('quickSuggestDropdown');
+      if(suggestDropdown) suggestDropdown.classList.add('hidden');
+
+      if (!inputEl) return;
+      const input = inputEl.value.trim();
+      const slot = slotEl ? slotEl.value : 'lunch';
+
+      if (!input) return alert("Vui lòng nhập tên món ăn hoặc số calo (+/-)!");
+
+      const directCalMatch = input.match(/^([+-]?\d+)(?:\s*kcal)?(?:\s+(.*))?$/i);
+      if (directCalMatch && (input.includes('+') || input.includes('-') || !isNaN(input))) {
+        const calVal = parseInt(directCalMatch[1]);
+        const customName = directCalMatch[2] ? directCalMatch[2].trim() : (calVal < 0 ? "Điều chỉnh giảm calo" : "Nhập calo thủ công");
+        const rec = ensureDayRecord(currentDate);
+        rec.meals[slot].push({
+          name: customName,
+          cal: calVal,
+          carb: 0, pro: 0, fat: 0, fiber: 0, purine: 0,
+          baseCal: calVal, baseCarb: 0, basePro: 0, baseFat: 0, baseFiber: 0, basePurine: 0,
+          safe: true
+        });
+        inputEl.value = "";
+        saveDatabase();
+        renderMealLogs();
+        return;
+      }
+
+      const parts = input.split(/[,;+]| và /i).map(p => p.trim()).filter(p => p.length > 0);
+      const unknownParts = [];
+      const rec = ensureDayRecord(currentDate);
+      const allFoods = getAllFoods();
+
+      parts.forEach(part => {
+        const lower = part.toLowerCase();
+        const gramOrMlMatch = lower.match(/(\d+(?:\.\d+)?)\s*(g|gr|gam|ml)(?=\s|$|,)/);
+        const unitMatch = lower.match(/(\d+(?:\.\d+)?)\s*(quả|trái|chén|bát|củ|hộp|hủ|hũ|ly|cốc|phần)(?=\s|$|,)/);
+
+        let weight = 100;
+        let explicitQty = 1;
+        let hasUnit = false;
+
+        if (gramOrMlMatch) {
+          weight = parseFloat(gramOrMlMatch[1]);
+        } else if (unitMatch) {
+          hasUnit = true;
+          explicitQty = parseFloat(unitMatch[1]);
+          if (lower.includes("chuối")) weight = explicitQty * 110;
+          else if (lower.includes("trứng")) weight = explicitQty * 50;
+          else if (lower.includes("sữa chua")) weight = explicitQty * 100;
+          else if (lower.includes("sữa")) weight = explicitQty * 180;
+          else if (lower.includes("khoai")) weight = explicitQty * 150;
+          else weight = explicitQty * 100;
+        }
+
+        let matchedFood = null;
+        let bestKeyLen = 0;
+        allFoods.forEach(f => {
+          f.keys.forEach(k => {
+            if (lower.includes(k) && k.length > bestKeyLen) {
+              bestKeyLen = k.length;
+              matchedFood = f;
+            }
+          });
+        });
+
+        if (matchedFood) {
+          const factor = matchedFood.unitType === '1part' ? (hasUnit ? explicitQty : 1) : (weight / 100);
+          rec.meals[slot].push({
+            name: part,
+            cal: Math.round(matchedFood.cal * factor),
+            carb: Math.round(matchedFood.carb * factor * 10) / 10,
+            pro: Math.round(matchedFood.pro * factor * 10) / 10,
+            fat: Math.round(matchedFood.fat * factor * 10) / 10,
+            fiber: Math.round((matchedFood.fiber || 0) * factor * 10) / 10,
+            purine: Math.round(matchedFood.purine * factor),
+            baseCal: matchedFood.cal,
+            baseCarb: matchedFood.carb,
+            basePro: matchedFood.pro,
+            baseFat: matchedFood.fat,
+            baseFiber: matchedFood.fiber || 0,
+            basePurine: matchedFood.purine,
+            safe: matchedFood.purine <= 150
+          });
+        } else {
+          unknownParts.push({ raw: part, weight });
+        }
+      });
+
+      saveDatabase();
+      renderMealLogs();
+
+      if (unknownParts.length === 0) {
+        inputEl.value = "";
+        return;
+      }
+
+      const btn = document.getElementById('btnAnalyze');
+      if(btn) {
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tra AI...`;
+        btn.disabled = true;
+      }
+
+      const geminiKey = localStorage.getItem('gemini_api_key');
+      const models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+      const queryText = unknownParts.map(u => u.raw).join(', ');
+
+      try {
+        if (geminiKey) {
+          let successData = null;
+          let lastError = "";
+
+          const prompt = `Phân tích dinh dưỡng chuẩn xác cho danh sách thực phẩm Việt Nam sau: "${queryText}".
+Trả về DUY NHẤT một mảng JSON thuần (không markdown) chứa từng món theo định dạng:
+[{"name":"tên món kèm khối lượng","cal":150,"carb":20,"pro":10,"fat":3,"fiber":3,"purine":25,"safe":true}]`;
+
+          for (const modelName of models) {
+            try {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 7000);
+
+              const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+              });
+
+              clearTimeout(timeoutId);
+              const data = await res.json();
+
+              if (res.status === 503 || (data.error && data.error.code === 503)) {
+                lastError = `Model ${modelName} quá tải (503)`;
+                continue;
+              }
+              if (data.error) throw new Error(data.error.message);
+
+              successData = data;
+              break;
+            } catch (err) {
+              lastError = err.name === 'AbortError' ? `Timeout ${modelName}` : err.message;
+            }
+          }
+
+          if (!successData) throw new Error(lastError || "Server bận");
+
+          let raw = successData.candidates[0].content.parts[0].text.trim().replace(/```json/g, '').replace(/```/g, '').trim();
+          const items = JSON.parse(raw);
+          const itemArr = Array.isArray(items) ? items : [items];
+
+          itemArr.forEach(item => {
+            const wMatch = (item.name || '').match(/(\d+(?:\.\d+)?)\s*(g|gr|gam|ml)/i);
+            const origQty = wMatch ? parseFloat(wMatch[1]) : 100;
+            const normFactor = wMatch ? (origQty / 100) : 1;
+            const isPart = !wMatch;
+            const fVal = item.fiber || 0;
+            rec.meals[slot].push({
+              ...item,
+              fiber: fVal,
+              isPart: isPart,
+              baseCal: item.cal / normFactor,
+              baseCarb: item.carb / normFactor,
+              basePro: item.pro / normFactor,
+              baseFat: item.fat / normFactor,
+              baseFiber: fVal / normFactor,
+              basePurine: item.purine / normFactor,
+              factor: normFactor
+            });
+          });
+
+          saveDatabase();
+          renderMealLogs();
+          inputEl.value = "";
+        } else {
+          throw new Error("Chưa cấu hình AI Key");
+        }
+      } catch (e) {
+        unknownParts.forEach(u => {
+          const factor = u.weight / 100;
+          rec.meals[slot].push({
+            name: u.raw,
+            cal: Math.round(120 * factor),
+            carb: Math.round(15 * factor * 10) / 10,
+            pro: Math.round(5 * factor * 10) / 10,
+            fat: Math.round(3 * factor * 10) / 10,
+            fiber: Math.round(2 * factor * 10) / 10,
+            purine: Math.round(15 * factor),
+            baseCal: 120, baseCarb: 15, basePro: 5, baseFat: 3, baseFiber: 2, basePurine: 15,
+            safe: true
+          });
+        });
+        saveDatabase();
+        renderMealLogs();
+        inputEl.value = "";
+        if(errText) errText.textContent = `Món "${queryText}" chưa có trong kho nên tạm ước tính. Hãy bấm "+ Thêm Món" để lưu thông số chuẩn!`;
+        if(errNotice) errNotice.classList.remove('hidden');
+      } finally {
+        if(btn) {
+          btn.innerHTML = `<i class="fa-solid fa-plus"></i> Tính & Thêm Món`;
+          btn.disabled = false;
+        }
+      }
+    }
+
+    function calculateWaistRisk(shouldSave = true) {
+      const waistInputEl = document.getElementById('waistInput');
+      if (!waistInputEl) return;
+      const waist = parseFloat(waistInputEl.value);
+      if (!waist || waist < 40) return;
+
+      if (shouldSave) {
+        const rec = ensureDayRecord(currentDate);
+        rec.waist = waist;
+        saveDatabase();
+      }
+
+      const ratio = (waist / 158).toFixed(2);
+      const whtrValEl = document.getElementById('whtrValue');
+      const whtrLabelEl = document.getElementById('whtrLabel');
+
+      if(whtrValEl) whtrValEl.textContent = ratio;
+      if(whtrLabelEl) {
+        if (ratio <= 0.49) { whtrLabelEl.textContent = "Chuẩn & An toàn"; whtrLabelEl.className = "font-bold text-emerald-600"; }
+        else if (ratio <= 0.59) { whtrLabelEl.textContent = "Béo bụng (Triglyceride tăng)"; whtrLabelEl.className = "font-bold text-amber-600"; }
+        else { whtrLabelEl.textContent = "Mỡ nội tạng báo động"; whtrLabelEl.className = "font-bold text-red-600"; }
+      }
+
+      const headerWaist = document.getElementById('headerWaistDisplay');
+      const headerWhtr = document.getElementById('headerWhtrDisplay');
+      if (headerWaist) headerWaist.textContent = waist + "cm";
+      if (headerWhtr) headerWhtr.textContent = ratio;
+    }
+
+    function saveBurnedCalories() {
+      const inputEl = document.getElementById('burnedCalInput');
+      if (!inputEl) return;
+      const val = Math.max(0, Math.round(parseFloat(inputEl.value) || 0));
+      const rec = ensureDayRecord(currentDate);
+      rec.burnedCal = val;
+      saveDatabase();
+      renderMealLogs();
+      showToast(`Đã cập nhật tiêu hao ${val.toLocaleString()} kcal từ đồng hồ!`, 'success');
+    }
+
+    function addBurnedCalories(kcal) {
+      const rec = ensureDayRecord(currentDate);
+      rec.burnedCal = Math.max(0, (Number(rec.burnedCal) || 0) + kcal);
+      saveDatabase();
+      renderMealLogs();
+      showToast(`Đã cộng thêm +${kcal} kcal tiêu hao!`, 'success');
+    }
+
+    function resetBurnedCalories() {
+      const rec = ensureDayRecord(currentDate);
+      rec.burnedCal = 0;
+      saveDatabase();
+      renderMealLogs();
+    }
+
+    function addWater(ml) {
+      const rec = ensureDayRecord(currentDate);
+      rec.water = Math.min(4500, (rec.water || 0) + ml);
+      saveDatabase();
+      updateWaterUI();
+      showToast(`Đã uống thêm +${ml}ml nước đào thải urat!`, 'water');
+    }
+    function resetWater() {
+      const rec = ensureDayRecord(currentDate);
+      rec.water = 0;
+      saveDatabase();
+      updateWaterUI();
+    }
+    function updateWaterUI() {
+      const rec = ensureDayRecord(currentDate);
+      const w = rec.water || 0;
+      const counterEl = document.getElementById('waterCounterText');
+      const barEl = document.getElementById('waterProgressBar');
+      if(counterEl) counterEl.textContent = `${w.toLocaleString()} / 2,800 ml`;
+      if(barEl) barEl.style.width = Math.min(100, Math.round((w / 2800) * 100)) + "%";
+    }
+
+    function renderHistoryTable() {
+      const tbody = document.getElementById('historyTableBody');
+      if(!tbody) return;
+      const dates = Object.keys(appDatabase.history).sort((a, b) => b.localeCompare(a));
+
+      const validDates = dates.filter(d => {
+        const r = appDatabase.history[d];
+        const count = Object.values(r.meals).reduce((s, a) => s + a.length, 0);
+        return count > 0 || r.water > 0 || (r.burnedCal && r.burnedCal > 0) || r.waist;
+      });
+
+      const totalDaysEl = document.getElementById('statTotalDays');
+      if(totalDaysEl) totalDaysEl.textContent = validDates.length;
+
+      if (validDates.length === 0) {
+        const avgCal = document.getElementById('statAvgCal');
+        const avgPurine = document.getElementById('statAvgPurine');
+        const avgWater = document.getElementById('statAvgWater');
+        if(avgCal) avgCal.textContent = "0";
+        if(avgPurine) avgPurine.textContent = "0";
+        if(avgWater) avgWater.textContent = "0";
+        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400 italic">Chưa có lịch sử bữa ăn nào.</td></tr>`;
+        return;
+      }
+
+      let sumAllCal = 0, sumAllPurine = 0, sumAllWater = 0;
+
+      tbody.innerHTML = validDates.map(dateStr => {
+        const rec = appDatabase.history[dateStr];
+        const t = computeDayTotals(rec.meals);
+        const burned = Math.max(0, Number(rec.burnedCal) || 0);
+        const netCal = Math.max(0, Math.round(t.cal) - burned);
+        const w = rec.water || 0;
+        const waistStr = rec.waist ? `${rec.waist} cm` : "--";
+
+        sumAllCal += netCal; sumAllPurine += t.purine; sumAllWater += w;
+
+        return `
+          <tr class="hover:bg-slate-50 transition ${dateStr === currentDate ? 'bg-blue-50/40' : ''}">
+            <td class="p-3 font-bold text-slate-900">
+              ${formatDisplayDate(dateStr)}
+              ${dateStr === getTodayISO() ? '<span class="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">Hôm nay</span>' : ''}
+            </td>
+            <td class="p-3">
+              <div class="font-extrabold text-slate-800">${netCal} <span class="font-normal text-slate-400">kcal (Net)</span></div>
+              ${burned > 0 ? `<div class="text-[10px] text-orange-600 font-semibold">Nạp ${Math.round(t.cal)} - Đốt ${burned}</div>` : ''}
+            </td>
+            <td class="p-3 text-slate-600">${Math.round(t.carb)}g / ${Math.round(t.pro)}g / ${Math.round(t.fat)}g</td>
+            <td class="p-3 font-semibold text-emerald-700">${Math.round(t.fiber * 10) / 10}g</td>
+            <td class="p-3 font-bold ${t.purine > 250 ? 'text-red-600' : 'text-emerald-600'}">${Math.round(t.purine)} mg</td>
+            <td class="p-3 font-semibold text-cyan-700">${w.toLocaleString()} ml</td>
+            <td class="p-3 font-semibold text-amber-700">${waistStr}</td>
+            <td class="p-3 text-right space-x-1">
+              <button onclick="viewHistoryDay('${dateStr}')" class="px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-[11px] font-bold transition cursor-pointer">
+                Xem / Sửa
+              </button>
+              <button onclick="deleteHistoryDay('${dateStr}')" class="px-2 py-1.5 bg-slate-100 text-slate-400 hover:bg-red-50 hover:text-red-600 rounded-lg text-[11px] transition cursor-pointer">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const avgCal = document.getElementById('statAvgCal');
+      const avgPurine = document.getElementById('statAvgPurine');
+      const avgWater = document.getElementById('statAvgWater');
+      if(avgCal) avgCal.textContent = Math.round(sumAllCal / validDates.length);
+      if(avgPurine) avgPurine.textContent = Math.round(sumAllPurine / validDates.length);
+      if(avgWater) avgWater.textContent = Math.round(sumAllWater / validDates.length).toLocaleString();
+    }
+
+    function viewHistoryDay(dateStr) {
+      loadDateState(dateStr);
+      switchTab('tab-daily');
+    }
+
+    function deleteHistoryDay(dateStr) {
+      if (confirm(`Xóa vĩnh viễn dữ liệu của ngày ${formatDisplayDate(dateStr)}?`)) {
+        delete appDatabase.history[dateStr];
+        saveDatabase();
+        if (dateStr === currentDate) loadDateState(currentDate);
+        renderHistoryTable();
+      }
+    }
+
+    function downloadJsonSnapshot() {
+      const jsonStr = JSON.stringify(appDatabase, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `HealthTrack_GitHubBackup_${getTodayISO()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function copyRawJson() {
+      navigator.clipboard.writeText(JSON.stringify(appDatabase, null, 2));
+      alert("Đã sao chép toàn bộ mã JSON!");
+    }
+
+    function applyEditedRawJson() {
+      try {
+        const edited = JSON.parse(document.getElementById('rawJsonViewer').value);
+        if (!edited.history || !edited.customFoods) {
+          return alert("Cấu trúc JSON thiếu trường 'history' hoặc 'customFoods'!");
+        }
+        appDatabase = edited;
+        saveDatabase();
+        loadDateState(currentDate);
+        renderFoodTable(getAllFoods());
+        renderHistoryTable();
+        alert("Đã cập nhật và đẩy lên GitHub!");
+      } catch (err) {
+        alert("Lỗi cú pháp JSON: " + err.message);
+      }
+    }
+
+    function openApiModal() {
+      const keyInput = document.getElementById('geminiApiKeyInput');
+      if(keyInput) keyInput.value = localStorage.getItem('gemini_api_key') || "";
+      const modal = document.getElementById('apiModal');
+      if(modal) modal.classList.remove('hidden');
+    }
+    function closeApiModal() {
+      const modal = document.getElementById('apiModal');
+      if(modal) modal.classList.add('hidden');
+    }
+    function saveApiKeys() {
+      const keyInput = document.getElementById('geminiApiKeyInput');
+      const k = keyInput ? keyInput.value.trim() : "";
+      if (k) localStorage.setItem('gemini_api_key', k);
+      else localStorage.removeItem('gemini_api_key');
+      closeApiModal();
+      alert("Đã lưu cấu hình AI Key!");
+    }
+  </script>
+</body>
+</html>
