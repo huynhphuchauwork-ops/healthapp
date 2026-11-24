@@ -340,7 +340,7 @@
   </nav>
 
   <!-- TOAST THÔNG BÁO SINH ĐỘNG -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toastContainer" class="fixed top-4 right-4 left-4 sm:left-auto z-[90] flex flex-col items-center sm:items-end gap-2 pointer-events-none"></div>
 
   <!-- HEADER -->
   <header class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white sticky top-0 z-40 shadow-lg border-b border-white/10">
@@ -1463,7 +1463,7 @@
   </div>
 
   <!-- MODAL 1: CẤU HÌNH GITHUB DATABASE -->
-  <div id="githubModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div id="githubModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 fade-in">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
@@ -1700,25 +1700,30 @@
         </button>
       </div>
 
-      <!-- FORM ĐĂNG NHẬP: HUYNH PHUC HAU (CHỈ CẦN NHẬP MẬT KHẨU - MẬT KHẨU ĐỒNG BỘ QUA GITHUB) -->
-      <form id="loginOwnerForm" onsubmit="handleOwnerLogin(event)" class="space-y-4 mt-5 text-xs">
-        <div class="flex items-center justify-between bg-slate-50 px-3.5 py-2.5 rounded-2xl border border-slate-200">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <span class="font-extrabold text-slate-800">Huynh Phuc Hau</span>
+      <!-- FORM ĐĂNG NHẬP: HUYNH PHUC HAU (CHỈ NHẬP MẬT KHẨU - ẨN HOÀN TOÀN CẤU HÌNH GITHUB) -->
+      <form id="loginOwnerForm" onsubmit="handleOwnerLogin(event)" class="space-y-3.5 mt-4 text-xs">
+        <div class="flex items-center justify-between bg-blue-50/80 px-3.5 py-2.5 rounded-2xl border border-blue-200/80">
+          <div class="flex items-center gap-2 min-w-0">
+            <i class="fa-solid fa-lock text-blue-600 text-xs"></i>
+            <span class="font-extrabold text-slate-800 text-xs">Tài khoản chủ sở hữu: Huynh Phuc Hau</span>
           </div>
-          <button type="button" onclick="openGithubModal()" class="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer">
-            <i class="fa-brands fa-github"></i> Cấu hình GitHub
-          </button>
+          <span class="text-[10px] font-bold text-blue-700 bg-white px-2 py-0.5 rounded-full border border-blue-200">Bảo mật</span>
         </div>
 
         <div>
           <label class="block font-bold text-slate-700 mb-1.5">Mật khẩu *</label>
-          <input type="password" id="ownerPasswordInput" required autofocus placeholder="Nhập mật khẩu của Huynh Phuc Hau..." class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <p id="ownerPasswordSyncHint" class="text-[10px] text-slate-400 mt-1.5">
-            <i class="fa-solid fa-rotate text-blue-500 mr-1"></i> Mật khẩu lưu trong tệp dữ liệu GitHub để đồng bộ mọi thiết bị. Lần đầu đặt mật khẩu sẽ tự lưu & đồng bộ.
+          <div class="relative">
+            <input type="password" id="ownerPasswordInput" required autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Nhập mật khẩu của Huynh Phuc Hau..." class="w-full pl-3.5 pr-10 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="button" onclick="togglePasswordVisibility('ownerPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer" title="Hiện/Ẩn mật khẩu">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+          <p id="ownerPasswordSyncHint" class="text-[10px] text-slate-500 mt-1.5 leading-relaxed">
+            <i class="fa-solid fa-rotate text-blue-500 mr-1"></i> Mật khẩu đồng bộ qua GitHub. Trên thiết bị mới, hãy bấm <strong>Kết nối GitHub</strong> ở trên để tải dữ liệu về trước.
           </p>
         </div>
+
+        <div id="authInlineErrorBox" class="hidden p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[11px] font-bold"></div>
 
         <button type="submit" id="btnSubmitOwnerLogin" class="w-full py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition cursor-pointer">
           <i class="fa-solid fa-right-to-bracket"></i> Đăng Nhập
@@ -1756,11 +1761,17 @@
 
         <div>
           <label class="block font-bold text-slate-700 mb-1.5">Mật khẩu *</label>
-          <input type="password" id="guestPasswordInput" required placeholder="Nhập mật khẩu của Guest..." class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <p class="text-[10px] text-slate-400 mt-1">
-            <i class="fa-solid fa-rotate text-indigo-500 mr-1"></i> Mật khẩu & hồ sơ Guest được đồng bộ qua GitHub (nếu đã cấu hình) và localStorage.
+          <div class="relative">
+            <input type="password" id="guestPasswordInput" required autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Nhập mật khẩu của Guest..." class="w-full pl-3.5 pr-10 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button type="button" onclick="togglePasswordVisibility('guestPasswordInput', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer" title="Hiện/Ẩn mật khẩu">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-1">
+            <i class="fa-solid fa-shield-halved text-indigo-500 mr-1"></i> Dữ liệu của Guest được lưu cục bộ độc lập trên trình duyệt này, <strong>tách biệt 100%</strong> với kho GitHub của chủ tài khoản.
           </p>
         </div>
+        <div id="guestInlineErrorBox" class="hidden p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[11px] font-bold"></div>
 
         <div class="flex items-center justify-between gap-2 pt-1">
           <button type="button" id="btnEditGuestProfile" onclick="toggleGuestOnboardingMode(true)" class="hidden px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 font-bold text-[11px] cursor-pointer">
@@ -1995,51 +2006,43 @@
 
 
     // =========================================================================
-    // 2-USER LOGIN SYSTEM (HUYNH PHUC HAU & GUEST - SYNCED PASSWORD VIA GITHUB)
+    // 2-USER LOGIN SYSTEM (OWNER GITHUB SYNCED + GUEST 100% LOCAL ISOLATED)
     // =========================================================================
-    const AUTH_ACCOUNTS_KEY = 'healthtrack_2user_accounts_v2';
-    const AUTH_SESSION_KEY = 'healthtrack_active_user_slot_v2';
+    const OWNER_ACCOUNT_KEY = 'healthtrack_owner_account_v3';
+    const GUEST_ACCOUNT_KEY = 'healthtrack_guest_account_local_v3';
+    const AUTH_SESSION_KEY = 'healthtrack_active_user_slot_v3';
     const OWNER_DB_KEY = 'healthtrack_unified_json_v50';
-    const GUEST_DB_KEY = 'healthtrack_guest_user_json_v2';
+    const GUEST_DB_KEY = 'healthtrack_guest_user_json_v3';
     const OWNER_GH_KEY = 'healthtrack_github_cfg';
 
-    function loadAuthAccounts() {
-      const saved = JSON.parse(localStorage.getItem(AUTH_ACCOUNTS_KEY) || 'null');
-      const dbAuth = appDatabase?.authAccounts || null;
-      const merged = {
-        owner: {
-          name: "Huynh Phuc Hau",
-          passwordHash: "",
-          ...(saved?.owner || {}),
-          ...(dbAuth?.owner || {})
-        },
-        guest: (dbAuth?.guest !== undefined ? dbAuth.guest : saved?.guest) || null
+    function loadOwnerAccount() {
+      const saved = JSON.parse(localStorage.getItem(OWNER_ACCOUNT_KEY) || 'null');
+      const dbOwner = appDatabase?.ownerAuth || appDatabase?.authAccounts?.owner || null;
+      return {
+        name: "Huynh Phuc Hau",
+        passwordHash: dbOwner?.passwordHash || saved?.passwordHash || ""
       };
-      // Prefer newer passwordHash if updated on another device via GitHub
-      if (dbAuth?.owner?.passwordHash) merged.owner.passwordHash = dbAuth.owner.passwordHash;
-      if (dbAuth?.guest?.passwordHash && merged.guest) merged.guest.passwordHash = dbAuth.guest.passwordHash;
-      return merged;
     }
 
-    function saveAuthAccounts(accountsObj, syncToDb = true) {
-      localStorage.setItem(AUTH_ACCOUNTS_KEY, JSON.stringify(accountsObj));
-      if (syncToDb) {
-        appDatabase.authAccounts = {
-          owner: {
-            name: accountsObj.owner.name || "Huynh Phuc Hau",
-            passwordHash: accountsObj.owner.passwordHash || ""
-          },
-          guest: accountsObj.guest ? {
-            name: accountsObj.guest.name || "Guest",
-            passwordHash: accountsObj.guest.passwordHash || "",
-            heightCm: accountsObj.guest.heightCm || 165,
-            weightKg: accountsObj.guest.weightKg || 60,
-            targetCal: accountsObj.guest.targetCal || 1900,
-            onboarded: !!accountsObj.guest.onboarded
-          } : null
+    function saveOwnerAccount(ownerObj, syncToDb = true) {
+      localStorage.setItem(OWNER_ACCOUNT_KEY, JSON.stringify(ownerObj));
+      if (syncToDb && activeUserSlot !== 'guest') {
+        appDatabase.ownerAuth = {
+          name: "Huynh Phuc Hau",
+          passwordHash: ownerObj.passwordHash || ""
         };
+        if (appDatabase.authAccounts) delete appDatabase.authAccounts;
         localStorage.setItem(OWNER_DB_KEY, JSON.stringify(appDatabase));
       }
+    }
+
+    function loadGuestAccount() {
+      return JSON.parse(localStorage.getItem(GUEST_ACCOUNT_KEY) || 'null');
+    }
+
+    function saveGuestAccount(guestObj) {
+      if (!guestObj) localStorage.removeItem(GUEST_ACCOUNT_KEY);
+      else localStorage.setItem(GUEST_ACCOUNT_KEY, JSON.stringify(guestObj));
     }
 
     function simpleHashPassword(pwd) {
@@ -2056,7 +2059,6 @@
       return `${(h1 >>> 0).toString(16)}_${(h2 >>> 0).toString(16)}`;
     }
 
-    let authAccounts = loadAuthAccounts();
     let activeUserSlot = localStorage.getItem(AUTH_SESSION_KEY) || null;
     let selectedModalSlot = activeUserSlot === 'guest' ? 'guest' : 'owner';
     let guestForceEditProfile = false;
@@ -2076,8 +2078,26 @@
       }
       $('loginOwnerForm')?.classList.toggle('hidden', !isOwner);
       $('loginGuestForm')?.classList.toggle('hidden', isOwner);
+      showAuthInlineError('owner', '');
+      showAuthInlineError('guest', '');
       if (isOwner) guestForceEditProfile = false;
       populateAuthModalFields();
+    }
+
+    function togglePasswordVisibility(inputId, btnEl) {
+      const inp = $(inputId);
+      if (!inp) return;
+      const isPwd = inp.type === 'password';
+      inp.type = isPwd ? 'text' : 'password';
+      if (btnEl) btnEl.innerHTML = isPwd ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+    }
+
+    function showAuthInlineError(slot, msg) {
+      const box = $(slot === 'guest' ? 'guestInlineErrorBox' : 'authInlineErrorBox');
+      if (!box) return;
+      if (!msg) { box.classList.add('hidden'); box.textContent = ''; return; }
+      box.textContent = msg;
+      box.classList.remove('hidden');
     }
 
     function toggleGuestOnboardingMode(forceEdit) {
@@ -2086,39 +2106,40 @@
     }
 
     function populateAuthModalFields() {
-      authAccounts = loadAuthAccounts();
-      const guestExists = !!(authAccounts.guest && authAccounts.guest.onboarded);
+      const ownerAcc = loadOwnerAccount();
+      const guestAcc = loadGuestAccount();
+      const guestExists = !!(guestAcc && guestAcc.onboarded);
 
       if ($('slotGuestNamePreview')) {
-        $('slotGuestNamePreview').textContent = guestExists ? (authAccounts.guest.name || 'Guest') : 'Guest';
+        $('slotGuestNamePreview').textContent = guestExists ? (guestAcc.name || 'Guest') : 'Guest';
       }
       if ($('slotGuestStatusPreview')) {
         $('slotGuestStatusPreview').innerHTML = guestExists
-          ? `<span class="text-emerald-700"><i class="fa-solid fa-check-circle"></i> Đăng nhập thường</span>`
+          ? `<span class="text-indigo-700"><i class="fa-solid fa-laptop"></i> Dữ liệu cục bộ</span>`
           : `Nhập thông tin đầu`;
       }
 
       if ($('ownerPasswordInput')) {
         $('ownerPasswordInput').value = "";
-        $('ownerPasswordInput').placeholder = authAccounts.owner.passwordHash
+        $('ownerPasswordInput').placeholder = ownerAcc.passwordHash
           ? "Nhập mật khẩu của Huynh Phuc Hau..."
-          : "Tạo mật khẩu lần đầu (đồng bộ mọi thiết bị)...";
+          : "Tạo mật khẩu lần đầu cho Huynh Phuc Hau...";
       }
       if ($('ownerPasswordSyncHint')) {
-        $('ownerPasswordSyncHint').innerHTML = authAccounts.owner.passwordHash
-          ? `<i class="fa-solid fa-shield-check text-emerald-600 mr-1"></i> Mật khẩu đã được đồng bộ qua GitHub trên các thiết bị.`
-          : `<i class="fa-solid fa-rotate text-blue-500 mr-1"></i> Chưa có mật khẩu: hãy nhập mật khẩu mới, hệ thống sẽ lưu & đồng bộ lên GitHub.`;
+        $('ownerPasswordSyncHint').innerHTML = ownerAcc.passwordHash
+          ? `<i class="fa-solid fa-shield-check text-emerald-600 mr-1"></i> Nhập mật khẩu để truy cập dữ liệu của Huynh Phuc Hau.`
+          : `<i class="fa-solid fa-key text-blue-500 mr-1"></i> Chưa đặt mật khẩu: nhập mật khẩu mới để bảo vệ tài khoản của bạn.`;
       }
 
       const showGuestOnboarding = !guestExists || guestForceEditProfile;
       $('guestOnboardingFields')?.classList.toggle('hidden', !showGuestOnboarding);
       $('btnEditGuestProfile')?.classList.toggle('hidden', !guestExists || showGuestOnboarding);
 
-      if (authAccounts.guest) {
-        if ($('guestNameInput')) $('guestNameInput').value = authAccounts.guest.name || "Guest";
-        if ($('guestHeightInput')) $('guestHeightInput').value = authAccounts.guest.heightCm || 165;
-        if ($('guestWeightInput')) $('guestWeightInput').value = authAccounts.guest.weightKg || 60;
-        if ($('guestCalTargetInput')) $('guestCalTargetInput').value = authAccounts.guest.targetCal || 1900;
+      if (guestAcc) {
+        if ($('guestNameInput')) $('guestNameInput').value = guestAcc.name || "Guest";
+        if ($('guestHeightInput')) $('guestHeightInput').value = guestAcc.heightCm || 165;
+        if ($('guestWeightInput')) $('guestWeightInput').value = guestAcc.weightKg || 60;
+        if ($('guestCalTargetInput')) $('guestCalTargetInput').value = guestAcc.targetCal || 1900;
       }
       if ($('guestPasswordInput')) {
         $('guestPasswordInput').value = "";
@@ -2129,7 +2150,7 @@
     }
 
     async function openAuthLoginModal(forceSlot = null) {
-      // Try pulling latest password & data from GitHub if config exists
+      // Silently pull owner's synced password ONLY if owner's githubConfig already exists on this device
       if (githubConfig?.owner && githubConfig?.repo && githubConfig?.token && !isPulling) {
         await pullFromGithub(false);
       }
@@ -2154,49 +2175,60 @@
 
     async function handleOwnerLogin(e) {
       e.preventDefault();
+      showAuthInlineError('owner', '');
       const rawPwd = ($('ownerPasswordInput')?.value || '').trim();
-      if (!rawPwd) return showToast("Vui lòng nhập mật khẩu!", "warn");
+      if (!rawPwd) return showAuthInlineError('owner', 'Vui lòng nhập mật khẩu!');
 
-      // Ensure latest synced password from GitHub is checked
+      // Restore owner's githubConfig if it was saved in OWNER_GH_KEY
+      githubConfig = JSON.parse(localStorage.getItem(OWNER_GH_KEY) || 'null');
       if (githubConfig?.owner && githubConfig?.repo && githubConfig?.token && !isPulling) {
         await pullFromGithub(false);
       }
-      authAccounts = loadAuthAccounts();
+
+      const ownerAcc = loadOwnerAccount();
       const inputHash = simpleHashPassword(rawPwd);
 
-      if (authAccounts.owner.passwordHash) {
-        if (authAccounts.owner.passwordHash !== inputHash) {
+      if (ownerAcc.passwordHash) {
+        if (ownerAcc.passwordHash !== inputHash) {
+          showAuthInlineError("owner", "Mật khẩu không chính xác! Vui lòng kiểm tra lại.");
           return showToast("Mật khẩu không chính xác!", "error");
         }
       } else {
-        // First time setting password -> save & sync to GitHub
-        authAccounts.owner.passwordHash = inputHash;
-        authAccounts.owner.name = "Huynh Phuc Hau";
+        ownerAcc.passwordHash = inputHash;
+        ownerAcc.name = "Huynh Phuc Hau";
       }
 
       activeUserSlot = 'owner';
       localStorage.setItem(AUTH_SESSION_KEY, 'owner');
-      saveAuthAccounts(authAccounts, true);
+
+      const ownerCache = JSON.parse(localStorage.getItem(OWNER_DB_KEY) || 'null');
+      if (ownerCache) appDatabase = { ...appDatabase, ...ownerCache };
+      saveOwnerAccount(ownerAcc, true);
 
       closeAuthLoginModal();
       updateCurrentUserUI();
       refreshAllViews();
       if (githubConfig?.owner && githubConfig?.repo && githubConfig?.token) {
+        updateGithubStatusUI('synced', `GitHub: ${githubConfig.owner}/${githubConfig.repo}`);
         await pushToGithub(false);
+      } else {
+        updateGithubStatusUI('offline', 'Chưa kết nối GitHub');
       }
       showToast("Đăng nhập thành công (Huynh Phuc Hau)!", "success");
     }
 
-    async function handleGuestLogin(e) {
+    function handleGuestLogin(e) {
       e.preventDefault();
-      if (githubConfig?.owner && githubConfig?.repo && githubConfig?.token && !isPulling) {
-        await pullFromGithub(false);
-      }
-      authAccounts = loadAuthAccounts();
-      const guestExists = !!(authAccounts.guest && authAccounts.guest.onboarded);
+      showAuthInlineError('guest', '');
+      const guestAcc = loadGuestAccount();
+      const guestExists = !!(guestAcc && guestAcc.onboarded);
       const rawPwd = ($('guestPasswordInput')?.value || '').trim();
-      if (!rawPwd) return showToast("Vui lòng nhập mật khẩu cho Guest!", "warn");
+      if (!rawPwd) return showAuthInlineError('guest', 'Vui lòng nhập mật khẩu cho Guest!');
       const pwdHash = simpleHashPassword(rawPwd);
+
+      // Strictly block Guest from accessing or pushing to Owner's GitHub
+      githubConfig = null;
+      currentFileSha = null;
 
       if (!guestExists || guestForceEditProfile) {
         const name = ($('guestNameInput')?.value || '').trim() || "Guest";
@@ -2204,20 +2236,21 @@
         const weightKg = parseFloat($('guestWeightInput')?.value) || 60;
         const targetCal = parseInt($('guestCalTargetInput')?.value, 10) || 1900;
 
-        if (guestExists && authAccounts.guest.passwordHash && authAccounts.guest.passwordHash !== pwdHash) {
+        if (guestExists && guestAcc.passwordHash && guestAcc.passwordHash !== pwdHash) {
+          showAuthInlineError("guest", "Mật khẩu Guest không chính xác!");
           return showToast("Mật khẩu Guest không chính xác!", "error");
         }
 
-        authAccounts.guest = {
+        const newGuestAcc = {
           name,
-          passwordHash: authAccounts.guest?.passwordHash || pwdHash,
+          passwordHash: guestAcc?.passwordHash || pwdHash,
           heightCm,
           weightKg,
           targetCal,
           onboarded: true,
           updatedAt: new Date().toISOString()
         };
-        saveAuthAccounts(authAccounts, true);
+        saveGuestAccount(newGuestAcc);
 
         const bmi = round1(weightKg / Math.pow(heightCm / 100, 2));
         const existingGuestDb = JSON.parse(localStorage.getItem(GUEST_DB_KEY) || 'null');
@@ -2230,7 +2263,7 @@
           appDatabase.patientProfile.targets.calories = targetCal;
         } else {
           appDatabase = {
-            schemaVersion: "6.0-guest-synced",
+            schemaVersion: "6.0-guest-local-only",
             lastUpdated: new Date().toISOString(),
             patientProfile: {
               name,
@@ -2259,8 +2292,8 @@
         localStorage.setItem(GUEST_DB_KEY, JSON.stringify(appDatabase));
         guestForceEditProfile = false;
       } else {
-        // Subsequent logins: standard password login
-        if (authAccounts.guest.passwordHash && authAccounts.guest.passwordHash !== pwdHash) {
+        if (guestAcc.passwordHash && guestAcc.passwordHash !== pwdHash) {
+          showAuthInlineError("guest", "Mật khẩu Guest không chính xác!");
           return showToast("Mật khẩu Guest không chính xác!", "error");
         }
         const gDb = JSON.parse(localStorage.getItem(GUEST_DB_KEY) || 'null');
@@ -2272,47 +2305,47 @@
 
       closeAuthLoginModal();
       updateCurrentUserUI();
+      updateGithubStatusUI('offline', 'Chế độ cục bộ (Không đồng bộ GitHub)');
       refreshAllViews();
-      if (githubConfig?.owner && githubConfig?.repo && githubConfig?.token) {
-        await pushToGithub(false);
-      }
-      showToast(`Đăng nhập thành công (${authAccounts.guest?.name || 'Guest'})!`, "success");
+      const activeGuest = loadGuestAccount();
+      showToast(`Đăng nhập thành công (${activeGuest?.name || 'Guest'}) — Dữ liệu lưu cục bộ độc lập!`, "success");
     }
 
     function resetGuestAccount() {
-      if (!confirm("Xóa hồ sơ và dữ liệu của Guest?")) return;
-      authAccounts = loadAuthAccounts();
-      authAccounts.guest = null;
+      if (!confirm("Xóa toàn bộ hồ sơ và dữ liệu cục bộ của Guest?")) return;
+      saveGuestAccount(null);
       guestForceEditProfile = false;
-      saveAuthAccounts(authAccounts, true);
       localStorage.removeItem(GUEST_DB_KEY);
       if (activeUserSlot === 'guest') {
         activeUserSlot = null;
         localStorage.removeItem(AUTH_SESSION_KEY);
       }
-      if (githubConfig?.owner && githubConfig?.repo && githubConfig?.token) {
-        pushToGithub(false);
-      }
       populateAuthModalFields();
-      showToast("Đã xóa tài khoản Guest!");
+      showToast("Đã xóa hoàn toàn dữ liệu Guest!");
     }
 
     function updateCurrentUserUI() {
       const slot = activeUserSlot || 'owner';
+      const isGuest = slot === 'guest';
+      const guestAcc = loadGuestAccount();
       const profile = appDatabase.patientProfile || {};
-      const displayName = slot === 'guest'
-        ? (authAccounts.guest?.name || profile.name || 'Guest')
+      const displayName = isGuest
+        ? (guestAcc?.name || profile.name || 'Guest')
         : 'HUỲNH PHÚC HẬU';
-      const wKg = profile.weightKg || (slot === 'guest' ? authAccounts.guest?.weightKg : 56) || 56;
-      const hCm = profile.heightCm || (slot === 'guest' ? authAccounts.guest?.heightCm : 158) || 158;
+      const wKg = profile.weightKg || (isGuest ? guestAcc?.weightKg : 56) || 56;
+      const hCm = profile.heightCm || (isGuest ? guestAcc?.heightCm : 158) || 158;
 
       if ($('currentUserMenuLabel')) {
-        $('currentUserMenuLabel').textContent = `Đổi tài khoản (${slot === 'guest' ? displayName : 'Huynh Phuc Hau'})`;
+        $('currentUserMenuLabel').textContent = `Đổi tài khoản (${isGuest ? displayName : 'Huynh Phuc Hau'})`;
       }
       if ($('headerUserNameDisplay')) $('headerUserNameDisplay').textContent = displayName.toUpperCase();
-      if ($('headerAgeTag')) $('headerAgeTag').style.display = slot === 'guest' ? 'none' : '';
+      if ($('headerAgeTag')) $('headerAgeTag').style.display = isGuest ? 'none' : '';
       if ($('headerWeightDisplay')) $('headerWeightDisplay').textContent = wKg;
       if ($('headerHeightDisplay')) $('headerHeightDisplay').textContent = (hCm / 100).toFixed(2);
+
+      // Hide GitHub configuration button in header settings when Guest is logged in so Guest cannot view or overwrite Owner's GitHub config
+      const ghBtn = document.querySelector('#headerSettingsDropdown button[onclick*="openGithubModal"]');
+      if (ghBtn) ghBtn.classList.toggle('hidden', isGuest);
     }
 
     function getTodayISO() {
@@ -2382,7 +2415,7 @@
       if (renderScope === 'all') refreshAllViews();
       else refreshActiveView();
 
-      if (githubConfig) {
+      if (githubConfig && activeUserSlot !== 'guest') {
         hasPendingSync = true;
         updateGithubStatusUI('syncing', 'Đang chờ đồng bộ...');
         clearTimeout(pushDebounceTimer);
@@ -2426,7 +2459,7 @@
     }
 
     async function pullFromGithub(notify = false) {
-      if (!githubConfig || isPulling) return;
+      if (activeUserSlot === 'guest' || !githubConfig || isPulling) return;
       isPulling = true;
       const { owner, repo, path, branch, token } = githubConfig;
       updateGithubStatusUI('syncing', 'Đang tải từ GitHub...');
@@ -2444,14 +2477,13 @@
         const data = await res.json();
         currentFileSha = data.sha;
         const remoteDb = JSON.parse(base64ToUtf8(data.content));
-        if (remoteDb.authAccounts) {
-          appDatabase.authAccounts = remoteDb.authAccounts;
-          localStorage.setItem(AUTH_ACCOUNTS_KEY, JSON.stringify(remoteDb.authAccounts));
-          authAccounts = loadAuthAccounts();
+        const remoteOwner = remoteDb.ownerAuth || remoteDb.authAccounts?.owner;
+        if (remoteOwner?.passwordHash) {
+          localStorage.setItem(OWNER_ACCOUNT_KEY, JSON.stringify({ name: "Huynh Phuc Hau", passwordHash: remoteOwner.passwordHash }));
         }
         if (activeUserSlot !== 'guest' && remoteDb.history) {
           appDatabase = { ...appDatabase, ...remoteDb };
-          localStorage.setItem('healthtrack_unified_json_v50', JSON.stringify(appDatabase));
+          localStorage.setItem(OWNER_DB_KEY, JSON.stringify(appDatabase));
         }
         refreshAllViews();
         updateGithubStatusUI('synced', `GitHub Synced (${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })})`);
@@ -2465,7 +2497,7 @@
     }
 
     async function pushToGithub(notify = false) {
-      if (!githubConfig) return;
+      if (activeUserSlot === 'guest' || !githubConfig) return;
       const { owner, repo, path, branch, token } = githubConfig;
       updateGithubStatusUI('syncing', 'Đang lưu lên GitHub...');
       try {
@@ -4535,6 +4567,7 @@
     }
 
     function openGithubModal() {
+      if (activeUserSlot === 'guest') return showToast('Tài khoản Guest không có quyền truy cập cấu hình GitHub!', 'warn');
       if (githubConfig) {
         $('ghOwner').value = githubConfig.owner || ""; $('ghRepo').value = githubConfig.repo || "";
         $('ghPath').value = githubConfig.path || "data/healthtrack_db.json";
@@ -4547,7 +4580,7 @@
       e.preventDefault();
       githubConfig = { owner: $('ghOwner').value.trim(), repo: $('ghRepo').value.trim(), path: $('ghPath').value.trim().replace(/^\/+/, ''), branch: $('ghBranch').value.trim() || 'main', token: $('ghToken').value.trim() };
       localStorage.setItem('healthtrack_github_cfg', JSON.stringify(githubConfig));
-      currentFileSha = null; closeGithubModal(); await pullFromGithub(true);
+      currentFileSha = null; closeGithubModal(); await pullFromGithub(true); populateAuthModalFields();
     }
     function disconnectGithub() {
       if (confirm("Ngắt kết nối đồng bộ GitHub?")) { localStorage.removeItem('healthtrack_github_cfg'); githubConfig = null; currentFileSha = null; updateGithubStatusUI('offline', 'Chưa kết nối GitHub'); closeGithubModal(); }
@@ -4590,6 +4623,8 @@
       } else if (activeUserSlot === 'owner' && githubConfig?.owner && githubConfig?.repo && githubConfig?.token) {
         await pullFromGithub(false);
       } else if (activeUserSlot === 'guest') {
+        githubConfig = null;
+        updateGithubStatusUI('offline', 'Chế độ cục bộ (Không đồng bộ GitHub)');
         const gDb = JSON.parse(localStorage.getItem(GUEST_DB_KEY) || 'null');
         if (gDb) { appDatabase = gDb; refreshAllViews(); }
       }
