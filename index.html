@@ -1963,7 +1963,14 @@
 
     const getExerciseById = (id) => EXERCISE_DATABASE.find(e => e.id === id);
 
-    const $ = (id) => document.getElementById(id);
+    const _elCache = Object.create(null);
+    const $ = (id) => {
+      const cached = _elCache[id];
+      if (cached && cached.isConnected) return cached;
+      const el = document.getElementById(id);
+      if (el) _elCache[id] = el;
+      return el;
+    };
     const round1 = (n) => Math.round((Number(n) || 0) * 10) / 10;
     const escHtml = (str) => String(str ?? "").replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 
@@ -2011,6 +2018,40 @@
     const OWNER_ACCOUNT_KEY = 'healthtrack_owner_account_v3';
     const GUEST_ACCOUNT_KEY = 'healthtrack_guest_account_local_v3';
     const AUTH_SESSION_KEY = 'healthtrack_active_user_slot_v3';
+    const AUTH_SESSION_META_KEY = 'healthtrack_session_meta_v3';
+
+    function persistAuthSession(slot) {
+      if (!slot) {
+        localStorage.removeItem(AUTH_SESSION_KEY);
+        localStorage.removeItem(AUTH_SESSION_META_KEY);
+        try { sessionStorage.removeItem(AUTH_SESSION_KEY); } catch {}
+        activeUserSlot = null;
+        return;
+      }
+      activeUserSlot = slot;
+      localStorage.setItem(AUTH_SESSION_KEY, slot);
+      localStorage.setItem(AUTH_SESSION_META_KEY, JSON.stringify({ slot, savedAt: Date.now() }));
+      try { sessionStorage.setItem(AUTH_SESSION_KEY, slot); } catch {}
+    }
+
+    function restoreAuthSession() {
+      let savedSlot = localStorage.getItem(AUTH_SESSION_KEY);
+      if (!savedSlot) {
+        try {
+          const meta = JSON.parse(localStorage.getItem(AUTH_SESSION_META_KEY) || 'null');
+          if (meta?.slot) savedSlot = meta.slot;
+        } catch {}
+      }
+      if (!savedSlot) {
+        try { savedSlot = sessionStorage.getItem(AUTH_SESSION_KEY) || null; } catch {}
+      }
+      if (savedSlot === 'owner' || savedSlot === 'guest') {
+        activeUserSlot = savedSlot;
+        localStorage.setItem(AUTH_SESSION_KEY, savedSlot);
+        return savedSlot;
+      }
+      return null;
+    }
     const OWNER_DB_KEY = 'healthtrack_unified_json_v50';
     const GUEST_DB_KEY = 'healthtrack_guest_user_json_v3';
     const OWNER_GH_KEY = 'healthtrack_github_cfg';
@@ -2059,7 +2100,7 @@
       return `${(h1 >>> 0).toString(16)}_${(h2 >>> 0).toString(16)}`;
     }
 
-    let activeUserSlot = localStorage.getItem(AUTH_SESSION_KEY) || null;
+    let activeUserSlot = null;
     let selectedModalSlot = activeUserSlot === 'guest' ? 'guest' : 'owner';
     let guestForceEditProfile = false;
 
@@ -2169,7 +2210,7 @@
 
     function logoutToLoginModal() {
       activeUserSlot = null;
-      localStorage.removeItem(AUTH_SESSION_KEY);
+      persistAuthSession(null);
       openAuthLoginModal('owner');
     }
 
@@ -2199,7 +2240,7 @@
       }
 
       activeUserSlot = 'owner';
-      localStorage.setItem(AUTH_SESSION_KEY, 'owner');
+      persistAuthSession('owner');
 
       const ownerCache = JSON.parse(localStorage.getItem(OWNER_DB_KEY) || 'null');
       if (ownerCache) appDatabase = { ...appDatabase, ...ownerCache };
@@ -2214,7 +2255,7 @@
       } else {
         updateGithubStatusUI('offline', 'Chưa kết nối GitHub');
       }
-      showToast("Đăng nhập thành công (Huynh Phuc Hau)!", "success");
+      startPeriodicGithubSync(20000); showToast("Đăng nhập thành công (Huynh Phuc Hau)!", "success");
     }
 
     function handleGuestLogin(e) {
@@ -2301,7 +2342,7 @@
       }
 
       activeUserSlot = 'guest';
-      localStorage.setItem(AUTH_SESSION_KEY, 'guest');
+      persistAuthSession('guest');
 
       closeAuthLoginModal();
       updateCurrentUserUI();
@@ -2318,7 +2359,7 @@
       localStorage.removeItem(GUEST_DB_KEY);
       if (activeUserSlot === 'guest') {
         activeUserSlot = null;
-        localStorage.removeItem(AUTH_SESSION_KEY);
+        persistAuthSession(null);
       }
       populateAuthModalFields();
       showToast("Đã xóa hoàn toàn dữ liệu Guest!");
@@ -2347,6 +2388,74 @@
       const ghBtn = document.querySelector('#headerSettingsDropdown button[onclick*="openGithubModal"]');
       if (ghBtn) ghBtn.classList.toggle('hidden', isGuest);
     }
+
+
+    // =========================================================================
+    // PERIODIC REALTIME-LIKE GITHUB POLLING & CROSS-TAB SYNC ENGINE
+    // =========================================================================
+    let githubPollIntervalId = null;
+
+    function startPeriodicGithubSync(intervalMs = 20000) {
+      stopPeriodicGithubSync();
+      githubPollIntervalId = setInterval(async () => {
+        if (document.visibilityState !== 'visible') return;
+        if (activeUserSlot === 'guest') return;
+        const activeGh = githubConfig || JSON.parse(localStorage.getItem(OWNER_GH_KEY) || 'null');
+        if (!activeGh?.owner || !activeGh?.repo || !activeGh?.token) return;
+        githubConfig = activeGh;
+        if (hasPendingSync) {
+          clearTimeout(pushDebounceTimer);
+          hasPendingSync = false;
+          await pushToGithub(false);
+        } else if (!isPulling) {
+          await pullFromGithub(false);
+        }
+      }, intervalMs);
+    }
+
+    function stopPeriodicGithubSync() {
+      if (githubPollIntervalId) {
+        clearInterval(githubPollIntervalId);
+        githubPollIntervalId = null;
+      }
+    }
+
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState === 'visible' && activeUserSlot === 'owner') {
+        const activeGh = githubConfig || JSON.parse(localStorage.getItem(OWNER_GH_KEY) || 'null');
+        if (activeGh?.owner && activeGh?.repo && activeGh?.token && !isPulling) {
+          githubConfig = activeGh;
+          await pullFromGithub(false);
+        }
+      }
+    });
+
+    window.addEventListener('focus', async () => {
+      if (activeUserSlot === 'owner') {
+        const activeGh = githubConfig || JSON.parse(localStorage.getItem(OWNER_GH_KEY) || 'null');
+        if (activeGh?.owner && activeGh?.repo && activeGh?.token && !isPulling) {
+          githubConfig = activeGh;
+          await pullFromGithub(false);
+        }
+      }
+    });
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === OWNER_DB_KEY && e.newValue && activeUserSlot === 'owner') {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed?.history) {
+            appDatabase = { ...appDatabase, ...parsed };
+            refreshAllViews();
+          }
+        } catch {}
+      } else if (e.key === GUEST_DB_KEY && e.newValue && activeUserSlot === 'guest') {
+        try {
+          appDatabase = JSON.parse(e.newValue);
+          refreshAllViews();
+        } catch {}
+      }
+    });
 
     function getTodayISO() {
       const now = new Date();
@@ -2464,7 +2573,8 @@
       const { owner, repo, path, branch, token } = githubConfig;
       updateGithubStatusUI('syncing', 'Đang tải từ GitHub...');
       try {
-        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch || 'main'}&t=${Date.now()}`, {
+        const cleanPath = String(path || 'data/healthtrack_db.json').replace(/^[\/]+/, '').replace(/\.\./g, '');
+        const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${cleanPath}?ref=${encodeURIComponent(branch || 'main')}&t=${Date.now()}`, {
           headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
         });
         if (res.status === 404) {
@@ -2507,7 +2617,10 @@
           });
           if (checkRes.ok) currentFileSha = (await checkRes.json()).sha;
         }
+        if (appDatabase.githubConfig) delete appDatabase.githubConfig;
+        if (appDatabase.ghToken) delete appDatabase.ghToken;
         appDatabase.lastUpdated = new Date().toISOString();
+        const safePath = String(path || 'data/healthtrack_db.json').replace(/^[\/]+/, '').replace(/\.\./g, '');
         const payload = {
           message: `Update HealthTrack DB (${formatDisplayDate(currentDate)})`,
           content: utf8ToBase64(JSON.stringify(appDatabase, null, 2)),
@@ -2519,6 +2632,7 @@
           headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+        void safePath;
         if (res.status === 409) { currentFileSha = null; return pushToGithub(notify); }
         if (!res.ok) throw new Error((await res.json()).message || `HTTP ${res.status}`);
         currentFileSha = (await res.json()).content.sha;
@@ -4616,17 +4730,29 @@
       updateCustomFoodBadge();
       renderQuickPills();
       updateHistoryBadge();
+      const restoredSlot = restoreAuthSession();
+      if (!githubConfig) {
+        githubConfig = JSON.parse(localStorage.getItem(OWNER_GH_KEY) || 'null');
+      }
+      if (restoredSlot === 'owner') {
+        const ownerCache = JSON.parse(localStorage.getItem(OWNER_DB_KEY) || 'null');
+        if (ownerCache) appDatabase = { ...appDatabase, ...ownerCache };
+      } else if (restoredSlot === 'guest') {
+        githubConfig = null;
+        const gDb = JSON.parse(localStorage.getItem(GUEST_DB_KEY) || 'null');
+        if (gDb) appDatabase = gDb;
+      }
+
       loadDateState(currentDate);
       updateCurrentUserUI();
-      if (!activeUserSlot) {
+
+      if (!restoredSlot) {
         openAuthLoginModal('owner');
-      } else if (activeUserSlot === 'owner' && githubConfig?.owner && githubConfig?.repo && githubConfig?.token) {
+      } else if (restoredSlot === 'owner' && githubConfig?.owner && githubConfig?.repo && githubConfig?.token) {
         await pullFromGithub(false);
-      } else if (activeUserSlot === 'guest') {
-        githubConfig = null;
+        startPeriodicGithubSync(20000);
+      } else if (restoredSlot === 'guest') {
         updateGithubStatusUI('offline', 'Chế độ cục bộ (Không đồng bộ GitHub)');
-        const gDb = JSON.parse(localStorage.getItem(GUEST_DB_KEY) || 'null');
-        if (gDb) { appDatabase = gDb; refreshAllViews(); }
       }
     });
   </script>
