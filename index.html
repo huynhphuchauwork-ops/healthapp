@@ -507,7 +507,7 @@
         </div>
         <div class="flex justify-between text-slate-600">
           <span>Calo mục tiêu:</span>
-          <strong class="text-slate-900">1,750 kcal</strong>
+          <strong class="text-slate-900">1,950 kcal</strong>
         </div>
         <div class="flex justify-between text-slate-600">
           <span>Purine (Gout):</span>
@@ -625,7 +625,7 @@
                   Nhật Ký Dinh Dưỡng Ngày <span id="displayDateTitle" class="text-blue-600"></span>
                 </h2>
               </div>
-              <p class="text-xs text-slate-500 mt-1">Mục tiêu: <strong class="text-slate-700">1,750 kcal</strong> • Đạm: <strong class="text-slate-700">75g</strong> • Chất xơ: <strong class="text-emerald-600">&ge; 25g</strong> • Purine: <strong class="text-red-600">&lt; 200mg</strong></p>
+              <p class="text-xs text-slate-500 mt-1">Mục tiêu Body Recomp: <strong class="text-slate-700">1,950 kcal (Net)</strong> • Đạm sạch: <strong class="text-sky-700">85g</strong> • Chất xơ: <strong class="text-emerald-600">&ge; 28g</strong> • Purine: <strong class="text-red-600">&lt; 200mg</strong></p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <button onclick="pushToGithub(true)" id="btnManualPush" class="hidden px-3.5 py-2 text-xs text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl transition font-bold cursor-pointer">
@@ -708,7 +708,7 @@
                 <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-orange-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce"><i class="fa-solid fa-wheat-awn"></i></span>
                 <span class="text-[9px] font-extrabold text-amber-800 uppercase tracking-tight">Carbs</span>
                 <span id="sumCarbs" class="text-lg font-black text-amber-700 leading-tight mt-0.5">0</span>
-                <span class="text-[9px] font-semibold text-slate-400">&le;200g</span>
+                <span class="text-[9px] font-semibold text-slate-400">&le;220g</span>
               </div>
             </div>
 
@@ -724,7 +724,7 @@
                 <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-sky-500 to-cyan-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce"><i class="fa-solid fa-fish"></i></span>
                 <span class="text-[9px] font-extrabold text-sky-800 uppercase tracking-tight">Protein</span>
                 <span id="sumProtein" class="text-lg font-black text-sky-700 leading-tight mt-0.5">0</span>
-                <span class="text-[9px] font-semibold text-slate-400">~75g</span>
+                <span class="text-[9px] font-semibold text-slate-400">~85g</span>
               </div>
             </div>
 
@@ -740,7 +740,7 @@
                 <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-600 to-fuchsia-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce"><i class="fa-solid fa-oil-can"></i></span>
                 <span class="text-[9px] font-extrabold text-purple-800 uppercase tracking-tight">Fat (Béo)</span>
                 <span id="sumFat" class="text-lg font-black text-purple-700 leading-tight mt-0.5">0</span>
-                <span class="text-[9px] font-semibold text-slate-400">&le;45g</span>
+                <span class="text-[9px] font-semibold text-slate-400">&le;50g</span>
               </div>
             </div>
 
@@ -756,7 +756,7 @@
                 <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-xs flex items-center justify-center text-[10px] mb-0.5 group-hover:animate-bounce"><i class="fa-solid fa-seedling"></i></span>
                 <span class="text-[9px] font-extrabold text-emerald-800 uppercase tracking-tight">Chất Xơ</span>
                 <span id="sumFiber" class="text-lg font-black text-emerald-700 leading-tight mt-0.5">0</span>
-                <span class="text-[9px] font-semibold text-slate-400">&ge;25g</span>
+                <span class="text-[9px] font-semibold text-slate-400">&ge;28g</span>
               </div>
             </div>
 
@@ -834,7 +834,7 @@
                   <span class="w-7 h-7 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-xs"><i class="fa-solid fa-fire-flame-curved"></i></span>
                   Calo Tiêu Hao (Đồng Hồ)
                 </h3>
-                <span id="netCalBadge" class="text-[11px] font-extrabold text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-lg border border-orange-200/70">Net: 0 / 1,750 kcal</span>
+                <span id="netCalBadge" class="text-[11px] font-extrabold text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-lg border border-orange-200/70">Net: 0 / 1,950 kcal</span>
               </div>
               <div class="flex gap-2 mt-4">
                 <input type="number" id="burnedCalInput" min="0" step="1" onkeydown="if(event.key==='Enter') saveBurnedCalories()" placeholder="Nhập calo đồng hồ đo được (kcal)..." class="flex-1 px-3.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold text-slate-800">
@@ -917,7 +917,7 @@
                   <h2 class="wk-text-main font-extrabold text-base sm:text-lg text-slate-900">
                     Lịch Tập Gym & Highlight Nhóm Cơ • <span id="workoutDateTitle" class="text-lime-600"></span>
                   </h2>
-                  <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-lime-100 text-lime-800 font-extrabold border border-lime-300">1–2 Năm KN • Tăng Cân Nạc</span>
+                  <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-lime-100 text-lime-800 font-extrabold border border-lime-300">1–2 Năm KN • Body Recomp (Tăng Cơ • Giảm Mỡ)</span>
                 </div>
                 <p class="wk-text-sub text-xs text-slate-500 mt-0.5">
                   1m58 • 55–56kg • Dụng cụ: <strong>Tạ đơn, Tạ đòn, Ghế đa năng (dốc xuống, nâng lưng, đá chân), Xà đơn, Máy chạy bộ, Hít đất</strong>
@@ -960,7 +960,7 @@
 
             <div class="flex items-center gap-2 text-xs">
               <span class="wk-surface px-3 py-1.5 rounded-xl bg-lime-50 border border-lime-200 text-lime-800 font-extrabold">
-                <i class="fa-solid fa-fire text-orange-500 mr-1"></i> Lean Bulk: ~2,450 kcal • 115g Đạm
+                <i class="fa-solid fa-fire text-orange-500 mr-1"></i> Body Recomp: 1,950 kcal (Net) • 85g Đạm sạch • Purine &lt;200mg
               </span>
             </div>
           </div>
@@ -1667,7 +1667,7 @@
 
     // =========================================================================
     // CHƯƠNG TRÌNH TẬP CHUẨN QUỐC TẾ (NSCA/ACSM) - 1-2 NĂM KINH NGHIỆM
-    // Thể trạng: 1m58, 55kg • Mục tiêu: Tăng cân nạc (Lean Bulk) • 5 buổi/tuần
+    // Thể trạng: 1m58, 56kg • Mục tiêu: Body Recomposition (Tăng cơ, hạ Triglyceride & Acid Uric) • 5 buổi/tuần
     // Dụng cụ: Tạ đơn, Tạ đòn, Ghế đa năng (dốc xuống, nâng lưng, đá chân), Xà đơn, Hít đất
     // =========================================================================
     const MUSCLE_CATALOG = {
@@ -1793,7 +1793,7 @@
       },
       3: {
         dayName: "Thứ 4", shortLabel: "T4 • Nghỉ", title: "Nghỉ Ngơi & Phục Hồi Cơ Bắp", isRest: true,
-        goal: "Ngày vàng để cơ bắp tổng hợp protein và tăng cân. Ngủ đủ 7.5–8 tiếng, ăn đủ 2,450 kcal.",
+        goal: "Ngày vàng để cơ bắp tổng hợp protein và hạ mỡ máu. Ngủ đủ 7.5–8 tiếng, duy trì 1,950 kcal & 85g đạm ít Purine.",
         exerciseIds: []
       },
       4: {
@@ -1833,7 +1833,7 @@
         weightKg: 56,
         heightCm: 158,
         bmi: 22.4,
-        targets: { calories: 1750, carbsG: 200, proteinG: 75, fatG: 45, fiberG: 25, purineMg: 200, waterMl: 2800, maxWaistCm: 70 },
+        targets: { calories: 1950, carbsG: 220, proteinG: 85, fatG: 50, fiberG: 28, purineMg: 200, waterMl: 2800, maxWaistCm: 70 },
         labs: { acidUric: 8.5, triglyceride: 231, cholesterolTotal: 225, alt: 42, egfr: 103.3, date: "2026-10-13" }
       },
       customFoods: [],
@@ -1843,7 +1843,12 @@
     };
 
     const cachedDb = JSON.parse(localStorage.getItem('healthtrack_unified_json_v50') || localStorage.getItem('healthtrack_unified_json_v44') || 'null');
-    if (cachedDb) appDatabase = { ...appDatabase, ...cachedDb };
+    if (cachedDb) {
+      appDatabase = { ...appDatabase, ...cachedDb };
+      if (appDatabase.patientProfile?.targets?.calories === 1750) {
+        appDatabase.patientProfile.targets = { calories: 1950, carbsG: 220, proteinG: 85, fatG: 50, fiberG: 28, purineMg: 200, waterMl: 2800, maxWaistCm: 70 };
+      }
+    }
 
     let githubConfig = JSON.parse(localStorage.getItem('healthtrack_github_cfg') || 'null');
     let currentFileSha = null;
@@ -2484,18 +2489,18 @@
       if ($('cardIntakeCal')) $('cardIntakeCal').textContent = intakeCal.toLocaleString();
       if ($('cardBurnedCal')) $('cardBurnedCal').textContent = `-${burned.toLocaleString()}`;
       if ($('cardNetCal')) $('cardNetCal').textContent = netCal.toLocaleString();
-      if ($('netCalBadge')) $('netCalBadge').textContent = `Net: ${netCal.toLocaleString()} / 1,750 kcal`;
+      if ($('netCalBadge')) $('netCalBadge').textContent = `Net: ${netCal.toLocaleString()} / 1,950 kcal`;
 
       const RING_C = 314.16;
       const updateRing = (rId, bId, val, target) => {
         if ($(bId)) $(bId).textContent = `${Math.round((val / target) * 100)}%`;
         if ($(rId)) $(rId).style.strokeDashoffset = (RING_C * (1 - Math.min(1, Math.max(0, val / target)))).toFixed(2);
       };
-      updateRing('calProgressRing', 'calPctBadge', netCal, 1750);
-      updateRing('carbProgressRing', 'carbPctBadge', totals.carb, 200);
-      updateRing('proProgressRing', 'proPctBadge', totals.pro, 75);
-      updateRing('fatProgressRing', 'fatPctBadge', totals.fat, 45);
-      updateRing('fiberProgressRing', 'fiberPctBadge', totals.fiber, 25);
+      updateRing('calProgressRing', 'calPctBadge', netCal, 1950);
+      updateRing('carbProgressRing', 'carbPctBadge', totals.carb, 220);
+      updateRing('proProgressRing', 'proPctBadge', totals.pro, 85);
+      updateRing('fatProgressRing', 'fatPctBadge', totals.fat, 50);
+      updateRing('fiberProgressRing', 'fiberPctBadge', totals.fiber, 28);
       updateRing('purineProgressRing', 'purinePctBadge', totals.purine, 200);
 
       $('purineRingCard')?.classList.toggle('ring-alert-pulse', totals.purine >= 200);
@@ -2508,9 +2513,9 @@
       if (!box) return;
       const warnings = [];
       if (totals.purine >= 200) warnings.push(`Purine đạt ${Math.round(totals.purine)}mg (vượt ngưỡng 200mg)`);
-      if (totals.carb > 200) warnings.push(`Tinh bột ${Math.round(totals.carb)}g (>200g, dễ tăng Triglyceride)`);
-      if (totals.fat > 45) warnings.push(`Chất béo ${Math.round(totals.fat)}g (>45g)`);
-      if (totals.netCal > 1750) warnings.push(`Calo Net đạt ${totals.netCal} kcal (>1,750 kcal)`);
+      if (totals.carb > 220) warnings.push(`Tinh bột ${Math.round(totals.carb)}g (>220g, dễ tăng Triglyceride)`);
+      if (totals.fat > 50) warnings.push(`Chất béo ${Math.round(totals.fat)}g (>50g)`);
+      if (totals.netCal > 1950) warnings.push(`Calo Net đạt ${totals.netCal} kcal (>1,950 kcal)`);
 
       if (totals.purine >= 200) {
         box.className = "mt-4 p-3.5 rounded-2xl border border-red-200 bg-red-50/80 flex items-center gap-3.5 transition-all";
@@ -2537,7 +2542,7 @@
         descEl.className = "text-slate-600 mt-0.5";
         descEl.textContent = "Thêm món ăn để hệ thống tự động đánh giá độ an toàn với Acid Uric và Triglyceride.";
       } else {
-        const fiberNote = totals.fiber < 25 ? ` (Bổ sung thêm chất xơ: hiện đạt ${round1(totals.fiber)}/25g)` : " Lượng chất xơ rất tốt!";
+        const fiberNote = totals.fiber < 28 ? ` (Bổ sung thêm chất xơ: hiện đạt ${round1(totals.fiber)}/28g)` : " Lượng chất xơ rất tốt!";
         box.className = "mt-4 p-3.5 rounded-2xl border border-emerald-200 bg-emerald-50/70 flex items-center gap-3.5 transition-all";
         iconBox.className = "w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm";
         iconBox.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
@@ -2961,7 +2966,7 @@
             <div class="wk-card p-8 text-center">
               <div class="w-14 h-14 rounded-2xl bg-lime-100 text-lime-700 flex items-center justify-center text-2xl mx-auto mb-3"><i class="fa-solid fa-bed"></i></div>
               <h4 class="wk-text-main font-extrabold text-base text-slate-900">Ngày Nghỉ Phục Hồi & Tăng Trưởng Cơ</h4>
-              <p class="wk-text-sub text-xs text-slate-500 max-w-md mx-auto mt-1.5">Cơ bắp chỉ phát triển khi bạn nghỉ ngơi và nạp đủ dinh dưỡng. Duy trì ~2,450 kcal & 115g Protein hôm nay.</p>
+              <p class="wk-text-sub text-xs text-slate-500 max-w-md mx-auto mt-1.5">Cơ bắp chỉ phát triển khi bạn nghỉ ngơi và nạp đủ dinh dưỡng. Duy trì 1,950 kcal (Net), 85g đạm sạch (ức gà, trứng, sữa chua) & uống đủ 2.8L nước hôm nay.</p>
             </div>`;
         } else {
           $('workoutExerciseList').innerHTML = exList.map((ex, idx) => {
