@@ -245,6 +245,46 @@
       color: #f8fafc !important;
     }
 
+
+    /* === ANIMATED EXERCISE DEMO GIF ENGINE === */
+    .btn-show-gif {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+      color: #090d16;
+      border: 1px solid #a3e635;
+      box-shadow: 0 2px 6px rgba(132, 204, 22, 0.3);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-show-gif:hover {
+      transform: translateY(-1px) scale(1.03);
+      box-shadow: 0 4px 10px rgba(132, 204, 22, 0.45);
+    }
+    .btn-show-gif.active {
+      background: #0f172a;
+      color: #a3e635;
+      border-color: #a3e635;
+    }
+    .gif-stage-box {
+      position: relative;
+      background: radial-gradient(circle at 50% 45%, #1e293b 0%, #090d16 100%);
+      border: 1px solid #334155;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    .gif-grid-bg {
+      background-image: linear-gradient(to right, rgba(148,163,184,0.07) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(148,163,184,0.07) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+
   </style>
 </head>
 <body class="text-slate-800 min-h-screen pb-24 lg:pb-14 relative overflow-x-hidden">
@@ -880,7 +920,7 @@
                   <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-lime-100 text-lime-800 font-extrabold border border-lime-300">1–2 Năm KN • Tăng Cân Nạc</span>
                 </div>
                 <p class="wk-text-sub text-xs text-slate-500 mt-0.5">
-                  1m58 • 55–56kg • Dụng cụ: <strong>Tạ đơn, Tạ đòn, Ghế đa năng (dốc xuống, nâng lưng, đá chân), Xà đơn, Hít đất</strong>
+                  1m58 • 55–56kg • Dụng cụ: <strong>Tạ đơn, Tạ đòn, Ghế đa năng (dốc xuống, nâng lưng, đá chân), Xà đơn, Máy chạy bộ, Hít đất</strong>
                 </p>
               </div>
             </div>
@@ -1022,7 +1062,7 @@
                 <h3 class="wk-text-main font-extrabold text-base text-slate-900">
                   Thư Viện Bài Tập <span id="libraryMuscleBadge" class="text-lime-600">Lưng</span>
                 </h3>
-                <p class="wk-text-sub text-xs text-slate-500 mt-0.5">Tối ưu cho Tạ đơn, Tạ đòn, Ghế đa năng, Xà đơn & Hít đất</p>
+                <p class="wk-text-sub text-xs text-slate-500 mt-0.5">Tối ưu cho Tạ đơn, Tạ đòn, Ghế đa năng, Xà đơn, Máy chạy bộ & Hít đất</p>
               </div>
               <select id="wkToolFilter" onchange="renderMuscleExerciseLibrary()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-700">
                 <option value="all">Tất cả dụng cụ</option>
@@ -1030,6 +1070,7 @@
                 <option value="Tạ đơn">Tạ đơn (Dumbbell)</option>
                 <option value="Ghế đa năng">Ghế đa năng</option>
                 <option value="Xà đơn">Xà đơn (Pull-up Bar)</option>
+                <option value="Máy chạy bộ">Máy chạy bộ (Treadmill)</option>
                 <option value="Hít đất / Bodyweight">Hít đất / Bodyweight</option>
               </select>
             </div>
@@ -1558,6 +1599,52 @@
     </div>
   </div>
 
+
+  <!-- MODAL 4: MÔ PHỎNG ĐỘNG TÁC GIF CHUẨN FORM (SHOW BUTTON) -->
+  <div id="exerciseGifModal" onclick="if(event.target===this) closeExerciseGifModal()" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-700/90 fade-in">
+      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded-md bg-lime-400 text-slate-950 text-[10px] font-black uppercase tracking-wider">GIF Form Chuẩn</span>
+            <span id="gifModalToolBadge" class="text-[11px] text-slate-400 font-bold">Tạ đòn</span>
+          </div>
+          <h3 id="gifModalTitle" class="font-extrabold text-white text-sm sm:text-base mt-1 leading-snug">Tên bài tập</h3>
+        </div>
+        <button onclick="closeExerciseGifModal()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-lg font-bold cursor-pointer">&times;</button>
+      </div>
+
+      <!-- Khung Canvas / SVG Động Tác GIF Tuần Hoàn -->
+      <div class="gif-stage-box gif-grid-bg mt-3.5 p-3 flex flex-col items-center justify-center">
+        <div class="w-full flex items-center justify-between text-[10px] font-mono-code text-slate-400 px-1 mb-1">
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-lime-400 animate-ping"></span> LIVE LOOP • 60 FPS</span>
+          <span id="gifPhaseLabel" class="px-2 py-0.5 rounded bg-lime-400/15 text-lime-300 font-bold">Pha phát lực</span>
+        </div>
+        <canvas id="exerciseGifCanvas" width="360" height="240" class="w-full max-w-[360px] h-auto rounded-xl"></canvas>
+        <div class="w-full flex items-center justify-between text-[10px] text-slate-400 mt-1.5 px-1">
+          <span id="gifMusclesHighlight" class="text-lime-400 font-bold">Nhóm cơ chính: --</span>
+          <span id="gifTempoTag" class="font-mono-code">Tempo: 2-0-1-1</span>
+        </div>
+      </div>
+
+      <!-- Hướng dẫn kỹ thuật & Chú ý nhịp thở -->
+      <div class="mt-3.5 p-3 rounded-2xl bg-slate-800/80 border border-slate-700/80 text-xs space-y-1.5">
+        <div class="font-bold text-lime-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-bullseye"></i> Kỹ thuật thực hiện & Nhịp thở:
+        </div>
+        <p id="gifModalNote" class="text-slate-300 leading-relaxed text-[11px]">--</p>
+      </div>
+
+      <div class="flex items-center justify-between gap-2 mt-4">
+        <div class="flex items-center gap-1.5">
+          <button onclick="setGifPlaybackSpeed(0.5)" id="gifSpdSlow" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold cursor-pointer">0.5x Chậm</button>
+          <button onclick="setGifPlaybackSpeed(1)" id="gifSpdNorm" class="px-2.5 py-1.5 rounded-xl bg-lime-400 text-slate-950 text-[11px] font-extrabold cursor-pointer">1.0x Chuẩn</button>
+        </div>
+        <button onclick="closeExerciseGifModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold cursor-pointer">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // =========================================================================
     // HEALTHTRACK PRO ENGINE v6.0 - OPTIMIZED & MODULARIZED
@@ -1646,6 +1733,12 @@
         subs: [
           { id: "all_quads", label: "Đùi trước (Quads)", parts: ["quads"] }
         ]
+      },
+      cardio: {
+        label: "Cardio & Tim mạch", side: "front", count: 24,
+        subs: [
+          { id: "all_cardio", label: "Máy chạy bộ (Zone 2 & HIIT)", parts: ["quads", "hamstrings", "calves", "abs"] }
+        ]
       }
     };
 
@@ -1680,14 +1773,18 @@
       { id: "ex_bulgarian", name: "Bulgarian Split Squat (Squat 1 chân kê ghế)", muscle: "quads", sub: "all_quads", parts: ["quads", "glutes"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "10/chân", tempo: "2-0-1-0", rir: "1", rest: "90 giây", restSec: 90, note: "Kê mu bàn chân sau lên ghế tập, giữ thân thẳng." },
       // BỤNG
       { id: "ex_hanging_leg", name: "Hanging Leg Raise (Treo xà đơn nâng chân)", muscle: "abs", sub: "all_abs", parts: ["abs", "obliques"], tool: "Xà đơn", isBodyweight: true, allowExtraWeight: false, sets: 3, reps: "12–15", tempo: "2-1-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Cuộn xương chậu đưa mũi chân hướng lên thanh xà." },
-      { id: "ex_decline_crunch", name: "Decline Bench Crunch (Gập bụng trên ghế dốc xuống)", muscle: "abs", sub: "all_abs", parts: ["abs", "obliques"], tool: "Ghế đa năng", isBodyweight: true, allowExtraWeight: true, sets: 3, reps: "15–20", tempo: "2-1-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Khóa cổ chân vào đệm ghế dốc xuống để siết múi bụng sâu hơn." }
+      { id: "ex_decline_crunch", name: "Decline Bench Crunch (Gập bụng trên ghế dốc xuống)", muscle: "abs", sub: "all_abs", parts: ["abs", "obliques"], tool: "Ghế đa năng", isBodyweight: true, allowExtraWeight: true, sets: 3, reps: "15–20", tempo: "2-1-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Khóa cổ chân vào đệm ghế dốc xuống để siết múi bụng sâu hơn." },
+      // MÁY CHẠY BỘ (TREADMILL - TỐI ƯU HẠ TRIGLYCERIDE & GIỮ CƠ LEAN BULK)
+      { id: "ex_treadmill_zone2", name: "Treadmill Zone 2 Brisk Walk / Light Jog (Đi bộ nhanh / Chạy nhẹ)", muscle: "cardio", sub: "all_cardio", parts: ["quads", "hamstrings", "calves"], tool: "Máy chạy bộ", isBodyweight: true, allowExtraWeight: false, isCardio: true, sets: 1, reps: "15–20 phút (6.0–7.8 km/h)", tempo: "Nhịp đều", rir: "Nhẹ (Zone 2)", rest: "—", restSec: 0, note: "Tốc độ 6.0–6.5 km/h (đi bộ nhanh) hoặc 7.5–7.8 km/h (chạy nhẹ). Giữ nhịp tim Zone 2 giúp hạ Triglyceride (231 mg/dL) và tăng độ nhạy Insulin mà không đốt mất cơ bắp." },
+      { id: "ex_treadmill_incline_walk", name: "Treadmill Incline Power Walk (Đi bộ dốc cao đốt mỡ giữ cơ)", muscle: "cardio", sub: "all_cardio", parts: ["glutes", "hamstrings", "calves"], tool: "Máy chạy bộ", isBodyweight: true, allowExtraWeight: false, isCardio: true, sets: 1, reps: "20–25 phút (Dốc 8–10% • 5.5 km/h)", tempo: "Sải dài", rir: "Vừa", rest: "—", restSec: 0, note: "Nâng độ dốc máy chạy bộ 8–10%, tốc độ 5.2–5.8 km/h (không vịn tay). Siết mông & đùi sau, đốt mỡ nội tạng cực mạnh nhưng rất êm khớp gối." },
+      { id: "ex_treadmill_hiit", name: "Treadmill HIIT Sprints (Chạy biến tốc ngắt quãng)", muscle: "cardio", sub: "all_cardio", parts: ["quads", "hamstrings", "calves", "abs"], tool: "Máy chạy bộ", isBodyweight: true, allowExtraWeight: false, isCardio: true, sets: 8, reps: "30s chạy nhanh / 60s đi bộ", tempo: "Bùng nổ", rir: "1", rest: "60 giây", restSec: 60, note: "Khởi động 3 phút, sau đó 8 hiệp chạy 11–13 km/h trong 30 giây xen kẽ đi bộ 4.5 km/h trong 60 giây. Tổng 15 phút tăng VO2 Max & trao đổi chất." }
     ];
 
     const WORKOUT_PLAN = {
       1: {
-        dayName: "Thứ 2", shortLabel: "T2 • Upper Strength", title: "Buổi 1: Upper Body (Sức Mạnh Thân Trên)", isRest: false,
-        goal: "Tập trung tạ nặng (6–10 reps) kích thích sợi cơ loại II phát triển độ dày. Kết thúc bằng Hít đất vắt kiệt cơ.",
-        exerciseIds: ["ex_bb_bench", "ex_pullup", "ex_db_ohp", "ex_bb_row", "ex_bb_curl", "ex_pushup_finisher"]
+        dayName: "Thứ 2", shortLabel: "T2 • Upper Strength", title: "Buổi 1: Upper Body + Máy Chạy Bộ Zone 2", isRest: false,
+        goal: "Tập trung tạ nặng (6–10 reps) phát triển độ dày thân trên, kết thúc bằng Hít đất & 15 phút máy chạy bộ Zone 2 hỗ trợ hạ Triglyceride.",
+        exerciseIds: ["ex_bb_bench", "ex_pullup", "ex_db_ohp", "ex_bb_row", "ex_bb_curl", "ex_pushup_finisher", "ex_treadmill_zone2"]
       },
       2: {
         dayName: "Thứ 3", shortLabel: "T3 • Lower Strength", title: "Buổi 2: Lower Body (Sức Mạnh Chân & Mông)", isRest: false,
@@ -1700,9 +1797,9 @@
         exerciseIds: []
       },
       4: {
-        dayName: "Thứ 5", shortLabel: "T5 • Push Hyper", title: "Buổi 3: Push (Ngực Trên/Dưới - Vai - Tay Sau)", isRest: false,
-        goal: "Khai thác tối đa ghế đa năng (dốc lên & dốc xuống) kết hợp Hít đất kê chân & Hít đất kim cương không cần tạ.",
-        exerciseIds: ["ex_inc_db_press", "ex_dec_db_press", "ex_db_lat_raise", "ex_skullcrusher", "ex_inc_pushup", "ex_diamond_pushup"]
+        dayName: "Thứ 5", shortLabel: "T5 • Push Hyper", title: "Buổi 3: Push + Đi Bộ Dốc Máy Chạy Bộ", isRest: false,
+        goal: "Khai thác ghế đa năng (dốc lên & dốc xuống), Hít đất kê chân/kim cương & 20 phút đi bộ dốc giữ cơ siết mỡ bụng.",
+        exerciseIds: ["ex_inc_db_press", "ex_dec_db_press", "ex_db_lat_raise", "ex_skullcrusher", "ex_inc_pushup", "ex_diamond_pushup", "ex_treadmill_incline_walk"]
       },
       5: {
         dayName: "Thứ 6", shortLabel: "T6 • Pull Hyper", title: "Buổi 4: Pull (Lưng Xô - Vai Sau - Tay Trước)", isRest: false,
@@ -1710,9 +1807,9 @@
         exerciseIds: ["ex_chinup", "ex_db_row", "ex_rear_delt_fly", "ex_bb_shrug", "ex_inc_db_curl"]
       },
       6: {
-        dayName: "Thứ 7", shortLabel: "T7 • Legs & Core", title: "Buổi 5: Legs & Core (Phì Đại Chân & Bụng Dốc Xuống)", isRest: false,
-        goal: "Hoàn thiện khối lượng thân dưới (Hip Thrust, Bulgarian Split Squat, Đá/Móc chân ghế đa năng) & Bụng dốc xuống.",
-        exerciseIds: ["ex_hip_thrust", "ex_bulgarian", "ex_leg_ext", "ex_leg_curl", "ex_decline_crunch"]
+        dayName: "Thứ 7", shortLabel: "T7 • Legs & Core", title: "Buổi 5: Legs, Core & Treadmill Conditioning", isRest: false,
+        goal: "Hoàn thiện khối lượng thân dưới (Hip Thrust, Bulgarian Split Squat, Đá/Móc chân ghế), Bụng dốc xuống & 15 phút máy chạy bộ.",
+        exerciseIds: ["ex_hip_thrust", "ex_bulgarian", "ex_leg_ext", "ex_leg_curl", "ex_decline_crunch", "ex_treadmill_zone2"]
       },
       0: {
         dayName: "Chủ Nhật", shortLabel: "CN • Nghỉ", title: "Nghỉ Hoàn Toàn & Tổng Kết Tuần", isRest: true,
@@ -2742,6 +2839,7 @@
           <div class="flex-1 min-w-[220px]">
             <div class="flex flex-wrap items-center gap-1.5">
               <h4 class="wk-text-main font-extrabold text-xs sm:text-sm text-slate-900">${escHtml(ex.name)}</h4>
+              <button onclick="openExerciseGifModal('${ex.id}')" class="btn-show-gif" title="Xem mô phỏng động tác GIF"><i class="fa-solid fa-play text-[8px]"></i> Show</button>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-700 font-bold">${escHtml(ex.tool)}</span>
               ${ex.isBodyweight ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-lime-100 text-lime-800 font-extrabold">Bodyweight</span>' : ''}
             </div>
@@ -2881,6 +2979,7 @@
                       <div class="flex flex-wrap items-center gap-1.5">
                         <span class="text-xs font-extrabold text-slate-400">#${idx + 1}</span>
                         <h4 class="wk-text-main font-extrabold text-sm ${entry.done ? 'line-through text-slate-400' : 'text-slate-900'}">${escHtml(ex.name)}</h4>
+                        <button onclick="openExerciseGifModal('${ex.id}')" class="btn-show-gif" title="Xem mô phỏng động tác GIF"><i class="fa-solid fa-play text-[8px]"></i> Show</button>
                         <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold">${escHtml(ex.tool)}</span>
                         ${ex.isBodyweight ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-lime-100 text-lime-800 font-extrabold">BW • Trọng lượng cơ thể</span>' : ''}
                         ${lastPr ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-extrabold"><i class="fa-solid fa-trophy text-amber-500"></i> PR: ${escHtml(lastPr)}</span>` : ''}
@@ -2917,8 +3016,8 @@
                     <div class="flex items-center gap-1.5">
                       ${setsArr.map((val, sIdx) => `
                         <div>
-                          <label class="block text-[9px] font-bold text-slate-400 text-center mb-0.5">Hiệp ${sIdx + 1}</label>
-                          <input type="text" value="${escHtml(val)}" onchange="updateExerciseSet('${ex.id}', ${sIdx}, this.value)" placeholder="reps" class="w-12 px-1.5 py-1 text-xs font-bold text-center bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-500">
+                          <label class="block text-[9px] font-bold text-slate-400 text-center mb-0.5">${ex.isCardio && ex.sets === 1 ? 'Thời gian' : `Hiệp ${sIdx + 1}`}</label>
+                          <input type="text" value="${escHtml(val)}" onchange="updateExerciseSet('${ex.id}', ${sIdx}, this.value)" placeholder="${ex.isCardio && ex.sets === 1 ? '15p' : 'reps'}" class="${ex.isCardio && ex.sets === 1 ? 'w-16' : 'w-12'} px-1.5 py-1 text-xs font-bold text-center bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-500">
                         </div>
                       `).join('')}
                     </div>
@@ -3192,6 +3291,609 @@
       if (!el) return;
       el.textContent = `${String(Math.floor(restSecondsLeft / 60)).padStart(2, '0')}:${String(restSecondsLeft % 60).padStart(2, '0')}`;
       el.className = `font-mono-code font-extrabold text-sm min-w-[44px] text-center ${restSecondsLeft > 0 && restSecondsLeft <= 10 ? 'text-amber-400 animate-pulse' : 'text-lime-400'}`;
+    }
+
+
+    // =========================================================================
+    // PROCEDURAL BIOMECHANICAL GIF ANIMATOR (ALL 25 EXERCISES - 60FPS LOOP)
+    // =========================================================================
+    let gifAnimFrameId = null;
+    let gifCurrentExId = null;
+    let gifSpeedMultiplier = 1.0;
+
+    const EXERCISE_ANIM_CONFIG = {
+      ex_pullup:          { type: "pullup",       grip: "wide",    active: "Xô (Lats), Lưng giữa, Tay trước" },
+      ex_chinup:          { type: "pullup",       grip: "under",   active: "Xô dưới, Bắp tay trước" },
+      ex_bb_row:          { type: "bb_row",       grip: "row",     active: "Lưng giữa, Xô, Cầu vai" },
+      ex_db_row:          { type: "incline_row",  grip: "db",      active: "Lưng giữa, Xô, Vai sau" },
+      ex_bb_shrug:        { type: "shrug",        grip: "bb",      active: "Cầu vai (Trapezius)" },
+      ex_bb_bench:        { type: "bench_press",  angle: 0,        tool: "bb", active: "Ngực giữa, Vai trước, Tay sau" },
+      ex_inc_db_press:    { type: "bench_press",  angle: 32,       tool: "db", active: "Ngực trên, Vai trước, Tay sau" },
+      ex_dec_db_press:    { type: "bench_press",  angle: -18,      tool: "db", active: "Ngực dưới, Viền ngực, Tay sau" },
+      ex_pushup_finisher: { type: "pushup",       mode: "flat",    active: "Ngực giữa, Ngực dưới, Tay sau" },
+      ex_inc_pushup:      { type: "pushup",       mode: "elevated",active: "Ngực trên, Vai trước, Tay sau" },
+      ex_diamond_pushup:  { type: "pushup",       mode: "diamond", active: "Tay sau (Triceps), Ngực trong" },
+      ex_db_ohp:          { type: "ohp",          tool: "db",      active: "Vai trước, Vai giữa, Tay sau" },
+      ex_db_lat_raise:    { type: "lat_raise",    mode: "side",    active: "Vai giữa (Lateral Delt)" },
+      ex_rear_delt_fly:   { type: "incline_row",  grip: "fly",     active: "Vai sau (Rear Delt), Lưng giữa" },
+      ex_bb_curl:         { type: "curl",         angle: 0,        active: "Tay trước (Biceps), Cẳng tay" },
+      ex_inc_db_curl:     { type: "curl",         angle: -35,      active: "Đầu dài bắp tay trước" },
+      ex_skullcrusher:    { type: "skullcrusher", angle: -10,      active: "Tay sau (Triceps)" },
+      ex_bb_squat:        { type: "squat",        mode: "back",    active: "Đùi trước (Quads), Mông (Glutes)" },
+      ex_bulgarian:       { type: "squat",        mode: "split",   active: "Đùi trước, Mông" },
+      ex_leg_ext:         { type: "leg_ext",      mode: "ext",     active: "Đùi trước (Quadriceps)" },
+      ex_bb_rdl:          { type: "rdl",          mode: "bb",      active: "Đùi sau (Hamstrings), Mông, Lưng dưới" },
+      ex_leg_curl:        { type: "leg_curl",     mode: "prone",   active: "Đùi sau (Hamstrings)" },
+      ex_hip_thrust:      { type: "hip_thrust",   mode: "bb",      active: "Mông (Glutes), Đùi sau" },
+      ex_hanging_leg:     { type: "hanging_leg",  mode: "hang",    active: "Bụng dưới, Bụng 6 múi, Liên sườn" },
+      ex_decline_crunch:        { type: "crunch",       mode: "decline", active: "Bụng 6 múi, Cơ liên sườn" },
+      ex_treadmill_zone2:       { type: "treadmill",    incline: 0,        active: "Tim mạch Zone 2, Đùi trước, Bắp chân" },
+      ex_treadmill_incline_walk:{ type: "treadmill",    incline: 10,       active: "Mông (Glutes), Đùi sau, Bắp chân" },
+      ex_treadmill_hiit:        { type: "treadmill",    incline: 2,        active: "Tim mạch HIIT, Toàn thân dưới" }
+    };
+
+    function setGifPlaybackSpeed(spd) {
+      gifSpeedMultiplier = spd;
+      if ($('gifSpdSlow')) $('gifSpdSlow').className = spd === 0.5
+        ? "px-2.5 py-1.5 rounded-xl bg-lime-400 text-slate-950 text-[11px] font-extrabold cursor-pointer"
+        : "px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold cursor-pointer";
+      if ($('gifSpdNorm')) $('gifSpdNorm').className = spd === 1
+        ? "px-2.5 py-1.5 rounded-xl bg-lime-400 text-slate-950 text-[11px] font-extrabold cursor-pointer"
+        : "px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold cursor-pointer";
+    }
+
+    function openExerciseGifModal(exId) {
+      const ex = getExerciseById(exId);
+      if (!ex) return;
+      gifCurrentExId = exId;
+      const cfg = EXERCISE_ANIM_CONFIG[exId] || { type: "pushup", mode: "flat", active: "Toàn thân" };
+
+      if ($('gifModalTitle')) $('gifModalTitle').textContent = ex.name;
+      if ($('gifModalToolBadge')) $('gifModalToolBadge').textContent = ex.tool;
+      if ($('gifModalNote')) $('gifModalNote').textContent = ex.note;
+      if ($('gifMusclesHighlight')) $('gifMusclesHighlight').textContent = `Cơ tác động: ${cfg.active}`;
+      if ($('gifTempoTag')) $('gifTempoTag').textContent = `Tempo: ${ex.tempo} • ${ex.sets}×${ex.reps}`;
+
+      $('exerciseGifModal')?.classList.remove('hidden');
+      startExerciseGifLoop();
+    }
+
+    function closeExerciseGifModal() {
+      $('exerciseGifModal')?.classList.add('hidden');
+      if (gifAnimFrameId) {
+        cancelAnimationFrame(gifAnimFrameId);
+        gifAnimFrameId = null;
+      }
+    }
+
+    function startExerciseGifLoop() {
+      if (gifAnimFrameId) cancelAnimationFrame(gifAnimFrameId);
+      const canvas = $('exerciseGifCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let startTime = performance.now();
+
+      function renderFrame(now) {
+        const elapsed = ((now - startTime) / 1000) * gifSpeedMultiplier;
+        // Smooth asymmetric rep cycle: eccentric (slow down) -> pause -> concentric (explosive up)
+        const cycle = (elapsed % 2.8) / 2.8;
+        let phaseVal = 0; // 0 = start/extended, 1 = peak contraction
+        let phaseText = "Chuẩn bị";
+        if (cycle < 0.42) {
+          // Concentric or eccentric depending on exercise
+          const t = cycle / 0.42;
+          phaseVal = 0.5 - 0.5 * Math.cos(Math.PI * t);
+          phaseText = "Co cơ • Thở ra";
+        } else if (cycle < 0.55) {
+          phaseVal = 1;
+          phaseText = "Siết đỉnh • Giữ 1s";
+        } else {
+          const t = (cycle - 0.55) / 0.45;
+          phaseVal = 0.5 + 0.5 * Math.cos(Math.PI * t);
+          phaseText = "Hạ chậm • Hít vào";
+        }
+
+        if ($('gifPhaseLabel')) $('gifPhaseLabel').textContent = phaseText;
+        drawExerciseBiomechanics(ctx, canvas.width, canvas.height, gifCurrentExId, phaseVal);
+        gifAnimFrameId = requestAnimationFrame(renderFrame);
+      }
+      gifAnimFrameId = requestAnimationFrame(renderFrame);
+    }
+
+    function drawLimb(ctx, x1, y1, x2, y2, width, color, glow = false) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = color;
+      if (glow) {
+        ctx.shadowColor = "#a3e635";
+        ctx.shadowBlur = 12;
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawJoint(ctx, x, y, r = 4, color = "#f8fafc") {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+
+    function drawDumbbellOrBarbell(ctx, x, y, angleRad = 0, isBarbell = true) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angleRad);
+      // Shaft
+      ctx.fillStyle = "#94a3b8";
+      const w = isBarbell ? 56 : 26;
+      ctx.fillRect(-w / 2, -2.5, w, 5);
+      // Plates
+      ctx.fillStyle = "#38bdf8";
+      ctx.strokeStyle = "#0284c7";
+      ctx.lineWidth = 1.5;
+      if (isBarbell) {
+        ctx.fillRect(-w / 2 + 2, -14, 6, 28);
+        ctx.fillRect(-w / 2 + 9, -11, 4, 22);
+        ctx.fillRect(w / 2 - 8, -14, 6, 28);
+        ctx.fillRect(w / 2 - 13, -11, 4, 22);
+      } else {
+        ctx.fillRect(-w / 2, -9, 6, 18);
+        ctx.fillRect(w / 2 - 6, -9, 6, 18);
+      }
+      ctx.restore();
+    }
+
+    function drawBench(ctx, pivotX, pivotY, backAngleDeg, hasLegUnit = false) {
+      ctx.save();
+      // Floor line
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(40, 212);
+      ctx.lineTo(320, 212);
+      ctx.stroke();
+
+      // Bench Legs
+      ctx.strokeStyle = "#475569";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(pivotX - 35, pivotY + 4);
+      ctx.lineTo(pivotX - 45, 212);
+      ctx.moveTo(pivotX + 35, pivotY + 4);
+      ctx.lineTo(pivotX + 45, 212);
+      ctx.stroke();
+
+      // Seat pad
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 8;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(pivotX, pivotY);
+      ctx.lineTo(pivotX + 42, pivotY);
+      ctx.stroke();
+
+      // Adjustable Backrest
+      const rad = (-backAngleDeg * Math.PI) / 180;
+      const bx = pivotX - Math.cos(rad) * 64;
+      const by = pivotY + Math.sin(rad) * 64;
+      ctx.beginPath();
+      ctx.moveTo(pivotX, pivotY);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+
+      if (hasLegUnit) {
+        ctx.strokeStyle = "#64748b";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(pivotX + 44, pivotY + 2);
+        ctx.lineTo(pivotX + 44, pivotY + 44);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawExerciseBiomechanics(ctx, W, H, exId, p) {
+      ctx.clearRect(0, 0, W, H);
+      const cfg = EXERCISE_ANIM_CONFIG[exId] || { type: "pushup", mode: "flat" };
+      const bodyCol = "#cbd5e1";
+      const activeCol = "#a3e635"; // Neon lime highlight on working muscle
+
+      // Floor reference
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(30, 212);
+      ctx.lineTo(330, 212);
+      ctx.stroke();
+
+      if (cfg.type === "pullup") {
+        // Pull-up bar
+        ctx.strokeStyle = "#64748b";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(95, 26);
+        ctx.lineTo(265, 26);
+        ctx.stroke();
+
+        const pullY = p * 54;
+        const headY = 92 - pullY;
+        const shY = 112 - pullY;
+        const hipY = 162 - pullY;
+        const elbowX = cfg.grip === "wide" ? (135 + p * 12) : (165 - p * 8);
+        const elbowY = 66 - pullY * 0.25;
+
+        // Legs
+        drawLimb(ctx, 180, hipY, 176, hipY + 44, 9, bodyCol);
+        drawLimb(ctx, 176, hipY + 44, 182, hipY + 76, 8, bodyCol);
+        // Torso (Lats highlighted!)
+        drawLimb(ctx, 180, shY, 180, hipY, 16, activeCol, true);
+        // Arms
+        drawLimb(ctx, 180, shY, elbowX, elbowY, 8, activeCol, true);
+        drawLimb(ctx, elbowX, elbowY, 155, 26, 7, bodyCol);
+        // Head
+        drawJoint(ctx, 180, headY, 12, "#f8fafc");
+      }
+      else if (cfg.type === "bench_press") {
+        const ang = cfg.angle || 0;
+        drawBench(ctx, 175, 165, ang);
+        const rad = (-ang * Math.PI) / 180;
+        const hipX = 180, hipY = 156;
+        const shX = hipX - Math.cos(rad) * 52;
+        const shY = hipY + Math.sin(rad) * 52;
+        const headX = shX - Math.cos(rad) * 18;
+        const headY = shY + Math.sin(rad) * 18;
+
+        // Legs planted
+        drawLimb(ctx, hipX, hipY, 224, 160, 10, bodyCol);
+        drawLimb(ctx, 224, 160, 232, 210, 8, bodyCol);
+        // Torso (Chest highlighted!)
+        drawLimb(ctx, hipX, hipY, shX, shY, 15, activeCol, true);
+        drawJoint(ctx, headX, headY, 11, "#f8fafc");
+
+        // Pressing arm & weight
+        const handX = shX + 6;
+        const handY = shY - 22 - p * 36;
+        const elbX = shX - 10 + p * 12;
+        const elbY = shY - 6 - p * 22;
+        drawLimb(ctx, shX, shY, elbX, elbY, 8, activeCol, true);
+        drawLimb(ctx, elbX, elbY, handX, handY, 7, bodyCol);
+        drawDumbbellOrBarbell(ctx, handX, handY, 0, cfg.tool === "bb");
+      }
+      else if (cfg.type === "pushup") {
+        if (cfg.mode === "elevated") {
+          // Box/Bench for feet
+          ctx.fillStyle = "#334155";
+          ctx.fillRect(65, 168, 52, 44);
+        }
+        const footX = 88;
+        const footY = cfg.mode === "elevated" ? 166 : 206;
+        const handX = 248, handY = 208;
+        // p = 1 is top plank, p = 0 is bottom chest near floor
+        const lift = p * 38;
+        const shX = 236, shY = 192 - lift;
+        const hipX = 162, hipY = (footY + shY) / 2 - 4;
+        const headX = shX + 20, headY = shY - 6;
+
+        // Legs & Hip
+        drawLimb(ctx, footX, footY, hipX, hipY, 9, bodyCol);
+        // Torso (Chest/Core highlighted)
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, activeCol, true);
+        // Arm
+        const elbX = shX - 14 + p * 14;
+        const elbY = (shY + handY) / 2 - 4;
+        drawLimb(ctx, shX, shY, elbX, elbY, 8, activeCol, true);
+        drawLimb(ctx, elbX, elbY, handX, handY, 7, bodyCol);
+        drawJoint(ctx, headX, headY, 11, "#f8fafc");
+      }
+      else if (cfg.type === "squat") {
+        if (cfg.mode === "split") {
+          ctx.fillStyle = "#334155";
+          ctx.fillRect(85, 172, 46, 40);
+        }
+        const depth = (1 - p) * 52; // p=1 standing, p=0 deep squat
+        const ankleX = 192, ankleY = 208;
+        const kneeX = 204 + (1 - p) * 18;
+        const kneeY = 162 + depth * 0.25;
+        const hipX = 176 - (1 - p) * 26;
+        const hipY = 114 + depth;
+        const shX = 186 - (1 - p) * 10;
+        const shY = 62 + depth;
+
+        if (cfg.mode === "split") {
+          drawLimb(ctx, 108, 170, hipX, hipY, 9, "#64748b");
+        }
+        // Front Leg (Quads & Glutes highlighted!)
+        drawLimb(ctx, ankleX, ankleY, kneeX, kneeY, 9, bodyCol);
+        drawLimb(ctx, kneeX, kneeY, hipX, hipY, 12, activeCol, true);
+        // Torso
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, bodyCol);
+        drawJoint(ctx, shX + 3, shY - 16, 11, "#f8fafc");
+        // Barbell on traps
+        drawLimb(ctx, shX, shY, shX - 4, shY - 12, 7, bodyCol);
+        drawDumbbellOrBarbell(ctx, shX - 4, shY - 12, 0, true);
+      }
+      else if (cfg.type === "rdl") {
+        // Romanian Deadlift hip hinge
+        const hinge = p; // 0 = standing, 1 = deep hip hinge
+        const ankleX = 175, ankleY = 208;
+        const kneeX = 180 + hinge * 4;
+        const kneeY = 160;
+        const hipX = 172 - hinge * 28;
+        const hipY = 112 + hinge * 6;
+        const shX = hipX + 12 + hinge * 54;
+        const shY = hipY - 52 + hinge * 48;
+
+        drawLimb(ctx, ankleX, ankleY, kneeX, kneeY, 9, bodyCol);
+        drawLimb(ctx, kneeX, kneeY, hipX, hipY, 11, activeCol, true);
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, activeCol, true);
+        drawJoint(ctx, shX + 12, shY - 10, 11, "#f8fafc");
+
+        const barX = shX + 4;
+        const barY = shY + 46 - hinge * 6;
+        drawLimb(ctx, shX, shY, barX, barY, 7, bodyCol);
+        drawDumbbellOrBarbell(ctx, barX, barY, 0, true);
+      }
+      else if (cfg.type === "bb_row") {
+        // Bent-over Barbell Row
+        const hipX = 148, hipY = 122;
+        const shX = 204, shY = 92;
+        drawLimb(ctx, 152, 208, 160, 162, 9, bodyCol);
+        drawLimb(ctx, 160, 162, hipX, hipY, 11, bodyCol);
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, activeCol, true);
+        drawJoint(ctx, shX + 14, shY - 8, 11, "#f8fafc");
+
+        const handX = shX - 4 - p * 14;
+        const handY = shY + 48 - p * 28;
+        const elbX = shX - 12 - p * 16;
+        const elbY = shY + 22 - p * 26;
+        drawLimb(ctx, shX, shY, elbX, elbY, 8, activeCol, true);
+        drawLimb(ctx, elbX, elbY, handX, handY, 7, bodyCol);
+        drawDumbbellOrBarbell(ctx, handX, handY, 0, true);
+      }
+      else if (cfg.type === "incline_row") {
+        // Chest-supported incline bench row / rear delt fly
+        drawBench(ctx, 185, 165, 38);
+        const hipX = 186, hipY = 154;
+        const shX = 144, shY = 120;
+        drawLimb(ctx, 192, 208, 215, 174, 8, bodyCol);
+        drawLimb(ctx, 215, 174, hipX, hipY, 10, bodyCol);
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, activeCol, true);
+        drawJoint(ctx, shX - 13, shY - 10, 11, "#f8fafc");
+
+        const handX = shX + p * 18;
+        const handY = shY + 46 - p * 32;
+        drawLimb(ctx, shX, shY, handX, handY, 8, activeCol, true);
+        drawDumbbellOrBarbell(ctx, handX, handY, 0, false);
+      }
+      else if (cfg.type === "ohp" || cfg.type === "shrug") {
+        if (cfg.type === "ohp") drawBench(ctx, 175, 165, 82);
+        const hipX = 180, hipY = cfg.type === "ohp" ? 156 : 120;
+        const shX = 176, shY = cfg.type === "ohp" ? 102 : (66 - p * 10);
+        if (cfg.type === "ohp") {
+          drawLimb(ctx, hipX, hipY, 220, 160, 10, bodyCol);
+          drawLimb(ctx, 220, 160, 226, 210, 8, bodyCol);
+        } else {
+          drawLimb(ctx, 180, 208, hipX, hipY, 10, bodyCol);
+        }
+        drawLimb(ctx, hipX, hipY, shX, shY, 15, cfg.type === "shrug" ? activeCol : bodyCol, cfg.type === "shrug");
+        drawJoint(ctx, shX, shY - 17, 11, "#f8fafc");
+
+        if (cfg.type === "ohp") {
+          const handY = shY - 12 - p * 42;
+          const elbX = shX + 18 - p * 10;
+          const elbY = shY + 4 - p * 24;
+          drawLimb(ctx, shX, shY, elbX, elbY, 8, activeCol, true);
+          drawLimb(ctx, elbX, elbY, shX + 4, handY, 7, bodyCol);
+          drawDumbbellOrBarbell(ctx, shX + 4, handY, 0, false);
+        } else {
+          drawLimb(ctx, shX, shY, shX, shY + 48, 8, bodyCol);
+          drawDumbbellOrBarbell(ctx, shX, shY + 48, 0, true);
+        }
+      }
+      else if (cfg.type === "lat_raise") {
+        const hipX = 180, hipY = 124;
+        const shX = 180, shY = 72;
+        drawLimb(ctx, 172, 208, 175, hipY, 9, bodyCol);
+        drawLimb(ctx, 188, 208, 185, hipY, 9, bodyCol);
+        drawLimb(ctx, hipX, hipY, shX, shY, 16, bodyCol);
+        drawJoint(ctx, 180, 52, 12, "#f8fafc");
+
+        // Both arms raising laterally
+        const spread = 14 + p * 44;
+        const liftY = shY + 46 - p * 44;
+        drawLimb(ctx, shX - 8, shY, shX - spread, liftY, 8, activeCol, true);
+        drawLimb(ctx, shX + 8, shY, shX + spread, liftY, 8, activeCol, true);
+        drawDumbbellOrBarbell(ctx, shX - spread, liftY, 0, false);
+        drawDumbbellOrBarbell(ctx, shX + spread, liftY, 0, false);
+      }
+      else if (cfg.type === "curl") {
+        const isIncline = cfg.angle < 0;
+        if (isIncline) drawBench(ctx, 175, 165, 52);
+        const hipX = 178, hipY = isIncline ? 156 : 122;
+        const shX = isIncline ? 152 : 178;
+        const shY = isIncline ? 108 : 70;
+        if (isIncline) {
+          drawLimb(ctx, hipX, hipY, 222, 160, 10, bodyCol);
+          drawLimb(ctx, 222, 160, 228, 210, 8, bodyCol);
+        } else {
+          drawLimb(ctx, 178, 208, hipX, hipY, 10, bodyCol);
+        }
+        drawLimb(ctx, hipX, hipY, shX, shY, 15, bodyCol);
+        drawJoint(ctx, shX, shY - 17, 11, "#f8fafc");
+
+        const elbX = shX + 4, elbY = shY + 26;
+        const curlAng = -Math.PI * 0.45 + p * Math.PI * 0.78;
+        const handX = elbX + Math.cos(curlAng) * 26;
+        const handY = elbY - Math.sin(curlAng) * 26;
+        drawLimb(ctx, shX, shY, elbX, elbY, 8, activeCol, true);
+        drawLimb(ctx, elbX, elbY, handX, handY, 7, activeCol, true);
+        drawDumbbellOrBarbell(ctx, handX, handY, 0, !isIncline);
+      }
+      else if (cfg.type === "skullcrusher") {
+        drawBench(ctx, 175, 165, -12);
+        const hipX = 185, hipY = 156;
+        const shX = 132, shY = 166;
+        drawLimb(ctx, hipX, hipY, 226, 162, 10, bodyCol);
+        drawLimb(ctx, 226, 162, 232, 210, 8, bodyCol);
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, bodyCol);
+        drawJoint(ctx, shX - 16, shY + 3, 11, "#f8fafc");
+
+        const elbX = shX - 4, elbY = shY - 26;
+        const handX = elbX - 22 + p * 24;
+        const handY = elbY + 4 - p * 28;
+        drawLimb(ctx, shX, shY, elbX, elbY, 8, activeCol, true);
+        drawLimb(ctx, elbX, elbY, handX, handY, 7, activeCol, true);
+        drawDumbbellOrBarbell(ctx, handX, handY, 0, false);
+      }
+      else if (cfg.type === "leg_ext") {
+        drawBench(ctx, 165, 162, 80, true);
+        const hipX = 172, hipY = 154;
+        const shX = 166, shY = 100;
+        const kneeX = 212, kneeY = 156;
+        const ankleX = kneeX + 4 + p * 40;
+        const ankleY = kneeY + 42 - p * 40;
+
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, bodyCol);
+        drawJoint(ctx, shX, shY - 16, 11, "#f8fafc");
+        drawLimb(ctx, hipX, hipY, kneeX, kneeY, 11, activeCol, true);
+        drawLimb(ctx, kneeX, kneeY, ankleX, ankleY, 9, activeCol, true);
+        // Roller pad
+        drawJoint(ctx, ankleX, ankleY, 6, "#38bdf8");
+      }
+      else if (cfg.type === "leg_curl") {
+        drawBench(ctx, 175, 165, 0, true);
+        const shX = 128, shY = 154;
+        const hipX = 176, hipY = 154;
+        const kneeX = 216, kneeY = 156;
+        const curlAng = p * 1.45;
+        const ankleX = kneeX + Math.cos(curlAng) * 42;
+        const ankleY = kneeY - Math.sin(curlAng) * 42;
+
+        drawJoint(ctx, shX - 16, shY - 2, 11, "#f8fafc");
+        drawLimb(ctx, shX, shY, hipX, hipY, 14, bodyCol);
+        drawLimb(ctx, hipX, hipY, kneeX, kneeY, 11, activeCol, true);
+        drawLimb(ctx, kneeX, kneeY, ankleX, ankleY, 9, activeCol, true);
+        drawJoint(ctx, ankleX, ankleY, 6, "#38bdf8");
+      }
+      else if (cfg.type === "hip_thrust") {
+        // Bench behind upper back
+        ctx.fillStyle = "#334155";
+        ctx.fillRect(96, 154, 42, 58);
+
+        const shX = 136, shY = 154;
+        const hipX = 176, hipY = 192 - p * 38;
+        const kneeX = 218, kneeY = 156;
+        const ankleX = 224, ankleY = 208;
+
+        drawJoint(ctx, shX - 14, shY - 10, 11, "#f8fafc");
+        drawLimb(ctx, shX, shY, hipX, hipY, 15, activeCol, true);
+        drawLimb(ctx, hipX, hipY, kneeX, kneeY, 11, activeCol, true);
+        drawLimb(ctx, kneeX, kneeY, ankleX, ankleY, 9, bodyCol);
+        drawDumbbellOrBarbell(ctx, hipX, hipY - 6, 0, true);
+      }
+      else if (cfg.type === "hanging_leg") {
+        ctx.strokeStyle = "#64748b";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(120, 24);
+        ctx.lineTo(240, 24);
+        ctx.stroke();
+
+        const shX = 165, shY = 76;
+        const hipX = 165, hipY = 124;
+        const legAng = p * 1.45;
+        const footX = hipX + Math.sin(legAng) * 68;
+        const footY = hipY + Math.cos(legAng) * 68;
+
+        drawLimb(ctx, shX, shY, 165, 24, 7, bodyCol);
+        drawJoint(ctx, shX, shY - 16, 11, "#f8fafc");
+        drawLimb(ctx, shX, shY, hipX, hipY, 14, activeCol, true);
+        drawLimb(ctx, hipX, hipY, footX, footY, 9, activeCol, true);
+      }
+      else if (cfg.type === "crunch") {
+        drawBench(ctx, 175, 165, -20);
+        const hipX = 182, hipY = 156;
+        const baseRad = (20 * Math.PI) / 180;
+        const crunchAng = baseRad - p * 0.85;
+        const shX = hipX - Math.cos(crunchAng) * 52;
+        const shY = hipY + Math.sin(crunchAng) * 52;
+
+        drawLimb(ctx, hipX, hipY, 224, 152, 10, bodyCol);
+        drawLimb(ctx, 224, 152, 228, 198, 8, bodyCol);
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, activeCol, true);
+        drawJoint(ctx, shX - 13, shY - 8, 11, "#f8fafc");
+      }
+      else if (cfg.type === "treadmill") {
+        // Treadmill machine frame + moving belt + smooth running/walking stride
+        const inc = (cfg.incline || 0) * 1.4;
+        const deckX1 = 105, deckY1 = 198;
+        const deckX2 = 255, deckY2 = 198 - inc;
+
+        // Console post & screen
+        ctx.strokeStyle = "#475569";
+        ctx.lineWidth = 6;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(242, deckY2);
+        ctx.lineTo(256, 102);
+        ctx.lineTo(234, 96);
+        ctx.stroke();
+
+        // Treadmill running deck
+        ctx.strokeStyle = "#334155";
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.moveTo(deckX1, deckY1);
+        ctx.lineTo(deckX2, deckY2);
+        ctx.stroke();
+
+        // Animated belt ticks
+        ctx.fillStyle = "#a3e635";
+        for (let i = 0; i < 5; i++) {
+          const t = ((i / 5) + (1 - p) * 0.4) % 1;
+          const bx = deckX2 - t * (deckX2 - deckX1);
+          const by = deckY2 + t * (deckY1 - deckY2);
+          ctx.fillRect(bx - 3, by - 2, 6, 3);
+        }
+
+        // Stride kinematics (continuous sinusoidal gait)
+        const gait = p * Math.PI * 2;
+        const bounce = Math.abs(Math.sin(gait)) * 5;
+        const hipX = 178, hipY = 122 - inc * 0.5 - bounce;
+        const shX = 184 + (cfg.incline > 0 ? 6 : 3);
+        const shY = 74 - inc * 0.5 - bounce;
+
+        // Back leg
+        const leg1 = Math.sin(gait) * 0.55;
+        const k1X = hipX + Math.sin(leg1) * 34;
+        const k1Y = hipY + Math.cos(leg1) * 34;
+        const f1X = k1X + Math.sin(leg1 - 0.35) * 34;
+        const f1Y = Math.min(deckY1 - 6, k1Y + Math.cos(leg1 - 0.35) * 34);
+        drawLimb(ctx, hipX, hipY, k1X, k1Y, 10, "#64748b");
+        drawLimb(ctx, k1X, k1Y, f1X, f1Y, 8, "#64748b");
+
+        // Front leg (highlighted!)
+        const leg2 = -Math.sin(gait) * 0.55;
+        const k2X = hipX + Math.sin(leg2) * 34;
+        const k2Y = hipY + Math.cos(leg2) * 34;
+        const f2X = k2X + Math.sin(leg2 - 0.35) * 34;
+        const f2Y = Math.min(deckY1 - 6, k2Y + Math.cos(leg2 - 0.35) * 34);
+        drawLimb(ctx, hipX, hipY, k2X, k2Y, 11, activeCol, true);
+        drawLimb(ctx, k2X, k2Y, f2X, f2Y, 9, activeCol, true);
+
+        // Torso & Swinging Arm
+        drawLimb(ctx, hipX, hipY, shX, shY, 14, bodyCol);
+        drawJoint(ctx, shX + 2, shY - 16, 11, "#f8fafc");
+        const armAng = Math.sin(gait) * 0.5;
+        const elbX = shX + Math.sin(armAng) * 22;
+        const elbY = shY + Math.cos(armAng) * 22;
+        drawLimb(ctx, shX, shY, elbX, elbY, 7, bodyCol);
+        drawLimb(ctx, elbX, elbY, elbX + 16, elbY - 10, 6, bodyCol);
+      }
     }
 
     function loadDateState(dateStr) {
