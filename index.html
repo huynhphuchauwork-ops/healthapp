@@ -92,6 +92,159 @@
     @media (max-width: 639px) {
       .meal-item-card .nutrient-tooltip { left: -4px; right: -4px; }
     }
+
+    /* === WORKOUT MUSCLE MAP & TRACKER STYLES (SCOPED TO #tab-workout) === */
+    #tab-workout .wk-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.05);
+      transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    }
+    #tab-workout .wk-seg {
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 999px;
+      display: inline-flex;
+      gap: 4px;
+    }
+    #tab-workout .wk-seg-btn {
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    #tab-workout .wk-seg-btn.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+    #tab-workout .wk-pill {
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #334155;
+      white-space: nowrap;
+      transition: all 0.18s ease;
+      cursor: pointer;
+    }
+    #tab-workout .wk-pill:hover {
+      border-color: #84cc16;
+      color: #3f6212;
+    }
+    #tab-workout .wk-pill.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+    #tab-workout .wk-subpill {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #475569;
+      white-space: nowrap;
+      transition: all 0.18s ease;
+      cursor: pointer;
+    }
+    #tab-workout .wk-subpill.active {
+      background: #84cc16;
+      color: #0f172a;
+      border-color: #65a30d;
+    }
+    .muscle-part {
+      fill: #cbd5e1;
+      stroke: #ffffff;
+      stroke-width: 1.1;
+      cursor: pointer;
+      transition: fill 0.2s ease, filter 0.2s ease;
+    }
+    .muscle-part:hover {
+      fill: #bef264;
+    }
+    .muscle-part.active {
+      fill: #84cc16 !important;
+      filter: drop-shadow(0 0 6px rgba(132, 204, 22, 0.55));
+    }
+    .body-base {
+      fill: #e2e8f0;
+    }
+    /* Dark Mode scoped inside #tab-workout */
+    #tab-workout.wk-dark .wk-card {
+      background: #0f172a;
+      border-color: #1e293b;
+      color: #f1f5f9;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+    }
+    #tab-workout.wk-dark .wk-seg {
+      background: #1e293b;
+    }
+    #tab-workout.wk-dark .wk-seg-btn {
+      color: #94a3b8;
+    }
+    #tab-workout.wk-dark .wk-seg-btn.active {
+      background: #334155;
+      color: #f8fafc;
+    }
+    #tab-workout.wk-dark .wk-pill {
+      background: #1e293b;
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+    #tab-workout.wk-dark .wk-pill.active {
+      background: #a3e635;
+      color: #090d16;
+      border-color: #a3e635;
+    }
+    #tab-workout.wk-dark .wk-subpill {
+      background: #1e293b;
+      border-color: #334155;
+      color: #94a3b8;
+    }
+    #tab-workout.wk-dark .wk-subpill.active {
+      background: #a3e635;
+      color: #090d16;
+      border-color: #a3e635;
+    }
+    #tab-workout.wk-dark .body-base {
+      fill: #1e293b;
+    }
+    #tab-workout.wk-dark .muscle-part {
+      fill: #334155;
+      stroke: #0f172a;
+    }
+    #tab-workout.wk-dark .muscle-part:hover {
+      fill: #65a30d;
+    }
+    #tab-workout.wk-dark .muscle-part.active {
+      fill: #a3e635 !important;
+      filter: drop-shadow(0 0 8px rgba(163, 230, 53, 0.65));
+    }
+    #tab-workout.wk-dark .wk-surface {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    #tab-workout.wk-dark .wk-text-main {
+      color: #f8fafc !important;
+    }
+    #tab-workout.wk-dark .wk-text-sub {
+      color: #94a3b8 !important;
+    }
+    #tab-workout.wk-dark input, #tab-workout.wk-dark select {
+      background: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f8fafc !important;
+    }
+
   </style>
 </head>
 <body class="text-slate-800 min-h-screen pb-24 lg:pb-14 relative overflow-x-hidden">
@@ -709,70 +862,256 @@
       </div>
 
       <!-- ========================================================= -->
-      <!-- TAB 2: LỊCH TẬP TĂNG CƠ & GIẢM MỠ (5 BUỔI/TUẦN) -->
+      <!-- TAB 2: LỊCH TẬP GYM CHUẨN QUỐC TẾ & HIGHLIGHT NHÓM CƠ -->
       <!-- ========================================================= -->
-      <div id="tab-workout" class="hidden space-y-6 fade-in">
-        <div class="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-          <div class="flex flex-wrap items-center justify-between pb-4 border-b border-slate-200/80 gap-4">
-            <div>
-              <div class="flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-500 text-white flex items-center justify-center text-sm shadow-md shadow-violet-500/25">
-                  <i class="fa-solid fa-dumbbell"></i>
-                </span>
-                <div>
-                  <h2 class="font-extrabold text-lg text-slate-900">
-                    Lịch Tập Tăng Cơ & Giảm Mỡ • <span id="workoutDateTitle" class="text-violet-600"></span>
+      <div id="tab-workout" class="hidden space-y-5 fade-in">
+        <!-- HEADER BAR CỦA PHẦN TẬP GYM -->
+        <div class="wk-card p-4 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200/80">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-lime-500 to-emerald-600 text-slate-950 flex items-center justify-center text-base font-black shadow-md shadow-lime-500/25">
+                <i class="fa-solid fa-dumbbell"></i>
+              </span>
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 class="wk-text-main font-extrabold text-base sm:text-lg text-slate-900">
+                    Lịch Tập Gym & Highlight Nhóm Cơ • <span id="workoutDateTitle" class="text-lime-600"></span>
                   </h2>
-                  <p class="text-xs text-slate-500 mt-0.5">60–75 phút/buổi • Dụng cụ: <strong>Barbell, Dumbbell, Xà đơn, Máy chạy bộ</strong></p>
+                  <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-lime-100 text-lime-800 font-extrabold border border-lime-300">1–2 Năm KN • Tăng Cân Nạc</span>
+                </div>
+                <p class="wk-text-sub text-xs text-slate-500 mt-0.5">
+                  1m58 • 55–56kg • Dụng cụ: <strong>Tạ đơn, Tạ đòn, Ghế đa năng (dốc xuống, nâng lưng, đá chân), Xà đơn, Hít đất</strong>
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <!-- Nút Chế độ Đêm riêng cho Tab Gym -->
+              <button onclick="toggleWorkoutDarkMode()" id="btnWkDarkMode" class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer" title="Chuyển chế độ Sáng / Tối">
+                <i id="wkDarkIcon" class="fa-solid fa-moon text-amber-300"></i>
+                <span id="wkDarkText">Chế độ đêm</span>
+              </button>
+
+              <!-- Đồng hồ nghỉ giữa hiệp -->
+              <div class="flex items-center gap-1.5 bg-slate-900 text-white px-3 py-1.5 rounded-xl shadow-md">
+                <i class="fa-solid fa-stopwatch text-lime-400 text-xs"></i>
+                <span id="restTimerDisplay" class="font-mono-code font-extrabold text-sm text-lime-400 min-w-[44px] text-center">00:00</span>
+                <button onclick="startRestTimer(60)" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-lime-500 hover:text-slate-950 text-[10px] font-bold transition cursor-pointer">60s</button>
+                <button onclick="startRestTimer(90)" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-lime-500 hover:text-slate-950 text-[10px] font-bold transition cursor-pointer">90s</button>
+                <button onclick="startRestTimer(150)" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-lime-500 hover:text-slate-950 text-[10px] font-bold transition cursor-pointer">2.5p</button>
+                <button onclick="stopRestTimer()" class="px-1.5 py-0.5 rounded bg-red-500/20 hover:bg-red-500/40 text-red-300 text-[10px] font-bold transition cursor-pointer"><i class="fa-solid fa-stop"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- THANH CHUYỂN PHÂN KHU TRONG TAB GYM -->
+          <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
+            <div class="wk-seg">
+              <button onclick="switchWorkoutSubView('schedule')" id="wkSubBtn-schedule" class="wk-seg-btn active">
+                <i class="fa-solid fa-calendar-check mr-1"></i> Lịch Tập 5 Buổi/Tuần
+              </button>
+              <button onclick="switchWorkoutSubView('muscles')" id="wkSubBtn-muscles" class="wk-seg-btn">
+                <i class="fa-solid fa-person mr-1"></i> Sơ Đồ Nhóm Cơ (98 Bài)
+              </button>
+              <button onclick="switchWorkoutSubView('tracker')" id="wkSubBtn-tracker" class="wk-seg-btn">
+                <i class="fa-solid fa-chart-line mr-1"></i> Theo Dõi Mức Tạ & PR
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2 text-xs">
+              <span class="wk-surface px-3 py-1.5 rounded-xl bg-lime-50 border border-lime-200 text-lime-800 font-extrabold">
+                <i class="fa-solid fa-fire text-orange-500 mr-1"></i> Lean Bulk: ~2,450 kcal • 115g Đạm
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PHÂN KHU A: LỊCH TẬP 5 BUỔI/TUẦN + HIGHLIGHT CƠ BUỔI TẬP -->
+        <!-- ========================================================= -->
+        <div id="wkView-schedule" class="space-y-5">
+          <!-- Chọn buổi trong tuần + Nút hành động -->
+          <div class="wk-card p-4 sm:p-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div id="workoutDayPills" class="flex flex-wrap gap-1.5"></div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button onclick="copyLastWeekWorkout()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+                  <i class="fa-solid fa-clock-rotate-left"></i> Nạp tạ buổi trước
+                </button>
+                <button onclick="saveWorkoutSessionToHistory()" class="px-3.5 py-1.5 rounded-xl bg-lime-500 hover:bg-lime-400 text-slate-950 text-xs font-extrabold shadow-sm transition cursor-pointer">
+                  <i class="fa-solid fa-floppy-disk"></i> Lưu Buổi Tập & PR
+                </button>
+                <button onclick="markAllExercisesDone()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition cursor-pointer">
+                  <i class="fa-solid fa-check-double"></i> Hoàn thành cả buổi
+                </button>
+              </div>
+            </div>
+
+            <!-- Banner Buổi Tập + Mini SVG Highlight Nhóm Cơ Hoạt Động -->
+            <div class="wk-surface mt-4 p-4 rounded-2xl bg-gradient-to-r from-slate-50 via-lime-50/50 to-emerald-50/40 border border-slate-200/90 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span id="sessionDayTag" class="px-2.5 py-0.5 rounded-full bg-slate-900 text-lime-400 text-[11px] font-extrabold">Thứ 2</span>
+                  <h3 id="sessionTitle" class="wk-text-main font-extrabold text-base text-slate-900">Upper Body (Thân Trên Toàn Diện)</h3>
+                </div>
+                <p id="sessionGoal" class="wk-text-sub text-xs text-slate-600 mt-1.5 leading-relaxed">--</p>
+                <div id="sessionMuscleTags" class="flex flex-wrap gap-1.5 mt-2.5"></div>
+              </div>
+
+              <!-- Mini Sơ Đồ Cơ Hoạt Động Trong Buổi -->
+              <div class="flex items-center gap-3 shrink-0 bg-white/80 dark:bg-slate-900/60 px-3.5 py-2 rounded-2xl border border-slate-200/80">
+                <div class="flex items-center gap-1" title="Nhóm cơ chính hoạt động hôm nay">
+                  <svg id="miniBodyFront" viewBox="0 0 220 420" class="w-12 h-24"></svg>
+                  <svg id="miniBodyBack" viewBox="0 0 220 420" class="w-12 h-24"></svg>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-slate-400 font-bold uppercase block">Tiến độ buổi</span>
+                  <span id="sessionProgressText" class="text-lg font-black text-lime-600">0 / 6 bài</span>
+                  <span class="text-[10px] text-slate-500 block mt-0.5">RIR 1–2 • Progressive</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danh sách bài tập chi tiết của buổi -->
+          <div id="workoutExerciseList" class="space-y-3.5"></div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PHÂN KHU B: SƠ ĐỒ NHÓM CƠ TƯƠNG TÁC TRƯỚC / SAU (98 BÀI)  -->
+        <!-- ========================================================= -->
+        <div id="wkView-muscles" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Cột Trái: Sơ đồ cơ thể SVG Trước / Sau -->
+          <div class="lg:col-span-5 wk-card p-5 flex flex-col items-center">
+            <div class="w-full flex items-center justify-between mb-3">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Bản Đồ Giải Phẫu Cơ</span>
+              <div class="wk-seg">
+                <button onclick="setBodyViewSide('front')" id="btnSideFront" class="wk-seg-btn">Trước</button>
+                <button onclick="setBodyViewSide('back')" id="btnSideBack" class="wk-seg-btn active">Sau</button>
+              </div>
+            </div>
+
+            <!-- Khung chứa SVG Cơ thể tương tác -->
+            <div class="relative w-full max-w-[260px] my-1 flex items-center justify-center">
+              <svg id="interactiveBodySvg" viewBox="0 0 220 420" class="w-full h-auto select-none"></svg>
+            </div>
+
+            <!-- Thanh trạng thái Đang chọn & Số bài tập (Chuẩn mẫu ảnh) -->
+            <div class="w-full pt-3 mt-2 border-t border-slate-200/80 flex items-end justify-between">
+              <div>
+                <span class="text-[11px] text-slate-400 font-semibold block">Đang chọn</span>
+                <span id="selectedMuscleTitle" class="wk-text-main text-xl font-black text-slate-900">Lưng</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[11px] text-slate-400 font-semibold block">Bài tập</span>
+                <span id="selectedMuscleCount" class="wk-text-main text-xl font-black text-slate-900">98</span>
+              </div>
+            </div>
+
+            <!-- Bộ lọc 2 tầng (Nhóm chính + Nhóm chi tiết) -->
+            <div class="w-full mt-4 space-y-2">
+              <div id="primaryMusclePills" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1"></div>
+              <div id="subMusclePills" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1"></div>
+            </div>
+          </div>
+
+          <!-- Cột Phải: Danh sách bài tập theo nhóm cơ & dụng cụ của bạn -->
+          <div class="lg:col-span-7 wk-card p-5 flex flex-col">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200/80">
+              <div>
+                <h3 class="wk-text-main font-extrabold text-base text-slate-900">
+                  Thư Viện Bài Tập <span id="libraryMuscleBadge" class="text-lime-600">Lưng</span>
+                </h3>
+                <p class="wk-text-sub text-xs text-slate-500 mt-0.5">Tối ưu cho Tạ đơn, Tạ đòn, Ghế đa năng, Xà đơn & Hít đất</p>
+              </div>
+              <select id="wkToolFilter" onchange="renderMuscleExerciseLibrary()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-700">
+                <option value="all">Tất cả dụng cụ</option>
+                <option value="Tạ đòn">Tạ đòn (Barbell)</option>
+                <option value="Tạ đơn">Tạ đơn (Dumbbell)</option>
+                <option value="Ghế đa năng">Ghế đa năng</option>
+                <option value="Xà đơn">Xà đơn (Pull-up Bar)</option>
+                <option value="Hít đất / Bodyweight">Hít đất / Bodyweight</option>
+              </select>
+            </div>
+
+            <div id="muscleExerciseLibraryList" class="mt-4 space-y-2.5 max-h-[540px] overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PHÂN KHU C: THEO DÕI MỨC TẠ & KỶ LỤC PR THEO TỪNG BÀI TẬP -->
+        <!-- ========================================================= -->
+        <div id="wkView-tracker" class="hidden space-y-5">
+          <div class="wk-card p-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200/80">
+              <div>
+                <h3 class="wk-text-main font-extrabold text-base text-slate-900 flex items-center gap-2">
+                  <i class="fa-solid fa-trophy text-amber-500"></i> Biểu Đồ Tiến Triển Mức Tạ & Kỷ Lục Cá Nhân (PR)
+                </h3>
+                <p class="wk-text-sub text-xs text-slate-500 mt-0.5">Tự động phân biệt bài dùng tạ (kg & 1RM Epley) và bài Bodyweight (Hít đất, Xà đơn)</p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="trackerExerciseSelect" onchange="renderExerciseProgressChart()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-extrabold bg-white text-slate-800 max-w-[260px]"></select>
+              </div>
+            </div>
+
+            <!-- 3 Thẻ chỉ số PR của bài đang chọn -->
+            <div id="trackerStatsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-4"></div>
+
+            <!-- Biểu đồ đường SVG trực quan -->
+            <div class="wk-surface mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-extrabold text-slate-700" id="trackerChartTitle">Biểu đồ tiến triển</span>
+                <span class="text-[11px] text-slate-400">Dữ liệu đồng bộ tự động lên GitHub</span>
+              </div>
+              <div id="trackerSvgChartContainer" class="w-full h-48 flex items-center justify-center"></div>
+            </div>
+
+            <!-- Form ghi nhanh buổi tập thủ công cho bài đang chọn -->
+            <div class="wk-surface mt-4 p-4 rounded-2xl bg-lime-50/60 border border-lime-200/80">
+              <div class="text-xs font-extrabold text-slate-800 mb-2">
+                <i class="fa-solid fa-plus-circle text-lime-600 mr-1"></i> Ghi nhận nhanh kết quả hôm nay (<span id="trackerQuickDate"></span>):
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div id="trackerQuickWeightWrap">
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1" id="trackerQuickWeightLabel">Mức tạ (kg)</label>
+                  <input type="number" step="0.5" id="trackerQuickWeight" placeholder="VD: 45" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1">Số hiệp (Sets)</label>
+                  <input type="number" id="trackerQuickSets" value="4" min="1" max="10" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1">Số Reps trung bình</label>
+                  <input type="number" id="trackerQuickReps" placeholder="VD: 10" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white">
+                </div>
+                <div class="flex items-end">
+                  <button onclick="addManualTrackerLog()" class="w-full py-2 px-4 rounded-xl bg-slate-900 hover:bg-lime-500 hover:text-slate-950 text-white text-xs font-extrabold transition cursor-pointer">
+                    + Lưu Kỷ Lục
+                  </button>
                 </div>
               </div>
             </div>
 
-            <!-- ĐỒNG HỒ NGHỈ GIỮA HIỆP -->
-            <div class="flex flex-wrap items-center gap-2 bg-slate-900 text-white px-3.5 py-2 rounded-2xl shadow-md">
-              <i class="fa-solid fa-stopwatch text-amber-400 text-sm"></i>
-              <span class="text-[11px] text-slate-300 font-semibold">Nghỉ hiệp:</span>
-              <span id="restTimerDisplay" class="font-mono-code font-extrabold text-base text-emerald-400 min-w-[48px] text-center">00:00</span>
-              <div class="flex items-center gap-1 ml-1">
-                <button onclick="startRestTimer(60)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-violet-600 text-[10px] font-bold transition cursor-pointer">60s</button>
-                <button onclick="startRestTimer(90)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-violet-600 text-[10px] font-bold transition cursor-pointer">90s</button>
-                <button onclick="startRestTimer(120)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-violet-600 text-[10px] font-bold transition cursor-pointer">2p</button>
-                <button onclick="startRestTimer(180)" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-violet-600 text-[10px] font-bold transition cursor-pointer">3p</button>
-                <button onclick="stopRestTimer()" class="px-2 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-300 text-[10px] font-bold transition cursor-pointer" title="Dừng"><i class="fa-solid fa-stop"></i></button>
-              </div>
+            <!-- Bảng lịch sử chi tiết từng ngày của bài tập -->
+            <div class="mt-4 overflow-x-auto">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+                  <tr>
+                    <th class="p-2.5 rounded-tl-xl">Ngày tập</th>
+                    <th class="p-2.5">Mức tạ / Hình thức</th>
+                    <th class="p-2.5">Chi tiết Hiệp &times; Reps</th>
+                    <th class="p-2.5">1RM Ước tính / Volume</th>
+                    <th class="p-2.5 text-right rounded-tr-xl">Xóa</th>
+                  </tr>
+                </thead>
+                <tbody id="trackerHistoryTableBody" class="divide-y divide-slate-200"></tbody>
+              </table>
             </div>
           </div>
-
-          <div class="flex flex-wrap items-center justify-between gap-3 mt-4">
-            <div id="workoutDayPills" class="flex flex-wrap gap-1.5"></div>
-            <div class="flex items-center gap-2">
-              <button onclick="copyLastWeekWorkout()" class="px-3 py-1.5 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 text-xs font-bold transition cursor-pointer">
-                <i class="fa-solid fa-clock-rotate-left"></i> Nạp tạ buổi trước
-              </button>
-              <button onclick="markAllExercisesDone()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition cursor-pointer">
-                <i class="fa-solid fa-check-double"></i> Hoàn thành cả buổi
-              </button>
-            </div>
-          </div>
-
-          <div id="workoutSessionBanner" class="mt-5 p-4 rounded-2xl bg-gradient-to-r from-violet-50 via-indigo-50 to-sky-50 border border-violet-200/80 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div class="flex items-center gap-2">
-                <span id="sessionDayTag" class="px-2.5 py-0.5 rounded-full bg-violet-600 text-white text-[11px] font-extrabold">Thứ 2</span>
-                <h3 id="sessionTitle" class="font-extrabold text-base text-slate-900">Upper A</h3>
-              </div>
-              <p id="sessionGoal" class="text-xs text-slate-600 mt-1">--</p>
-            </div>
-            <div class="text-right">
-              <span class="text-[11px] text-slate-500 font-bold uppercase block">Tiến độ buổi tập</span>
-              <span id="sessionProgressText" class="text-xl font-black text-violet-700">0 / 6 bài</span>
-            </div>
-          </div>
-
-          <div id="workoutExerciseList" class="mt-5 space-y-3.5"></div>
         </div>
       </div>
-
       <!-- ========================================================= -->
       <!-- TAB 3: LỊCH SỬ BỮA ĂN THEO NGÀY -->
       <!-- ========================================================= -->
@@ -1239,79 +1578,150 @@
       { id: "def_12", keys: ["khoai lang"], name: "Khoai lang luộc / hấp (100g)", cal: 86, carb: 20, pro: 1.6, fat: 0.1, fiber: 3.0, purine: 12, unitType: "100g", pinned: false }
     ];
 
-    const WORKOUT_PLAN = {
-      1: {
-        dayName: "Thứ 2", shortLabel: "T2 • Upper A", title: "Upper A (Thiên về sức mạnh thân trên)", isRest: false,
-        goal: "Tập trung sức mạnh thân trên. Khi đạt mức reps cao nhất ở tất cả các hiệp với form chuẩn, tăng thêm 1–2.5kg ở tuần sau.",
-        exercises: [
-          { id: "uA_1", name: "Barbell Bench Press (Đẩy ngực ngang)", tool: "Tạ đòn", sets: 4, reps: "6–8", rest: "2–3 phút", restSec: 150, main: true, note: "Hạ tạ kiểm soát chạm nhẹ giữa ngực, ép chặt bả vai." },
-          { id: "uA_2", name: "Pull-ups (Hít xà rộng tay)", tool: "Xà đơn", sets: 4, reps: "6–10", rest: "2 phút", restSec: 120, main: true, note: "Kẹp thêm tạ đơn 2–5kg ở chân nếu kéo dư sức." },
-          { id: "uA_3", name: "Dumbbell Shoulder Press (Đẩy vai ngồi)", tool: "Tạ đơn", sets: 3, reps: "8–10", rest: "90 giây", restSec: 90, main: false, note: "Giữ thẳng lưng, không khóa khớp khuỷu tay ở đỉnh." },
-          { id: "uA_4", name: "Bent-Over Barbell Row (Gập người kéo lưng)", tool: "Tạ đòn", sets: 3, reps: "8–10", rest: "90 giây", restSec: 90, main: false, note: "Lưng giữ thẳng góc 45 độ, kéo thanh đòn về rốn." },
-          { id: "uA_5", name: "Dumbbell Bicep Curl (Cuốn tạ tay trước)", tool: "Tạ đơn", sets: 3, reps: "10–12", rest: "60 giây", restSec: 60, main: false, note: "Cố định khuỷu tay sát thân người, không đung đưa." },
-          { id: "uA_6", name: "Brisk Treadmill Walk / Jog (Đi bộ nhanh / Chạy nhẹ)", tool: "Máy chạy bộ phẳng", sets: 1, reps: "15 phút", rest: "—", restSec: 0, main: false, note: "Máy phẳng: Đi bộ nhanh 6.0–6.5 km/h hoặc chạy bộ nhẹ 7.5–8.0 km/h (Zone 2) để thả lỏng & đốt mỡ." }
+    // =========================================================================
+    // CHƯƠNG TRÌNH TẬP CHUẨN QUỐC TẾ (NSCA/ACSM) - 1-2 NĂM KINH NGHIỆM
+    // Thể trạng: 1m58, 55kg • Mục tiêu: Tăng cân nạc (Lean Bulk) • 5 buổi/tuần
+    // Dụng cụ: Tạ đơn, Tạ đòn, Ghế đa năng (dốc xuống, nâng lưng, đá chân), Xà đơn, Hít đất
+    // =========================================================================
+    const MUSCLE_CATALOG = {
+      back: {
+        label: "Lưng", side: "back", count: 98,
+        subs: [
+          { id: "all_back", label: "Tất cả lưng", parts: ["lats", "mid_back", "traps", "lower_back"] },
+          { id: "lats", label: "Xô (Lats)", parts: ["lats"] },
+          { id: "mid_back", label: "Lưng giữa & cầu vai", parts: ["mid_back", "traps"] },
+          { id: "lower_back", label: "Lưng dưới", parts: ["lower_back"] }
         ]
       },
-      2: {
-        dayName: "Thứ 3", shortLabel: "T3 • Lower A", title: "Lower A (Thiên về sức mạnh thân dưới)", isRest: false,
-        goal: "Xây dựng nền tảng sức mạnh chân & đùi sau. Gồng chặt core trước mỗi lần hạ tạ.",
-        exercises: [
-          { id: "lA_1", name: "Barbell Back Squat (Gánh tạ đòn)", tool: "Tạ đòn", sets: 4, reps: "6–8", rest: "2–3 phút", restSec: 150, main: true, note: "Hít sâu gồng bụng, hạ hông sâu dưới mức song song sàn." },
-          { id: "lA_2", name: "Barbell Romanian Deadlift (Kéo đùi sau)", tool: "Tạ đòn", sets: 4, reps: "8–10", rest: "2 phút", restSec: 120, main: true, note: "Đầu gối hơi chùng cố định, đẩy hông ra sau hết cỡ." },
-          { id: "lA_3", name: "Dumbbell Walking Lunges (Bước chùng chân)", tool: "Tạ đơn", sets: 3, reps: "10 bước/chân", rest: "90 giây", restSec: 90, main: false, note: "Bước sải dài vừa phải, hai gối tạo góc 90 độ khi hạ." },
-          { id: "lA_4", name: "Standing Dumbbell Calf Raise (Nhón bắp chuối)", tool: "Tạ đơn", sets: 3, reps: "15–20", rest: "60 giây", restSec: 60, main: false, note: "Dừng lại 1 giây ở điểm cao nhất để siết bắp chuối." },
-          { id: "lA_5", name: "Hanging Leg Raises (Treo xà đá chân)", tool: "Xà đơn", sets: 3, reps: "10–15", rest: "60 giây", restSec: 60, main: false, note: "Cuộn xương chậu nâng chân, hạ chậm chống đung đưa." }
+      shoulders: {
+        label: "Vai", side: "back", count: 64,
+        subs: [
+          { id: "all_shoulders", label: "Tất cả vai", parts: ["rear_delt", "side_delt", "front_delt"] },
+          { id: "rear_delt", label: "Vai sau", parts: ["rear_delt"] },
+          { id: "side_delt", label: "Vai giữa", parts: ["side_delt"] },
+          { id: "front_delt", label: "Vai trước", parts: ["front_delt"] }
         ]
       },
-      3: {
-        dayName: "Thứ 4", shortLabel: "T4 • Nghỉ", title: "Nghỉ ngơi / Phục hồi chủ động", isRest: true,
-        goal: "Giãn cơ toàn thân 15 phút hoặc đi bộ nhẹ nhàng ngoài trời (mục tiêu 8.000–10.000 bước).",
-        exercises: [
-          { id: "r4_1", name: "Giãn cơ toàn thân (Full-body Stretching)", tool: "Thảm / Sàn", sets: 1, reps: "15 phút", rest: "—", restSec: 0, main: false, note: "Tập trung giãn nhóm cơ ngực, vai, lưng xô và gân kheo." },
-          { id: "r4_2", name: "Đi bộ nhẹ nhàng ngoài trời", tool: "Đi bộ", sets: 1, reps: "8,000–10,000 bước", rest: "—", restSec: 0, main: false, note: "Tăng lưu thông máu, hỗ trợ đào thải Acid Uric tự nhiên." }
+      triceps: {
+        label: "Tay sau", side: "back", count: 42,
+        subs: [
+          { id: "all_triceps", label: "Tất cả tay sau", parts: ["triceps"] }
         ]
       },
-      4: {
-        dayName: "Thứ 5", shortLabel: "T5 • Upper B", title: "Upper B (Thiên về độ phì đại cơ - Hypertrophy)", isRest: false,
-        goal: "Tăng độ phì đại cơ thân trên với số reps trung bình – cao và kiểm soát nhịp độ (tempo).",
-        exercises: [
-          { id: "uB_1", name: "Chin-ups (Hít xà nắm ngửa tay)", tool: "Xà đơn", sets: 4, reps: "8–10", rest: "2 phút", restSec: 120, main: true, note: "Tập trung cảm nhận cơ lưng xô dưới và tay trước." },
-          { id: "uB_2", name: "Incline Dumbbell Press (Đẩy ngực trên)", tool: "Tạ đơn", sets: 4, reps: "8–12", rest: "90 giây", restSec: 90, main: true, note: "Chỉnh ghế dốc 30–45 độ, hạ tạ sâu giãn cơ ngực." },
-          { id: "uB_3", name: "One-Arm Dumbbell Row (Kéo lưng một tay)", tool: "Tạ đơn", sets: 3, reps: "10–12/tay", rest: "90 giây", restSec: 90, main: false, note: "Kéo tạ hướng về phía hông thay vì kéo thẳng lên vai." },
-          { id: "uB_4", name: "Dumbbell Lateral Raise (Bay vai ngang)", tool: "Tạ đơn", sets: 4, reps: "12–15", rest: "60 giây", restSec: 60, main: false, note: "Nâng khuỷu tay dẫn dắt chuyển động, tạ nhẹ chuẩn form." },
-          { id: "uB_5", name: "Overhead Dumbbell Tricep Extension (Tay sau)", tool: "Tạ đơn", sets: 3, reps: "10–12", rest: "60 giây", restSec: 60, main: false, note: "Giữ hai khuỷu tay khép hướng thẳng lên trần nhà." },
-          { id: "uB_6", name: "Brisk Treadmill Walk / Jog (Đi bộ nhanh / Chạy nhẹ)", tool: "Máy chạy bộ phẳng", sets: 1, reps: "15 phút", rest: "—", restSec: 0, main: false, note: "Máy phẳng: Đi bộ nhanh 6.0–6.5 km/h hoặc chạy bộ nhẹ 7.5–8.0 km/h giữ nhịp tim ổn định." }
+      glutes: {
+        label: "Mông", side: "back", count: 38,
+        subs: [
+          { id: "all_glutes", label: "Tất cả mông", parts: ["glutes"] }
         ]
       },
-      5: {
-        dayName: "Thứ 6", shortLabel: "T6 • Lower B", title: "Lower B (Thiên về độ bền cơ bắp & Mông đùi)", isRest: false,
-        goal: "Phát triển sức bền cơ bắp mông – đùi và siết cơ lõi (Core).",
-        exercises: [
-          { id: "lB_1", name: "Barbell Hip Thrust (Đẩy hông tạ đòn)", tool: "Tạ đòn", sets: 4, reps: "10–12", rest: "2 phút", restSec: 120, main: true, note: "Tựa lưng trên ghế, siết chặt mông và giữ 1 giây ở đỉnh." },
-          { id: "lB_2", name: "Dumbbell Goblet Squat (Gánh tạ đơn trước ngực)", tool: "Tạ đơn", sets: 4, reps: "10–12", rest: "90 giây", restSec: 90, main: true, note: "Giữ thân người thẳng đứng tối đa để tác động đùi trước." },
-          { id: "lB_3", name: "Bulgarian Split Squat (Squat một chân)", tool: "Tạ đơn", sets: 3, reps: "8–10/chân", rest: "90 giây", restSec: 90, main: false, note: "Đặt mu bàn chân sau lên ghế, đổ nhẹ người về trước." },
-          { id: "lB_4", name: "Dumbbell Stiff-Leg Deadlift (Kéo đùi sau tạ đơn)", tool: "Tạ đơn", sets: 3, reps: "12", rest: "90 giây", restSec: 90, main: false, note: "Giữ tạ sát đùi, cảm nhận độ căng sâu của gân kheo." },
-          { id: "lB_5", name: "Plank / Hanging Knee Raises (Siết bụng)", tool: "Xà đơn / Sàn", sets: 3, reps: "45–60 giây", rest: "60 giây", restSec: 60, main: false, note: "Gồng chặt cơ lõi, không để võng lưng dưới." }
+      hamstrings: {
+        label: "Đùi sau", side: "back", count: 34,
+        subs: [
+          { id: "all_hamstrings", label: "Đùi sau & Bắp chân", parts: ["hamstrings", "calves"] }
         ]
       },
-      6: {
-        dayName: "Thứ 7", shortLabel: "T7 • Core & Cardio", title: "Conditioning & Core (Đốt mỡ & Thể lực tim mạch)", isRest: false,
-        goal: "Đốt mỡ nội tạng, hạ Triglyceride và tăng sức bền tim mạch Zone 2.",
-        exercises: [
-          { id: "cC_1", name: "Dumbbell Swing (Vung tạ đơn)", tool: "Tạ đơn", sets: 4, reps: "15–20 reps", rest: "45 giây", restSec: 45, main: false, note: "Dùng lực bật của hông và mông, không dùng tay nhấc tạ." },
-          { id: "cC_2", name: "Hanging Leg Raises (Treo xà nâng chân)", tool: "Xà đơn", sets: 3, reps: "12–15 reps", rest: "60 giây", restSec: 60, main: false, note: "Thực hiện chậm rãi, kiểm soát nhịp thở." },
-          { id: "cC_3", name: "Dumbbell Russian Twist (Xoay eo bụng)", tool: "Tạ đơn", sets: 3, reps: "20 reps (10/bên)", rest: "45 giây", restSec: 45, main: false, note: "Ngả lưng 45 độ, xoay cả phần thân trên theo tạ." },
-          { id: "cC_4", name: "Flat Treadmill Zone 2 Run/Walk (Cardio đốt mỡ)", tool: "Máy chạy bộ phẳng", sets: 1, reps: "25–30 phút", rest: "—", restSec: 0, main: false, note: "Máy phẳng: Chạy bộ chậm 7.5–8.5 km/h hoặc đi bộ nhanh 6.2–6.8 km/h liên tục (duy trì nhịp tim Zone 2, không vịn tay)." }
+      chest: {
+        label: "Ngực", side: "front", count: 72,
+        subs: [
+          { id: "all_chest", label: "Tất cả ngực", parts: ["upper_chest", "mid_chest", "lower_chest"] },
+          { id: "upper_chest", label: "Ngực trên", parts: ["upper_chest"] },
+          { id: "mid_chest", label: "Ngực giữa", parts: ["mid_chest"] },
+          { id: "lower_chest", label: "Ngực dưới", parts: ["lower_chest"] }
         ]
       },
-      0: {
-        dayName: "Chủ Nhật", shortLabel: "CN • Nghỉ", title: "Nghỉ hoàn toàn", isRest: true,
-        goal: "Dành thời gian nghỉ ngơi, ngủ đủ 7–8 tiếng để cơ bắp phục hồi hoàn toàn cho chu kỳ tuần mới.",
-        exercises: [
-          { id: "r0_1", name: "Ngủ đủ 7–8 tiếng & Phục hồi hệ thần kinh", tool: "Nghỉ ngơi", sets: 1, reps: "Cả ngày", rest: "—", restSec: 0, main: false, note: "Uống đủ 2.8L nước và giữ bữa ăn nhẹ Purine." }
+      biceps: {
+        label: "Tay trước", side: "front", count: 46,
+        subs: [
+          { id: "all_biceps", label: "Tay trước & Cẳng tay", parts: ["biceps", "forearms"] }
+        ]
+      },
+      abs: {
+        label: "Bụng", side: "front", count: 52,
+        subs: [
+          { id: "all_abs", label: "Bụng trên & Liên sườn", parts: ["abs", "obliques"] }
+        ]
+      },
+      quads: {
+        label: "Đùi trước", side: "front", count: 48,
+        subs: [
+          { id: "all_quads", label: "Đùi trước (Quads)", parts: ["quads"] }
         ]
       }
     };
+
+    const EXERCISE_DATABASE = [
+      // LƯNG
+      { id: "ex_pullup", name: "Wide-Grip Pull-Up (Hít xà đơn rộng tay)", muscle: "back", sub: "lats", parts: ["lats", "mid_back", "biceps"], tool: "Xà đơn", isBodyweight: true, allowExtraWeight: true, sets: 4, reps: "6–10", tempo: "2-0-1-1", rir: "1–2", rest: "2 phút", restSec: 120, note: "Kéo ngực chạm xà, hạ chậm 2 giây. Đạt >10 reps hãy kẹp thêm tạ đơn." },
+      { id: "ex_bb_row", name: "Bent-Over Barbell Row (Gập người kéo tạ đòn)", muscle: "back", sub: "mid_back", parts: ["mid_back", "lats", "traps"], tool: "Tạ đòn", isBodyweight: false, sets: 4, reps: "8–10", tempo: "2-0-1-1", rir: "1–2", rest: "2 phút", restSec: 120, note: "Lưng thẳng 45°, kéo thanh đòn về rốn, siết chặt hai bả vai." },
+      { id: "ex_db_row", name: "Chest-Supported Incline DB Row (Kéo tạ đơn tựa ghế dốc)", muscle: "back", sub: "mid_back", parts: ["mid_back", "lats", "rear_delt"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "10–12", tempo: "2-1-1-1", rir: "1", rest: "90 giây", restSec: 90, note: "Nằm sấp trên ghế nâng lưng 30–45° để cô lập lưng giữa, chống ăn gian lưng dưới." },
+      { id: "ex_chinup", name: "Underhand Chin-Up (Hít xà nắm ngửa)", muscle: "back", sub: "lats", parts: ["lats", "biceps"], tool: "Xà đơn", isBodyweight: true, allowExtraWeight: true, sets: 3, reps: "8–12", tempo: "2-0-1-1", rir: "1", rest: "90 giây", restSec: 90, note: "Tác động cực mạnh vào xô dưới và bắp tay trước." },
+      { id: "ex_bb_shrug", name: "Barbell Shrug (Nhún cầu vai tạ đòn)", muscle: "back", sub: "mid_back", parts: ["traps"], tool: "Tạ đòn", isBodyweight: false, sets: 3, reps: "12–15", tempo: "2-1-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Nhún thẳng vai lên tai, giữ 1 giây ở đỉnh." },
+      // NGỰC
+      { id: "ex_bb_bench", name: "Flat Barbell Bench Press (Đẩy ngực ngang tạ đòn)", muscle: "chest", sub: "mid_chest", parts: ["mid_chest", "front_delt", "triceps"], tool: "Tạ đòn", isBodyweight: false, sets: 4, reps: "6–8", tempo: "3-1-1-0", rir: "1–2", rest: "2.5 phút", restSec: 150, note: "Bài nền tảng tăng khối lượng cơ ngực dày. Hạ tạ kiểm soát 3 giây." },
+      { id: "ex_inc_db_press", name: "Incline Dumbbell Press (Đẩy ngực trên ghế dốc 30°)", muscle: "chest", sub: "upper_chest", parts: ["upper_chest", "front_delt", "triceps"], tool: "Ghế đa năng", isBodyweight: false, sets: 4, reps: "8–12", tempo: "3-0-1-1", rir: "1", rest: "90 giây", restSec: 90, note: "Nâng lưng ghế 30° để làm đầy phần ngực trên." },
+      { id: "ex_dec_db_press", name: "Decline Dumbbell Press (Đẩy ngực dưới ghế dốc xuống)", muscle: "chest", sub: "lower_chest", parts: ["lower_chest", "mid_chest", "triceps"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "10–12", tempo: "2-0-1-1", rir: "1", rest: "90 giây", restSec: 90, note: "Tận dụng nấc dốc xuống của ghế đa năng để cắt nét viền ngực dưới." },
+      { id: "ex_pushup_finisher", name: "Deficit / Tempo Push-Up (Hít đất sâu vắt kiệt cơ ngực)", muscle: "chest", sub: "mid_chest", parts: ["mid_chest", "lower_chest", "triceps"], tool: "Hít đất / Bodyweight", isBodyweight: true, allowExtraWeight: false, sets: 3, reps: "15–25 (AMRAP)", tempo: "3-1-1-0", rir: "0–1", rest: "60 giây", restSec: 60, note: "Không cần tạ! Hạ ngực sâu 3 giây, đẩy bùng nổ để bơm máu tối đa cuối buổi." },
+      { id: "ex_inc_pushup", name: "Feet-Elevated Push-Up (Hít đất kê chân lên ghế)", muscle: "chest", sub: "upper_chest", parts: ["upper_chest", "front_delt"], tool: "Hít đất / Bodyweight", isBodyweight: true, allowExtraWeight: false, sets: 3, reps: "12–18", tempo: "2-1-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Đặt mũi chân lên ghế tập để dồn áp lực vào ngực trên & vai trước." },
+      // VAI
+      { id: "ex_db_ohp", name: "Seated Dumbbell Overhead Press (Đẩy vai ngồi tựa ghế)", muscle: "shoulders", sub: "front_delt", parts: ["front_delt", "side_delt", "triceps"], tool: "Ghế đa năng", isBodyweight: false, sets: 4, reps: "8–10", tempo: "2-0-1-0", rir: "1–2", rest: "90 giây", restSec: 90, note: "Dựng lưng ghế góc 80–85° để bảo vệ cột sống thắt lưng." },
+      { id: "ex_db_lat_raise", name: "Dumbbell Lateral Raise (Bay vai ngang tạ đơn)", muscle: "shoulders", sub: "side_delt", parts: ["side_delt"], tool: "Tạ đơn", isBodyweight: false, sets: 4, reps: "12–15", tempo: "2-1-1-0", rir: "0–1", rest: "60 giây", restSec: 60, note: "Giúp khung vai 1m58 mở rộng bề ngang rõ rệt." },
+      { id: "ex_rear_delt_fly", name: "Incline Bench Rear Delt Fly (Bay vai sau nằm sấp ghế)", muscle: "shoulders", sub: "rear_delt", parts: ["rear_delt", "mid_back"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "12–15", tempo: "2-1-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Nằm úp ngực lên ghế dốc 30°, mở rộng cánh tay ngang vai." },
+      // TAY TRƯỚC & TAY SAU
+      { id: "ex_bb_curl", name: "Barbell Bicep Curl (Cuốn tạ đòn đứng)", muscle: "biceps", sub: "all_biceps", parts: ["biceps", "forearms"], tool: "Tạ đòn", isBodyweight: false, sets: 3, reps: "8–12", tempo: "2-0-1-1", rir: "1", rest: "60 giây", restSec: 60, note: "Giữ khuỷu tay cố định sát sườn, không ngả lưng lấy đà." },
+      { id: "ex_inc_db_curl", name: "Incline Dumbbell Curl (Cuốn tạ đơn ngả ghế 45°)", muscle: "biceps", sub: "all_biceps", parts: ["biceps"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "10–12", tempo: "3-0-1-1", rir: "0–1", rest: "60 giây", restSec: 60, note: "Ngả lưng ghế 45° giúp kéo giãn tối đa đầu dài bắp tay trước." },
+      { id: "ex_skullcrusher", name: "Decline / Flat DB Skull Crusher (Nằm đẩy tay sau)", muscle: "triceps", sub: "all_triceps", parts: ["triceps"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "10–12", tempo: "3-0-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Nằm ghế phẳng hoặc dốc xuống nhẹ, hạ tạ qua đỉnh đầu." },
+      { id: "ex_diamond_pushup", name: "Diamond Push-Up (Hít đất kim cương tay sau)", muscle: "triceps", sub: "all_triceps", parts: ["triceps", "mid_chest"], tool: "Hít đất / Bodyweight", isBodyweight: true, allowExtraWeight: false, sets: 3, reps: "12–20", tempo: "2-1-1-0", rir: "0–1", rest: "60 giây", restSec: 60, note: "Hai bàn tay khép hình tam giác, khóa chặt khuỷu tay ép sát sườn." },
+      // CHÂN, MÔNG, ĐÙI TRƯỚC, ĐÙI SAU
+      { id: "ex_bb_squat", name: "Barbell Back Squat (Gánh tạ đòn sâu)", muscle: "quads", sub: "all_quads", parts: ["quads", "glutes"], tool: "Tạ đòn", isBodyweight: false, sets: 4, reps: "6–8", tempo: "3-1-1-0", rir: "1–2", rest: "2.5 phút", restSec: 150, note: "Bài vua kích thích hormone tăng trưởng & tăng cân cơ toàn thân." },
+      { id: "ex_leg_ext", name: "Seated Bench Leg Extension (Đá đùi trước trên ghế đa năng)", muscle: "quads", sub: "all_quads", parts: ["quads"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "12–15", tempo: "2-1-1-1", rir: "0–1", rest: "60 giây", restSec: 60, note: "Sử dụng cụm đá chân tích hợp trên ghế đa năng, giữ 1 giây ở đỉnh." },
+      { id: "ex_bb_rdl", name: "Barbell Romanian Deadlift (RDL đùi sau & mông)", muscle: "hamstrings", sub: "all_hamstrings", parts: ["hamstrings", "glutes", "lower_back"], tool: "Tạ đòn", isBodyweight: false, sets: 4, reps: "8–10", tempo: "3-1-1-0", rir: "1–2", rest: "2 phút", restSec: 120, note: "Đẩy hông ra sau, giữ thanh đòn trượt sát ống đồng." },
+      { id: "ex_leg_curl", name: "Prone Bench Leg Curl (Móc đùi sau trên ghế đa năng)", muscle: "hamstrings", sub: "all_hamstrings", parts: ["hamstrings"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "12–15", tempo: "2-1-1-1", rir: "0–1", rest: "60 giây", restSec: 60, note: "Nằm sấp trên ghế đa năng móc chân lên mông, cô lập đùi sau." },
+      { id: "ex_hip_thrust", name: "Barbell Hip Thrust (Đẩy hông tạ đòn tựa ghế)", muscle: "glutes", sub: "all_glutes", parts: ["glutes", "hamstrings"], tool: "Ghế đa năng", isBodyweight: false, sets: 4, reps: "8–12", tempo: "2-1-1-1", rir: "1", rest: "90 giây", restSec: 90, note: "Tựa lưng trên thành ghế, siết chặt mông 1 giây ở đỉnh." },
+      { id: "ex_bulgarian", name: "Bulgarian Split Squat (Squat 1 chân kê ghế)", muscle: "quads", sub: "all_quads", parts: ["quads", "glutes"], tool: "Ghế đa năng", isBodyweight: false, sets: 3, reps: "10/chân", tempo: "2-0-1-0", rir: "1", rest: "90 giây", restSec: 90, note: "Kê mu bàn chân sau lên ghế tập, giữ thân thẳng." },
+      // BỤNG
+      { id: "ex_hanging_leg", name: "Hanging Leg Raise (Treo xà đơn nâng chân)", muscle: "abs", sub: "all_abs", parts: ["abs", "obliques"], tool: "Xà đơn", isBodyweight: true, allowExtraWeight: false, sets: 3, reps: "12–15", tempo: "2-1-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Cuộn xương chậu đưa mũi chân hướng lên thanh xà." },
+      { id: "ex_decline_crunch", name: "Decline Bench Crunch (Gập bụng trên ghế dốc xuống)", muscle: "abs", sub: "all_abs", parts: ["abs", "obliques"], tool: "Ghế đa năng", isBodyweight: true, allowExtraWeight: true, sets: 3, reps: "15–20", tempo: "2-1-1-0", rir: "1", rest: "60 giây", restSec: 60, note: "Khóa cổ chân vào đệm ghế dốc xuống để siết múi bụng sâu hơn." }
+    ];
+
+    const WORKOUT_PLAN = {
+      1: {
+        dayName: "Thứ 2", shortLabel: "T2 • Upper Strength", title: "Buổi 1: Upper Body (Sức Mạnh Thân Trên)", isRest: false,
+        goal: "Tập trung tạ nặng (6–10 reps) kích thích sợi cơ loại II phát triển độ dày. Kết thúc bằng Hít đất vắt kiệt cơ.",
+        exerciseIds: ["ex_bb_bench", "ex_pullup", "ex_db_ohp", "ex_bb_row", "ex_bb_curl", "ex_pushup_finisher"]
+      },
+      2: {
+        dayName: "Thứ 3", shortLabel: "T3 • Lower Strength", title: "Buổi 2: Lower Body (Sức Mạnh Chân & Mông)", isRest: false,
+        goal: "Kích thích nội tiết tố tăng cân tự nhiên qua Squat, RDL kết hợp cụm đá đùi trước & móc đùi sau trên ghế đa năng.",
+        exerciseIds: ["ex_bb_squat", "ex_bb_rdl", "ex_leg_ext", "ex_leg_curl", "ex_hanging_leg"]
+      },
+      3: {
+        dayName: "Thứ 4", shortLabel: "T4 • Nghỉ", title: "Nghỉ Ngơi & Phục Hồi Cơ Bắp", isRest: true,
+        goal: "Ngày vàng để cơ bắp tổng hợp protein và tăng cân. Ngủ đủ 7.5–8 tiếng, ăn đủ 2,450 kcal.",
+        exerciseIds: []
+      },
+      4: {
+        dayName: "Thứ 5", shortLabel: "T5 • Push Hyper", title: "Buổi 3: Push (Ngực Trên/Dưới - Vai - Tay Sau)", isRest: false,
+        goal: "Khai thác tối đa ghế đa năng (dốc lên & dốc xuống) kết hợp Hít đất kê chân & Hít đất kim cương không cần tạ.",
+        exerciseIds: ["ex_inc_db_press", "ex_dec_db_press", "ex_db_lat_raise", "ex_skullcrusher", "ex_inc_pushup", "ex_diamond_pushup"]
+      },
+      5: {
+        dayName: "Thứ 6", shortLabel: "T6 • Pull Hyper", title: "Buổi 4: Pull (Lưng Xô - Vai Sau - Tay Trước)", isRest: false,
+        goal: "Mở rộng độ rộng xô & độ dày lưng giữa với Xà đơn, Ghế dốc và Tạ đòn.",
+        exerciseIds: ["ex_chinup", "ex_db_row", "ex_rear_delt_fly", "ex_bb_shrug", "ex_inc_db_curl"]
+      },
+      6: {
+        dayName: "Thứ 7", shortLabel: "T7 • Legs & Core", title: "Buổi 5: Legs & Core (Phì Đại Chân & Bụng Dốc Xuống)", isRest: false,
+        goal: "Hoàn thiện khối lượng thân dưới (Hip Thrust, Bulgarian Split Squat, Đá/Móc chân ghế đa năng) & Bụng dốc xuống.",
+        exerciseIds: ["ex_hip_thrust", "ex_bulgarian", "ex_leg_ext", "ex_leg_curl", "ex_decline_crunch"]
+      },
+      0: {
+        dayName: "Chủ Nhật", shortLabel: "CN • Nghỉ", title: "Nghỉ Hoàn Toàn & Tổng Kết Tuần", isRest: true,
+        goal: "Thư giãn hoàn toàn, kiểm tra cân nặng buổi sáng (mục tiêu tăng +0.25–0.4 kg/tuần).",
+        exerciseIds: []
+      }
+    };
+
+    const getExerciseById = (id) => EXERCISE_DATABASE.find(e => e.id === id);
 
     const $ = (id) => document.getElementById(id);
     const round1 = (n) => Math.round((Number(n) || 0) * 10) / 10;
@@ -2093,121 +2503,677 @@
       if ($('waterProgressBar')) $('waterProgressBar').style.width = `${Math.min(100, Math.round((w / 2800) * 100))}%`;
     }
 
+    // =========================================================================
+    // WORKOUT MODULE: INTERACTIVE SVG MUSCLE MAP + BODYWEIGHT + PR TRACKER
+    // =========================================================================
+    let wkSubView = 'schedule';
+    let wkBodySide = 'back';
+    let wkSelectedMuscle = 'back';
+    let wkSelectedSub = 'all_back';
+    let wkDarkMode = localStorage.getItem('healthtrack_wk_dark') === '1';
+
+    function toggleWorkoutDarkMode() {
+      wkDarkMode = !wkDarkMode;
+      localStorage.setItem('healthtrack_wk_dark', wkDarkMode ? '1' : '0');
+      applyWorkoutDarkModeUI();
+    }
+
+    function applyWorkoutDarkModeUI() {
+      const tab = $('tab-workout');
+      if (!tab) return;
+      tab.classList.toggle('wk-dark', wkDarkMode);
+      if ($('wkDarkIcon')) $('wkDarkIcon').className = wkDarkMode ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon text-amber-300';
+      if ($('wkDarkText')) $('wkDarkText').textContent = wkDarkMode ? 'Chế độ sáng' : 'Chế độ đêm';
+    }
+
+    function switchWorkoutSubView(viewName) {
+      wkSubView = viewName;
+      ['schedule', 'muscles', 'tracker'].forEach(v => {
+        $('wkView-' + v)?.classList.toggle('hidden', v !== viewName);
+        $('wkSubBtn-' + v)?.classList.toggle('active', v === viewName);
+      });
+      if (viewName === 'muscles') {
+        renderInteractiveMuscleMap();
+        renderMuscleExerciseLibrary();
+      } else if (viewName === 'tracker') {
+        initTrackerSelect();
+        renderExerciseProgressChart();
+      }
+    }
+
+    function openExerciseHistoryTracker(exId) {
+      switchWorkoutSubView('tracker');
+      const sel = $('trackerExerciseSelect');
+      if (sel) {
+        sel.value = exId;
+        renderExerciseProgressChart();
+      }
+    }
+
+    function getBodySvgPaths(side) {
+      if (side === 'front') {
+        return `
+          <!-- Organic Human Silhouette Front (Anatomical Proportions) -->
+          <g class="body-base">
+            <!-- Head, Neck, Torso, Arms, Hands, Legs, Feet -->
+            <path d="M110,16 C100,16 94,23 94,33 C94,41 98,47 103,49 L102,59 C93,62 77,65 68,70 C59,74 54,84 51,98 C47,114 43,131 38,148 C34,162 29,177 24,189 C21,196 16,201 14,206 C13,208 15,209 17,207 C19,205 22,201 24,199 C22,205 19,213 19,215 C19,217 21,217 23,214 C25,209 27,204 28,202 C27,208 25,216 25,218 C25,220 27,220 29,216 C31,211 32,205 33,203 C33,209 32,216 32,218 C32,220 34,219 35,215 C37,209 38,202 38,197 C39,192 41,188 43,182 C49,165 56,147 61,130 C64,119 67,108 69,99 L73,134 C74,148 72,163 72,178 C72,193 74,209 75,226 C76,249 77,274 80,298 C82,315 81,332 82,349 C83,366 85,383 84,398 L81,406 C80,409 84,411 91,411 C97,411 100,409 99,405 L97,396 C99,381 102,364 103,347 C104,330 102,314 104,297 C106,275 108,252 109,229 L111,229 C112,252 114,275 116,297 C118,314 116,330 117,347 C118,364 121,381 123,396 L121,405 C120,409 123,411 129,411 C136,411 140,409 139,406 L136,398 C135,383 137,366 138,349 C139,332 138,315 140,298 C143,274 144,249 145,226 C146,209 148,193 148,178 C148,163 146,148 147,134 L151,99 C153,108 156,119 159,130 C164,147 171,165 177,182 C179,188 181,192 182,197 C182,202 183,209 185,215 C186,219 188,220 188,218 C188,216 187,209 187,203 C188,205 189,211 191,216 C193,220 195,220 195,218 C195,216 193,208 192,202 C193,204 195,209 197,214 C199,217 201,217 201,215 C201,213 198,205 196,199 C198,201 201,205 203,207 C205,209 207,208 206,206 C204,201 199,196 196,189 C191,177 186,162 182,148 C177,131 173,114 169,98 C166,84 161,74 152,70 C143,65 127,62 118,59 L117,49 C122,47 126,41 126,33 C126,23 120,16 110,16 Z"/>
+          </g>
+
+          <!-- Interactive Anatomical Muscle Groups (Front) -->
+          <!-- Cầu vai trước (Traps) -->
+          <path data-part="traps" data-muscle="back" d="M101,58 C95,61 86,64 78,67 C85,69 93,71 101,71 Z" class="muscle-part"/>
+          <path data-part="traps" data-muscle="back" d="M119,58 C125,61 134,64 142,67 C135,69 127,71 119,71 Z" class="muscle-part"/>
+
+          <!-- Vai trước & Vai giữa (Front & Side Delts) -->
+          <path data-part="front_delt" data-muscle="shoulders" d="M77,68 C67,69 58,76 55,88 C54,94 56,99 60,102 C65,95 72,86 78,79 C79,74 79,70 77,68 Z" class="muscle-part"/>
+          <path data-part="front_delt" data-muscle="shoulders" d="M143,68 C153,69 162,76 165,88 C166,94 164,99 160,102 C155,95 148,86 142,79 C141,74 141,70 143,68 Z" class="muscle-part"/>
+
+          <!-- Ngực trên (Upper Chest) -->
+          <path data-part="upper_chest" data-muscle="chest" d="M80,72 C90,72 100,74 108,78 L108,87 C97,85 86,83 76,82 C77,78 78,75 80,72 Z" class="muscle-part"/>
+          <path data-part="upper_chest" data-muscle="chest" d="M140,72 C130,72 120,74 112,78 L112,87 C123,85 134,83 144,82 C143,78 142,75 140,72 Z" class="muscle-part"/>
+
+          <!-- Ngực giữa (Mid Chest) -->
+          <path data-part="mid_chest" data-muscle="chest" d="M75,84 C86,85 97,87 108,89 L108,104 C96,104 84,102 75,97 C73,93 74,88 75,84 Z" class="muscle-part"/>
+          <path data-part="mid_chest" data-muscle="chest" d="M145,84 C134,85 123,87 112,89 L112,104 C124,104 136,102 145,97 C147,93 146,88 145,84 Z" class="muscle-part"/>
+
+          <!-- Ngực dưới (Lower Chest) -->
+          <path data-part="lower_chest" data-muscle="chest" d="M76,99 C85,104 96,106 108,106 L107,113 C95,114 83,110 77,104 C76,102 76,100 76,99 Z" class="muscle-part"/>
+          <path data-part="lower_chest" data-muscle="chest" d="M144,99 C135,104 124,106 112,106 L113,113 C125,114 137,110 143,104 C144,102 144,100 144,99 Z" class="muscle-part"/>
+
+          <!-- Tay trước (Biceps) -->
+          <path data-part="biceps" data-muscle="biceps" d="M68,96 C62,102 56,113 54,126 C53,132 56,136 60,136 C65,127 69,115 70,104 C70,100 69,98 68,96 Z" class="muscle-part"/>
+          <path data-part="biceps" data-muscle="biceps" d="M152,96 C158,102 164,113 166,126 C167,132 164,136 160,136 C155,127 151,115 150,104 C150,100 151,98 152,96 Z" class="muscle-part"/>
+
+          <!-- Cẳng tay (Forearms) -->
+          <path data-part="forearms" data-muscle="biceps" d="M51,139 C45,151 39,167 35,183 L42,185 C49,171 56,155 59,141 C56,139 53,139 51,139 Z" class="muscle-part"/>
+          <path data-part="forearms" data-muscle="biceps" d="M169,139 C175,151 181,167 185,183 L178,185 C171,171 164,155 161,141 C164,139 167,139 169,139 Z" class="muscle-part"/>
+
+          <!-- Cơ bụng 6 múi (Rectus Abdominis) -->
+          <path data-part="abs" data-muscle="abs" d="M96,116 L108,116 L108,131 L95,131 Z" class="muscle-part"/>
+          <path data-part="abs" data-muscle="abs" d="M112,116 L124,116 L125,131 L112,131 Z" class="muscle-part"/>
+          <path data-part="abs" data-muscle="abs" d="M95,133 L108,133 L108,148 L95,148 Z" class="muscle-part"/>
+          <path data-part="abs" data-muscle="abs" d="M112,133 L125,133 L125,148 L112,148 Z" class="muscle-part"/>
+          <path data-part="abs" data-muscle="abs" d="M95,150 L108,150 L108,166 L96,166 Z" class="muscle-part"/>
+          <path data-part="abs" data-muscle="abs" d="M112,150 L125,150 L124,166 L112,166 Z" class="muscle-part"/>
+          <path data-part="abs" data-muscle="abs" d="M97,168 L108,168 L108,194 C103,190 99,180 97,168 Z" class="muscle-part"/>
+          <path data-part="abs" data-muscle="abs" d="M112,168 L123,168 C121,180 117,190 112,194 Z" class="muscle-part"/>
+
+          <!-- Cơ liên sườn (Obliques) -->
+          <path data-part="obliques" data-muscle="abs" d="M76,114 C82,116 88,117 93,117 L93,166 C87,162 80,153 77,140 C75,130 75,121 76,114 Z" class="muscle-part"/>
+          <path data-part="obliques" data-muscle="abs" d="M144,114 C138,116 132,117 127,117 L127,166 C133,162 140,153 143,140 C145,130 145,121 144,114 Z" class="muscle-part"/>
+
+          <!-- Đùi trước (Quadriceps) -->
+          <path data-part="quads" data-muscle="quads" d="M77,202 C83,212 92,221 103,227 C105,252 103,278 98,298 C93,301 87,301 82,297 C77,271 75,236 77,202 Z" class="muscle-part"/>
+          <path data-part="quads" data-muscle="quads" d="M143,202 C137,212 128,221 117,227 C115,252 117,278 122,298 C127,301 133,301 138,297 C143,271 145,236 143,202 Z" class="muscle-part"/>
+          <path data-part="quads" data-muscle="quads" d="M89,224 C93,245 93,270 90,295" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" pointer-events="none"/>
+          <path data-part="quads" data-muscle="quads" d="M131,224 C127,245 127,270 130,295" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" pointer-events="none"/>
+
+          <!-- Bắp chân trước (Calves) -->
+          <path data-part="calves" data-muscle="hamstrings" d="M82,316 C87,314 94,315 99,319 C100,338 97,362 93,382 L86,382 C83,361 81,338 82,316 Z" class="muscle-part"/>
+          <path data-part="calves" data-muscle="hamstrings" d="M138,316 C133,314 126,315 121,319 C120,338 123,362 127,382 L134,382 C137,361 139,338 138,316 Z" class="muscle-part"/>
+        `;
+      }
+      return `
+        <!-- Organic Human Silhouette Back (Exact Anatomical Proportions matching IMG_2628.jpeg) -->
+        <g class="body-base">
+          <!-- Head, Nape & Full Body Contour -->
+          <path d="M110,16 C100,16 94,23 94,33 C94,41 98,47 103,49 L102,59 C93,62 77,65 68,70 C59,74 54,84 51,98 C47,114 43,131 38,148 C34,162 29,177 24,189 C21,196 16,201 14,206 C13,208 15,209 17,207 C19,205 22,201 24,199 C22,205 19,213 19,215 C19,217 21,217 23,214 C25,209 27,204 28,202 C27,208 25,216 25,218 C25,220 27,220 29,216 C31,211 32,205 33,203 C33,209 32,216 32,218 C32,220 34,219 35,215 C37,209 38,202 38,197 C39,192 41,188 43,182 C49,165 56,147 61,130 C64,119 67,108 69,99 L73,134 C74,148 72,163 72,178 C72,193 74,209 75,226 C76,249 77,274 80,298 C82,315 81,332 82,349 C83,366 85,383 84,398 L81,406 C80,409 84,411 91,411 C97,411 100,409 99,405 L97,396 C99,381 102,364 103,347 C104,330 102,314 104,297 C106,275 108,252 109,229 L111,229 C112,252 114,275 116,297 C118,314 116,330 117,347 C118,364 121,381 123,396 L121,405 C120,409 123,411 129,411 C136,411 140,409 139,406 L136,398 C135,383 137,366 138,349 C139,332 138,315 140,298 C143,274 144,249 145,226 C146,209 148,193 148,178 C148,163 146,148 147,134 L151,99 C153,108 156,119 159,130 C164,147 171,165 177,182 C179,188 181,192 182,197 C182,202 183,209 185,215 C186,219 188,220 188,218 C188,216 187,209 187,203 C188,205 189,211 191,216 C193,220 195,220 195,218 C195,216 193,208 192,202 C193,204 195,209 197,214 C199,217 201,217 201,215 C201,213 198,205 196,199 C198,201 201,205 203,207 C205,209 207,208 206,206 C204,201 199,196 196,189 C191,177 186,162 182,148 C177,131 173,114 169,98 C166,84 161,74 152,70 C143,65 127,62 118,59 L117,49 C122,47 126,41 126,33 C126,23 120,16 110,16 Z"/>
+        </g>
+
+        <!-- Interactive Anatomical Muscle Groups (Back - Exact match to IMG_2628.jpeg) -->
+        <!-- Cầu vai (Trapezius) -->
+        <path data-part="traps" data-muscle="back" d="M103,56 C97,60 88,64 81,67 C85,73 95,82 108,86 L108,56 Z" class="muscle-part"/>
+        <path data-part="traps" data-muscle="back" d="M117,56 C123,60 132,64 139,67 C135,73 125,82 112,86 L112,56 Z" class="muscle-part"/>
+
+        <!-- Lưng giữa (Rhomboids / Mid-Back) -->
+        <path data-part="mid_back" data-muscle="back" d="M84,74 C92,81 100,86 108,88 L108,128 C100,122 93,111 89,98 C86,90 84,81 84,74 Z" class="muscle-part"/>
+        <path data-part="mid_back" data-muscle="back" d="M136,74 C128,81 120,86 112,88 L112,128 C120,122 127,111 131,98 C134,90 136,81 136,74 Z" class="muscle-part"/>
+
+        <!-- Cơ Xô (Latissimus Dorsi - Wing shape) -->
+        <path data-part="lats" data-muscle="back" d="M74,94 C78,94 83,96 87,100 C92,113 99,124 108,131 L108,144 C101,150 96,158 93,167 C83,153 76,134 74,114 C73,106 73,99 74,94 Z" class="muscle-part"/>
+        <path data-part="lats" data-muscle="back" d="M146,94 C142,94 137,96 133,100 C128,113 121,124 112,131 L112,144 C119,150 124,158 127,167 C137,153 144,134 146,114 C147,106 147,99 146,94 Z" class="muscle-part"/>
+
+        <!-- Lưng dưới (Erector Spinae / Lower Back) -->
+        <path data-part="lower_back" data-muscle="back" d="M108,147 L108,176 C103,176 98,173 95,169 C98,160 102,152 108,147 Z" class="muscle-part"/>
+        <path data-part="lower_back" data-muscle="back" d="M112,147 L112,176 C117,176 122,173 125,169 C122,160 118,152 112,147 Z" class="muscle-part"/>
+
+        <!-- Vai sau & Vai giữa (Rear & Side Delts) -->
+        <path data-part="rear_delt" data-muscle="shoulders" d="M78,68 C67,69 57,76 54,88 C53,93 55,97 58,99 C64,92 71,86 79,82 C81,77 80,71 78,68 Z" class="muscle-part"/>
+        <path data-part="rear_delt" data-muscle="shoulders" d="M142,68 C153,69 163,76 166,88 C167,93 165,97 162,99 C156,92 149,86 141,82 C139,77 140,71 142,68 Z" class="muscle-part"/>
+
+        <!-- Tay sau (Triceps - Horseshoe shape) -->
+        <path data-part="triceps" data-muscle="triceps" d="M68,92 C61,97 55,108 52,122 C51,129 54,135 59,137 C64,129 69,117 70,104 C71,99 70,95 68,92 Z" class="muscle-part"/>
+        <path data-part="triceps" data-muscle="triceps" d="M152,92 C159,97 165,108 168,122 C169,129 166,135 161,137 C156,129 151,117 150,104 C149,99 150,95 152,92 Z" class="muscle-part"/>
+
+        <!-- Cẳng tay sau (Forearms) -->
+        <path data-part="forearms" data-muscle="biceps" d="M50,140 C44,152 38,168 34,184 L41,186 C48,172 55,156 58,142 C55,140 52,140 50,140 Z" class="muscle-part"/>
+        <path data-part="forearms" data-muscle="biceps" d="M170,140 C176,152 182,168 186,184 L179,186 C172,172 165,156 162,142 C165,140 168,140 170,140 Z" class="muscle-part"/>
+
+        <!-- Cơ Mông (Gluteus Maximus) -->
+        <path data-part="glutes" data-muscle="glutes" d="M80,180 C87,178 98,179 108,183 L108,218 C97,221 84,218 77,209 C74,199 76,188 80,180 Z" class="muscle-part"/>
+        <path data-part="glutes" data-muscle="glutes" d="M140,180 C133,178 122,179 112,183 L112,218 C123,221 136,218 143,209 C146,199 144,188 140,180 Z" class="muscle-part"/>
+
+        <!-- Đùi sau (Hamstrings) -->
+        <path data-part="hamstrings" data-muscle="hamstrings" d="M78,216 C86,222 97,224 106,223 C106,250 103,276 98,298 C92,300 86,299 81,295 C77,270 76,242 78,216 Z" class="muscle-part"/>
+        <path data-part="hamstrings" data-muscle="hamstrings" d="M142,216 C134,222 123,224 114,223 C114,250 117,276 122,298 C128,300 134,299 139,295 C143,270 144,242 142,216 Z" class="muscle-part"/>
+
+        <!-- Bắp chân (Gastrocnemius - Diamond twin heads) -->
+        <path data-part="calves" data-muscle="hamstrings" d="M82,312 C88,308 95,310 100,317 C101,334 98,354 94,374 L86,374 C82,354 80,333 82,312 Z" class="muscle-part"/>
+        <path data-part="calves" data-muscle="hamstrings" d="M138,312 C132,308 125,310 120,317 C119,334 122,354 126,374 L134,374 C138,354 140,333 138,312 Z" class="muscle-part"/>
+      `;
+    }
+
+    function setBodyViewSide(side) {
+      wkBodySide = side;
+      $('btnSideFront')?.classList.toggle('active', side === 'front');
+      $('btnSideBack')?.classList.toggle('active', side === 'back');
+      renderInteractiveMuscleMap();
+    }
+
+    function selectMuscleGroup(muscleKey, subKey = null) {
+      wkSelectedMuscle = muscleKey;
+      const cat = MUSCLE_CATALOG[muscleKey];
+      if (!cat) return;
+      if (cat.side !== wkBodySide) {
+        wkBodySide = cat.side;
+        $('btnSideFront')?.classList.toggle('active', wkBodySide === 'front');
+        $('btnSideBack')?.classList.toggle('active', wkBodySide === 'back');
+      }
+      wkSelectedSub = subKey || cat.subs[0].id;
+      renderInteractiveMuscleMap();
+      renderMuscleExerciseLibrary();
+    }
+
+    function renderInteractiveMuscleMap() {
+      const svg = $('interactiveBodySvg');
+      if (!svg) return;
+      svg.innerHTML = getBodySvgPaths(wkBodySide);
+
+      const cat = MUSCLE_CATALOG[wkSelectedMuscle] || MUSCLE_CATALOG.back;
+      const subObj = cat.subs.find(s => s.id === wkSelectedSub) || cat.subs[0];
+      const activeParts = subObj.parts || [];
+
+      svg.querySelectorAll('.muscle-part').forEach(el => {
+        const part = el.getAttribute('data-part');
+        const mKey = el.getAttribute('data-muscle');
+        if (activeParts.includes(part)) el.classList.add('active');
+        el.addEventListener('click', () => selectMuscleGroup(mKey));
+      });
+
+      if ($('selectedMuscleTitle')) $('selectedMuscleTitle').textContent = subObj.id.startsWith('all_') ? cat.label : subObj.label;
+      if ($('selectedMuscleCount')) $('selectedMuscleCount').textContent = cat.count;
+      if ($('libraryMuscleBadge')) $('libraryMuscleBadge').textContent = subObj.id.startsWith('all_') ? cat.label : `${cat.label} • ${subObj.label}`;
+
+      if ($('primaryMusclePills')) {
+        $('primaryMusclePills').innerHTML = Object.keys(MUSCLE_CATALOG).map(k => {
+          const m = MUSCLE_CATALOG[k];
+          return `<button onclick="selectMuscleGroup('${k}')" class="wk-pill ${k === wkSelectedMuscle ? 'active' : ''}">${m.label}</button>`;
+        }).join('');
+      }
+
+      if ($('subMusclePills')) {
+        $('subMusclePills').innerHTML = cat.subs.map(s => `
+          <button onclick="selectMuscleGroup('${wkSelectedMuscle}', '${s.id}')" class="wk-subpill ${s.id === wkSelectedSub ? 'active' : ''}">${s.label}</button>
+        `).join('');
+      }
+    }
+
+    function renderMuscleExerciseLibrary() {
+      const container = $('muscleExerciseLibraryList');
+      if (!container) return;
+      const toolFilter = $('wkToolFilter')?.value || 'all';
+      const cat = MUSCLE_CATALOG[wkSelectedMuscle] || MUSCLE_CATALOG.back;
+      const subObj = cat.subs.find(s => s.id === wkSelectedSub) || cat.subs[0];
+      const activeParts = subObj.parts || [];
+
+      const filtered = EXERCISE_DATABASE.filter(ex => {
+        const matchMuscle = ex.muscle === wkSelectedMuscle || ex.parts.some(p => activeParts.includes(p));
+        const matchTool = toolFilter === 'all' || ex.tool === toolFilter;
+        return matchMuscle && matchTool;
+      });
+
+      if (!filtered.length) {
+        container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400 italic">Không có bài tập phù hợp bộ lọc dụng cụ này.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(ex => `
+        <div class="wk-surface p-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/70 hover:border-lime-400 transition flex flex-wrap items-center justify-between gap-3">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <h4 class="wk-text-main font-extrabold text-xs sm:text-sm text-slate-900">${escHtml(ex.name)}</h4>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-700 font-bold">${escHtml(ex.tool)}</span>
+              ${ex.isBodyweight ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-lime-100 text-lime-800 font-extrabold">Bodyweight</span>' : ''}
+            </div>
+            <p class="wk-text-sub text-[11px] text-slate-500 mt-1">
+              Chuẩn quốc tế: <strong class="text-lime-700">${ex.sets} hiệp &times; ${ex.reps}</strong> • Tempo: <strong>${ex.tempo}</strong> • RIR: <strong>${ex.rir}</strong> • Nghỉ: <strong>${ex.rest}</strong>
+            </p>
+            <p class="text-[11px] text-slate-500 mt-1">${escHtml(ex.note)}</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="openExerciseHistoryTracker('${ex.id}')" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-lime-50 text-slate-700 border border-slate-200 text-[11px] font-bold transition cursor-pointer">
+              <i class="fa-solid fa-chart-line text-lime-600"></i> Lịch sử PR
+            </button>
+            <button onclick="addExerciseToCurrentSession('${ex.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-lime-500 hover:text-slate-950 text-white text-[11px] font-bold transition cursor-pointer">
+              + Vào buổi tập
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addExerciseToCurrentSession(exId) {
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      if (!wLog.extraExercises) wLog.extraExercises = [];
+      const baseIds = WORKOUT_PLAN[dow]?.exerciseIds || [];
+      if (baseIds.includes(exId) || wLog.extraExercises.includes(exId)) {
+        return showToast("Bài tập này đã có trong buổi tập hôm nay!", "warn");
+      }
+      wLog.extraExercises.push(exId);
+      saveDatabase();
+      switchWorkoutSubView('schedule');
+      showToast("Đã thêm bài tập vào buổi hôm nay!");
+    }
+
+    function renderMiniSessionBodies(activeParts) {
+      ['miniBodyFront', 'miniBodyBack'].forEach(svgId => {
+        const el = $(svgId);
+        if (!el) return;
+        const side = svgId === 'miniBodyFront' ? 'front' : 'back';
+        el.innerHTML = getBodySvgPaths(side);
+        el.querySelectorAll('.muscle-part').forEach(p => {
+          if (activeParts.includes(p.getAttribute('data-part'))) p.classList.add('active');
+        });
+      });
+    }
+
+    function getSessionExercises(dow, wLog) {
+      const plan = WORKOUT_PLAN[dow] || WORKOUT_PLAN[1];
+      const ids = [...(plan.exerciseIds || []), ...(wLog.extraExercises || [])];
+      return ids.map(id => getExerciseById(id)).filter(Boolean);
+    }
+
     function ensureWorkoutRecord(dateStr, dow) {
       const rec = ensureDayRecord(dateStr);
-      if (!rec.workout) rec.workout = { dayOfWeek: dow, logs: {} };
+      if (!rec.workout) rec.workout = { dayOfWeek: dow, logs: {}, extraExercises: [] };
       if (!rec.workout.logs) rec.workout.logs = {};
+      if (!rec.workout.extraExercises) rec.workout.extraExercises = [];
       return rec.workout;
     }
+
     function selectWorkoutDay(dow) {
       selectedWorkoutDow = dow;
       ensureWorkoutRecord(currentDate, dow).dayOfWeek = dow;
       saveDatabase();
     }
+
     function updateDailyWorkoutWidget() {
       const rec = ensureDayRecord(currentDate);
       const dow = rec.workout?.dayOfWeek ?? getDayOfWeekFromISO(currentDate);
       const plan = WORKOUT_PLAN[dow] || WORKOUT_PLAN[1];
       const wLog = ensureWorkoutRecord(currentDate, dow);
-      const doneEx = plan.exercises.filter(ex => wLog.logs[ex.id]?.done).length;
-      const totalEx = plan.exercises.length;
+      const exList = getSessionExercises(dow, wLog);
+      const doneEx = exList.filter(ex => wLog.logs[ex.id]?.done).length;
+      const totalEx = exList.length;
 
       if ($('dailyWorkoutBadge')) $('dailyWorkoutBadge').textContent = `${plan.dayName} • ${doneEx}/${totalEx}`;
       if ($('dailyWorkoutTitle')) $('dailyWorkoutTitle').textContent = plan.title;
       if ($('dailyWorkoutBar')) $('dailyWorkoutBar').style.width = `${totalEx ? Math.round((doneEx / totalEx) * 100) : 0}%`;
-      if ($('dailyWorkoutSub')) $('dailyWorkoutSub').textContent = doneEx === totalEx ? "Tuyệt vời! Bạn đã hoàn thành 100% lịch tập hôm nay." : plan.goal;
+      if ($('dailyWorkoutSub')) $('dailyWorkoutSub').textContent = plan.isRest ? plan.goal : (doneEx === totalEx && totalEx > 0 ? "Hoàn thành 100% buổi tập! Nhớ ăn đủ đạm & tinh bột phục hồi." : plan.goal);
       if ($('workoutNavBadge')) $('workoutNavBadge').textContent = plan.isRest ? "Nghỉ" : `${doneEx}/${totalEx}`;
     }
 
     function renderWorkoutTab() {
+      applyWorkoutDarkModeUI();
       const naturalDow = getDayOfWeekFromISO(currentDate);
       const rec = ensureDayRecord(currentDate);
       if (selectedWorkoutDow === null) selectedWorkoutDow = rec.workout?.dayOfWeek ?? naturalDow;
       const dow = selectedWorkoutDow;
       const plan = WORKOUT_PLAN[dow] || WORKOUT_PLAN[1];
       const wLog = ensureWorkoutRecord(currentDate, dow);
+      const exList = getSessionExercises(dow, wLog);
 
       if ($('workoutDateTitle')) $('workoutDateTitle').textContent = `${formatDisplayDate(currentDate)} (${WORKOUT_PLAN[naturalDow].dayName})`;
       if ($('workoutDayPills')) {
         $('workoutDayPills').innerHTML = [1, 2, 3, 4, 5, 6, 0].map(d => {
           const p = WORKOUT_PLAN[d], isSel = d === dow;
-          return `<button onclick="selectWorkoutDay(${d})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${isSel ? 'bg-violet-600 text-white shadow-md shadow-violet-500/25' : 'bg-slate-100 hover:bg-violet-50 text-slate-600 hover:text-violet-700'}"><span>${p.shortLabel}</span>${d === naturalDow ? `<span class="w-1.5 h-1.5 rounded-full ${isSel ? 'bg-amber-300' : 'bg-violet-500'}"></span>` : ''}</button>`;
+          return `<button onclick="selectWorkoutDay(${d})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${isSel ? 'bg-slate-900 text-lime-400 shadow-md' : 'bg-slate-100 hover:bg-lime-50 text-slate-600 hover:text-slate-900'}"><span>${p.shortLabel}</span>${d === naturalDow ? `<span class="w-1.5 h-1.5 rounded-full ${isSel ? 'bg-lime-400' : 'bg-emerald-500'}"></span>` : ''}</button>`;
         }).join('');
       }
 
-      const doneCount = plan.exercises.filter(ex => wLog.logs[ex.id]?.done).length;
+      const activeParts = [...new Set(exList.flatMap(ex => ex.parts || []))];
+      const activeMuscles = [...new Set(exList.map(ex => MUSCLE_CATALOG[ex.muscle]?.label).filter(Boolean))];
+      renderMiniSessionBodies(activeParts);
+
+      const doneCount = exList.filter(ex => wLog.logs[ex.id]?.done).length;
       if ($('sessionDayTag')) $('sessionDayTag').textContent = plan.dayName;
       if ($('sessionTitle')) $('sessionTitle').textContent = plan.title;
       if ($('sessionGoal')) $('sessionGoal').textContent = plan.goal;
-      if ($('sessionProgressText')) $('sessionProgressText').textContent = `${doneCount} / ${plan.exercises.length} bài`;
+      if ($('sessionProgressText')) $('sessionProgressText').textContent = `${doneCount} / ${exList.length} bài`;
+      if ($('sessionMuscleTags')) {
+        $('sessionMuscleTags').innerHTML = activeMuscles.length
+          ? activeMuscles.map(m => `<span class="px-2.5 py-0.5 rounded-full bg-lime-100 text-lime-900 border border-lime-300 text-[11px] font-extrabold"><i class="fa-solid fa-bolt text-lime-600 mr-1"></i>${escHtml(m)}</span>`).join('')
+          : `<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">Phục hồi & Đồng hóa cơ bắp</span>`;
+      }
 
       if ($('workoutExerciseList')) {
-        $('workoutExerciseList').innerHTML = plan.exercises.map((ex, idx) => {
-          const entry = wLog.logs[ex.id] || { done: false, weight: "", sets: Array(ex.sets).fill(""), readyUp: false };
-          const setsArr = Array.from({ length: ex.sets }, (_, sIdx) => entry.sets?.[sIdx] ?? "");
-          return `
-            <div class="p-4 rounded-2xl border transition-all ${entry.done ? 'bg-emerald-50/60 border-emerald-300 shadow-xs' : 'bg-white/90 border-slate-200/90 hover:border-violet-300 shadow-xs'}">
-              <div class="flex flex-wrap items-start justify-between gap-3">
-                <div class="flex items-start gap-3 flex-1 min-w-[240px]">
-                  <button onclick="toggleExerciseDone('${ex.id}')" class="mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition cursor-pointer shrink-0 ${entry.done ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 hover:border-violet-500 bg-white text-transparent'}"><i class="fa-solid fa-check text-xs"></i></button>
-                  <div>
-                    <div class="flex flex-wrap items-center gap-2">
-                      <span class="text-xs font-extrabold text-slate-400">#${idx + 1}</span>
-                      <h4 class="font-extrabold text-sm ${entry.done ? 'line-through text-slate-500' : 'text-slate-900'}">${escHtml(ex.name)}</h4>
-                      <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">${escHtml(ex.tool)}</span>
-                      ${ex.main ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">Bài chính</span>' : ''}
-                      ${entry.readyUp ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold"><i class="fa-solid fa-arrow-trend-up"></i> Tăng +1–2.5kg tuần sau!</span>' : ''}
+        if (plan.isRest && !exList.length) {
+          $('workoutExerciseList').innerHTML = `
+            <div class="wk-card p-8 text-center">
+              <div class="w-14 h-14 rounded-2xl bg-lime-100 text-lime-700 flex items-center justify-center text-2xl mx-auto mb-3"><i class="fa-solid fa-bed"></i></div>
+              <h4 class="wk-text-main font-extrabold text-base text-slate-900">Ngày Nghỉ Phục Hồi & Tăng Trưởng Cơ</h4>
+              <p class="wk-text-sub text-xs text-slate-500 max-w-md mx-auto mt-1.5">Cơ bắp chỉ phát triển khi bạn nghỉ ngơi và nạp đủ dinh dưỡng. Duy trì ~2,450 kcal & 115g Protein hôm nay.</p>
+            </div>`;
+        } else {
+          $('workoutExerciseList').innerHTML = exList.map((ex, idx) => {
+            const entry = wLog.logs[ex.id] || { done: false, weight: "", extraWeight: false, sets: Array(ex.sets).fill(""), readyUp: false };
+            const setsArr = Array.from({ length: ex.sets }, (_, sIdx) => entry.sets?.[sIdx] ?? "");
+            const showWeightInput = !ex.isBodyweight || entry.extraWeight;
+            const lastPr = getExerciseBestRecord(ex.id);
+
+            return `
+              <div class="wk-card p-4 transition-all ${entry.done ? 'border-lime-400 bg-lime-50/30' : ''}">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <div class="flex items-start gap-3 flex-1 min-w-[250px]">
+                    <button onclick="toggleExerciseDone('${ex.id}')" class="mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition cursor-pointer shrink-0 ${entry.done ? 'bg-lime-500 border-lime-500 text-slate-950' : 'border-slate-300 hover:border-lime-500 bg-white text-transparent'}"><i class="fa-solid fa-check text-xs"></i></button>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-xs font-extrabold text-slate-400">#${idx + 1}</span>
+                        <h4 class="wk-text-main font-extrabold text-sm ${entry.done ? 'line-through text-slate-400' : 'text-slate-900'}">${escHtml(ex.name)}</h4>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold">${escHtml(ex.tool)}</span>
+                        ${ex.isBodyweight ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-lime-100 text-lime-800 font-extrabold">BW • Trọng lượng cơ thể</span>' : ''}
+                        ${lastPr ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-extrabold"><i class="fa-solid fa-trophy text-amber-500"></i> PR: ${escHtml(lastPr)}</span>` : ''}
+                      </div>
+                      <p class="wk-text-sub text-[11px] text-slate-500 mt-1">
+                        Chuẩn quốc tế: <strong class="text-lime-700">${ex.sets} hiệp &times; ${ex.reps}</strong> • Tempo: <strong>${ex.tempo}</strong> • RIR: <strong>${ex.rir}</strong> • Nghỉ: <strong>${ex.rest}</strong>
+                        ${ex.restSec > 0 ? `<button onclick="startRestTimer(${ex.restSec})" class="ml-1.5 px-2 py-0.5 rounded-md bg-slate-900 hover:bg-lime-500 hover:text-slate-950 text-white font-bold text-[10px] cursor-pointer transition"><i class="fa-solid fa-play"></i> Nghỉ ${ex.rest}</button>` : ''}
+                        <button onclick="openExerciseHistoryTracker('${ex.id}')" class="ml-1 px-2 py-0.5 rounded-md bg-lime-100 hover:bg-lime-200 text-lime-900 font-bold text-[10px] cursor-pointer transition"><i class="fa-solid fa-chart-line"></i> Lịch sử tạ</button>
+                      </p>
+                      <p class="wk-surface text-[11px] text-slate-600 mt-1.5 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200/70">
+                        <i class="fa-solid fa-circle-info text-lime-600 mr-1"></i> ${escHtml(ex.note)}
+                      </p>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1">Mục tiêu: <strong class="text-violet-700">${ex.sets} hiệp &times; ${ex.reps}</strong> • Nghỉ: <strong class="text-slate-700">${ex.rest}</strong>
-                      ${ex.restSec > 0 ? `<button onclick="startRestTimer(${ex.restSec})" class="ml-1.5 px-2 py-0.5 rounded-md bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold text-[10px] cursor-pointer"><i class="fa-solid fa-play"></i> Bấm nghỉ ${ex.rest}</button>` : ''}
-                    </p>
-                    <p class="text-[11px] text-slate-600 mt-1 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200/70"><i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> ${escHtml(ex.note)}</p>
                   </div>
-                </div>
-                ${!plan.isRest ? `
-                  <div class="w-full lg:w-auto flex flex-wrap items-center gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80">
-                    <div>
-                      <label class="block text-[9px] font-bold text-slate-500 uppercase mb-0.5">Mức tạ (kg)</label>
-                      <input type="text" value="${escHtml(entry.weight)}" onchange="updateExerciseField('${ex.id}', 'weight', this.value)" placeholder="VD: 40" class="w-16 px-2 py-1 text-xs font-extrabold text-center bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500">
-                    </div>
+
+                  <!-- Khu vực nhập Mức tạ / Bodyweight & Số Reps từng hiệp -->
+                  <div class="wk-surface w-full lg:w-auto flex flex-wrap items-center gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80">
+                    ${showWeightInput ? `
+                      <div>
+                        <label class="block text-[9px] font-bold text-slate-500 uppercase mb-0.5">${ex.isBodyweight ? 'Tạ phụ (kg)' : 'Mức tạ (kg)'}</label>
+                        <div class="flex items-center gap-1">
+                          <input type="text" value="${escHtml(entry.weight)}" onchange="updateExerciseField('${ex.id}', 'weight', this.value)" placeholder="${ex.isBodyweight ? '+5' : 'VD: 40'}" class="w-16 px-2 py-1 text-xs font-extrabold text-center bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-500">
+                          ${ex.isBodyweight ? `<button onclick="toggleExtraWeight('${ex.id}')" class="px-1.5 py-1 text-[10px] text-slate-400 hover:text-red-500" title="Bỏ tạ phụ">&times;</button>` : ''}
+                        </div>
+                      </div>
+                    ` : `
+                      <div class="flex flex-col items-start">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Trọng lượng</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-lime-100 text-lime-900 text-[11px] font-extrabold">Bodyweight</span>
+                        ${ex.allowExtraWeight ? `<button onclick="toggleExtraWeight('${ex.id}')" class="mt-1 text-[10px] text-blue-600 hover:underline font-bold cursor-pointer">+ Tạ phụ (kg)</button>` : ''}
+                      </div>
+                    `}
+
                     <div class="flex items-center gap-1.5">
-                      ${setsArr.map((val, sIdx) => `<div><label class="block text-[9px] font-bold text-slate-400 text-center mb-0.5">Hiệp ${sIdx + 1}</label><input type="text" value="${escHtml(val)}" onchange="updateExerciseSet('${ex.id}', ${sIdx}, this.value)" placeholder="reps" class="w-12 px-1.5 py-1 text-xs font-bold text-center bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500"></div>`).join('')}
+                      ${setsArr.map((val, sIdx) => `
+                        <div>
+                          <label class="block text-[9px] font-bold text-slate-400 text-center mb-0.5">Hiệp ${sIdx + 1}</label>
+                          <input type="text" value="${escHtml(val)}" onchange="updateExerciseSet('${ex.id}', ${sIdx}, this.value)" placeholder="reps" class="w-12 px-1.5 py-1 text-xs font-bold text-center bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-500">
+                        </div>
+                      `).join('')}
                     </div>
+
                     <div class="pl-1">
                       <label class="block text-[9px] font-bold text-slate-400 text-center mb-0.5">Tuần sau</label>
-                      <button onclick="toggleReadyIncrease('${ex.id}')" class="px-2 py-1 rounded-lg text-[10px] font-bold border transition cursor-pointer ${entry.readyUp ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-500 border-slate-300 hover:border-emerald-500 hover:text-emerald-600'}">+Tạ</button>
+                      <button onclick="toggleReadyIncrease('${ex.id}')" class="px-2 py-1 rounded-lg text-[10px] font-bold border transition cursor-pointer ${entry.readyUp ? 'bg-lime-500 text-slate-950 border-lime-500' : 'bg-white text-slate-500 border-slate-300 hover:border-lime-500'}">${ex.isBodyweight ? '+Reps' : '+Tạ'}</button>
                     </div>
-                  </div>` : ''}
-              </div>
-            </div>`;
-        }).join('');
+                  </div>
+                </div>
+              </div>`;
+          }).join('');
+        }
       }
       updateDailyWorkoutWidget();
+      if (wkSubView === 'muscles') renderInteractiveMuscleMap();
+      if (wkSubView === 'tracker') renderExerciseProgressChart();
     }
 
     function getWorkoutEntry(exId) {
       const wLog = ensureWorkoutRecord(currentDate, selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate));
-      if (!wLog.logs[exId]) wLog.logs[exId] = { done: false, weight: "", sets: [], readyUp: false };
+      if (!wLog.logs[exId]) wLog.logs[exId] = { done: false, weight: "", extraWeight: false, sets: [], readyUp: false };
       return wLog.logs[exId];
     }
     function toggleExerciseDone(exId) { const e = getWorkoutEntry(exId); e.done = !e.done; saveDatabase(); if (e.done) showToast('Đã hoàn thành bài tập!'); }
+    function toggleExtraWeight(exId) { const e = getWorkoutEntry(exId); e.extraWeight = !e.extraWeight; if (!e.extraWeight) e.weight = ""; saveDatabase(); }
     function updateExerciseField(exId, field, val) { getWorkoutEntry(exId)[field] = val.trim(); saveDatabase(); }
     function updateExerciseSet(exId, sIdx, val) { const e = getWorkoutEntry(exId); e.sets[sIdx] = val.trim(); if (val.trim()) e.done = true; saveDatabase(); }
     function toggleReadyIncrease(exId) { const e = getWorkoutEntry(exId); e.readyUp = !e.readyUp; saveDatabase(); }
     function markAllExercisesDone() {
-      const plan = WORKOUT_PLAN[selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate)];
-      plan.exercises.forEach(ex => { getWorkoutEntry(ex.id).done = true; });
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      getSessionExercises(dow, wLog).forEach(ex => { getWorkoutEntry(ex.id).done = true; });
       saveDatabase();
-      showToast(`Đã hoàn thành toàn bộ buổi ${plan.dayName}!`);
+      showToast(`Đã hoàn thành toàn bộ buổi ${WORKOUT_PLAN[dow].dayName}!`);
     }
     function copyLastWeekWorkout() {
       const prevIso = shiftISODate(currentDate, -7);
       const prevLogs = appDatabase.history[prevIso]?.workout?.logs;
       if (!prevLogs) return showToast(`Chưa có dữ liệu buổi tập ngày ${formatDisplayDate(prevIso)}!`, 'warn');
       const wLog = ensureWorkoutRecord(currentDate, selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate));
-      Object.keys(prevLogs).forEach(id => { wLog.logs[id] = { done: false, weight: prevLogs[id].weight || "", sets: [...(prevLogs[id].sets || [])], readyUp: false }; });
+      Object.keys(prevLogs).forEach(id => {
+        wLog.logs[id] = { done: false, weight: prevLogs[id].weight || "", extraWeight: !!prevLogs[id].extraWeight, sets: [...(prevLogs[id].sets || [])], readyUp: false };
+      });
       saveDatabase();
       showToast(`Đã nạp mức tạ từ ${formatDisplayDate(prevIso)}!`);
+    }
+
+    // === LỊCH SỬ MỨC TẠ & KỶ LỤC PR (LƯU TRONG appDatabase -> ĐỒNG BỘ GITHUB) ===
+    function ensureExerciseHistoryStore() {
+      if (!appDatabase.exerciseHistory) appDatabase.exerciseHistory = {};
+      return appDatabase.exerciseHistory;
+    }
+
+    function saveWorkoutSessionToHistory() {
+      const dow = selectedWorkoutDow ?? getDayOfWeekFromISO(currentDate);
+      const wLog = ensureWorkoutRecord(currentDate, dow);
+      const exList = getSessionExercises(dow, wLog);
+      const store = ensureExerciseHistoryStore();
+      let savedCount = 0;
+
+      exList.forEach(ex => {
+        const entry = wLog.logs[ex.id];
+        if (!entry) return;
+        const validSets = (entry.sets || []).map(v => parseInt(v, 10)).filter(n => !isNaN(n) && n > 0);
+        const weightNum = parseFloat(entry.weight) || 0;
+        if (validSets.length > 0 || weightNum > 0) {
+          if (!store[ex.id]) store[ex.id] = [];
+          const avgReps = validSets.length ? Math.round(validSets.reduce((a, b) => a + b, 0) / validSets.length) : 0;
+          const maxReps = validSets.length ? Math.max(...validSets) : 0;
+          const record = {
+            date: currentDate,
+            weight: weightNum,
+            setsCount: validSets.length || ex.sets,
+            setsDetail: validSets.join(' / ') || `${ex.sets} hiệp`,
+            avgReps,
+            maxReps,
+            epley1RM: weightNum > 0 && maxReps > 0 ? round1(weightNum * (1 + maxReps / 30)) : 0
+          };
+          const existingIdx = store[ex.id].findIndex(r => r.date === currentDate);
+          if (existingIdx >= 0) store[ex.id][existingIdx] = record;
+          else store[ex.id].push(record);
+          store[ex.id].sort((a, b) => a.date.localeCompare(b.date));
+          savedCount++;
+        }
+      });
+
+      if (!savedCount) {
+        return showToast("Hãy nhập mức tạ hoặc số reps ít nhất 1 bài trước khi lưu!", "warn");
+      }
+      saveDatabase();
+      showToast(`Đã lưu ${savedCount} bài vào Lịch sử PR & đồng bộ GitHub!`);
+    }
+
+    function getExerciseBestRecord(exId) {
+      const logs = appDatabase.exerciseHistory?.[exId] || [];
+      if (!logs.length) return null;
+      const ex = getExerciseById(exId);
+      if (ex?.isBodyweight) {
+        const maxR = Math.max(...logs.map(l => l.maxReps || 0));
+        const maxW = Math.max(...logs.map(l => l.weight || 0));
+        return maxW > 0 ? `BW +${maxW}kg (${maxR} reps)` : `${maxR} reps`;
+      }
+      const maxW = Math.max(...logs.map(l => l.weight || 0));
+      return maxW > 0 ? `${maxW} kg` : null;
+    }
+
+    function initTrackerSelect() {
+      const sel = $('trackerExerciseSelect');
+      if (!sel) return;
+      const currentVal = sel.value;
+      sel.innerHTML = EXERCISE_DATABASE.map(ex => `<option value="${ex.id}">${escHtml(ex.name)}</option>`).join('');
+      if (currentVal && EXERCISE_DATABASE.some(e => e.id === currentVal)) sel.value = currentVal;
+    }
+
+    function addManualTrackerLog() {
+      const exId = $('trackerExerciseSelect')?.value;
+      const ex = getExerciseById(exId);
+      if (!ex) return;
+      const weightNum = parseFloat($('trackerQuickWeight')?.value) || 0;
+      const setsCount = parseInt($('trackerQuickSets')?.value, 10) || 4;
+      const repsNum = parseInt($('trackerQuickReps')?.value, 10) || 0;
+
+      if (!ex.isBodyweight && weightNum <= 0) return showToast("Vui lòng nhập mức tạ (kg)!", "warn");
+      if (repsNum <= 0) return showToast("Vui lòng nhập số reps!", "warn");
+
+      const store = ensureExerciseHistoryStore();
+      if (!store[exId]) store[exId] = [];
+      const record = {
+        date: currentDate,
+        weight: weightNum,
+        setsCount,
+        setsDetail: Array(setsCount).fill(repsNum).join(' / '),
+        avgReps: repsNum,
+        maxReps: repsNum,
+        epley1RM: weightNum > 0 ? round1(weightNum * (1 + repsNum / 30)) : 0
+      };
+      const idx = store[exId].findIndex(r => r.date === currentDate);
+      if (idx >= 0) store[exId][idx] = record;
+      else store[exId].push(record);
+      store[exId].sort((a, b) => a.date.localeCompare(b.date));
+
+      if ($('trackerQuickReps')) $('trackerQuickReps').value = "";
+      saveDatabase();
+      renderExerciseProgressChart();
+      showToast(`Đã lưu kỷ lục cho ${ex.name.split('(')[0].trim()}!`);
+    }
+
+    function deleteTrackerLog(exId, dateStr) {
+      const store = ensureExerciseHistoryStore();
+      if (store[exId]) {
+        store[exId] = store[exId].filter(r => r.date !== dateStr);
+        saveDatabase();
+        renderExerciseProgressChart();
+      }
+    }
+
+    function renderExerciseProgressChart() {
+      initTrackerSelect();
+      const exId = $('trackerExerciseSelect')?.value || EXERCISE_DATABASE[0].id;
+      const ex = getExerciseById(exId) || EXERCISE_DATABASE[0];
+      const logs = (appDatabase.exerciseHistory?.[exId] || []).slice().sort((a, b) => a.date.localeCompare(b.date));
+
+      if ($('trackerQuickDate')) $('trackerQuickDate').textContent = formatDisplayDate(currentDate);
+      if ($('trackerQuickWeightLabel')) $('trackerQuickWeightLabel').textContent = ex.isBodyweight ? 'Tạ phụ thêm (kg - để 0 nếu BW)' : 'Mức tạ (kg)';
+      if ($('trackerChartTitle')) $('trackerChartTitle').textContent = `Tiến triển: ${ex.name}`;
+
+      // 3 Stat Cards
+      if ($('trackerStatsGrid')) {
+        if (ex.isBodyweight) {
+          const bestReps = logs.length ? Math.max(...logs.map(l => l.maxReps || 0)) : 0;
+          const bestExtraW = logs.length ? Math.max(...logs.map(l => l.weight || 0)) : 0;
+          const totalReps = logs.reduce((s, l) => s + (l.avgReps || 0) * (l.setsCount || 1), 0);
+          $('trackerStatsGrid').innerHTML = `
+            <div class="wk-surface p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Kỷ lục Reps tối đa</span>
+              <p class="text-xl font-black text-lime-600 mt-1">${bestReps} <span class="text-xs font-semibold">reps/hiệp</span></p>
+            </div>
+            <div class="wk-surface p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Tạ phụ cao nhất</span>
+              <p class="text-xl font-black text-slate-900 wk-text-main mt-1">${bestExtraW > 0 ? `+${bestExtraW} kg` : 'Bodyweight'}</p>
+            </div>
+            <div class="wk-surface p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Tổng Reps tích lũy</span>
+              <p class="text-xl font-black text-slate-900 wk-text-main mt-1">${totalReps.toLocaleString()} <span class="text-xs font-semibold">reps</span></p>
+            </div>`;
+        } else {
+          const bestWeight = logs.length ? Math.max(...logs.map(l => l.weight || 0)) : 0;
+          const best1RM = logs.length ? Math.max(...logs.map(l => l.epley1RM || 0)) : 0;
+          const lastVol = logs.length ? Math.round((logs[logs.length - 1].weight || 0) * (logs[logs.length - 1].avgReps || 0) * (logs[logs.length - 1].setsCount || 1)) : 0;
+          $('trackerStatsGrid').innerHTML = `
+            <div class="wk-surface p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Mức Tạ Kỷ Lục (PR)</span>
+              <p class="text-xl font-black text-lime-600 mt-1">${bestWeight} <span class="text-xs font-semibold">kg</span></p>
+            </div>
+            <div class="wk-surface p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">1RM Ước Tính (Epley)</span>
+              <p class="text-xl font-black text-slate-900 wk-text-main mt-1">${best1RM} <span class="text-xs font-semibold">kg</span></p>
+            </div>
+            <div class="wk-surface p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Volume buổi gần nhất</span>
+              <p class="text-xl font-black text-slate-900 wk-text-main mt-1">${lastVol.toLocaleString()} <span class="text-xs font-semibold">kg</span></p>
+            </div>`;
+        }
+      }
+
+      // SVG Line Chart
+      const chartBox = $('trackerSvgChartContainer');
+      if (chartBox) {
+        if (!logs.length) {
+          chartBox.innerHTML = `<div class="text-center text-xs text-slate-400 italic">Chưa có dữ liệu lịch sử cho bài tập này. Hãy nhập kết quả buổi tập và bấm "Lưu Buổi Tập & PR"!</div>`;
+        } else {
+          const vals = logs.map(l => ex.isBodyweight ? (l.maxReps || 0) : (l.weight || 0));
+          const minV = Math.max(0, Math.min(...vals) * 0.85);
+          const maxV = Math.max(...vals, minV + 5) * 1.1;
+          const W = 520, H = 160, padX = 36, padY = 24;
+          const pts = logs.map((l, i) => {
+            const x = logs.length === 1 ? W / 2 : padX + (i / (logs.length - 1)) * (W - padX * 2);
+            const y = H - padY - ((vals[i] - minV) / (maxV - minV || 1)) * (H - padY * 2);
+            return { x, y, val: vals[i], label: formatDisplayDate(l.date).slice(0, 5) };
+          });
+          const polyline = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+          chartBox.innerHTML = `
+            <svg viewBox="0 0 ${W} ${H}" class="w-full h-full overflow-visible">
+              <line x1="${padX}" y1="${H - padY}" x2="${W - padX}" y2="${H - padY}" stroke="#cbd5e1" stroke-dasharray="3,3"/>
+              <line x1="${padX}" y1="${padY}" x2="${W - padX}" y2="${padY}" stroke="#cbd5e1" stroke-dasharray="3,3"/>
+              ${pts.length > 1 ? `<polyline fill="none" stroke="#84cc16" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${polyline}"/>` : ''}
+              ${pts.map(p => `
+                <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5" fill="#0f172a" stroke="#84cc16" stroke-width="2.5"/>
+                <text x="${p.x.toFixed(1)}" y="${(p.y - 10).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="#65a30d">${p.val}${ex.isBodyweight ? 'r' : 'kg'}</text>
+                <text x="${p.x.toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">${p.label}</text>
+              `).join('')}
+            </svg>`;
+        }
+      }
+
+      // History Table
+      const tbody = $('trackerHistoryTableBody');
+      if (tbody) {
+        if (!logs.length) {
+          tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Chưa có bản ghi nào</td></tr>`;
+        } else {
+          tbody.innerHTML = logs.slice().reverse().map(l => `
+            <tr>
+              <td class="p-2.5 font-bold">${formatDisplayDate(l.date)}</td>
+              <td class="p-2.5 font-extrabold text-lime-700">${ex.isBodyweight ? (l.weight > 0 ? `BW + ${l.weight} kg` : 'Bodyweight') : `${l.weight} kg`}</td>
+              <td class="p-2.5">${escHtml(l.setsDetail)} reps</td>
+              <td class="p-2.5 font-semibold">${ex.isBodyweight ? `Max ${l.maxReps} reps` : `1RM: ${l.epley1RM} kg`}</td>
+              <td class="p-2.5 text-right">
+                <button onclick="deleteTrackerLog('${exId}', '${l.date}')" class="px-2 py-1 rounded bg-red-50 text-red-500 hover:bg-red-100 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
     }
 
     function startRestTimer(sec) {
@@ -2225,7 +3191,7 @@
       const el = $('restTimerDisplay');
       if (!el) return;
       el.textContent = `${String(Math.floor(restSecondsLeft / 60)).padStart(2, '0')}:${String(restSecondsLeft % 60).padStart(2, '0')}`;
-      el.className = `font-mono-code font-extrabold text-base min-w-[48px] text-center ${restSecondsLeft > 0 && restSecondsLeft <= 10 ? 'text-amber-400 animate-pulse' : 'text-emerald-400'}`;
+      el.className = `font-mono-code font-extrabold text-sm min-w-[44px] text-center ${restSecondsLeft > 0 && restSecondsLeft <= 10 ? 'text-amber-400 animate-pulse' : 'text-lime-400'}`;
     }
 
     function loadDateState(dateStr) {
